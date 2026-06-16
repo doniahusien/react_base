@@ -1,0 +1,123 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { User, AtSign, Shield, Lock, Contact, X, Image as ImageIcon, LayoutDashboard, UserCircle, KeyRound } from "lucide-react";
+import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
+import { useAuthStore } from "../../stores/auth";
+import Cookies from "js-cookie";
+import { Form } from "../../components/Inputs/Form";
+import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
+import { BaseFilesInput, type FileOutputItem } from "../../components/Inputs/BaseFilesInput";
+import { BasePhoneInput } from "../../components/Inputs/BasePhoneInput";
+import { SectionCard } from "../../components/Shared/SectionCard";
+import { toast } from "../../stores/toast";
+import api from "../../lib/axios";
+
+const USER_DATA_KEY = import.meta.env.VITE_USER_DATA ?? "admin_data";
+const schemaProfile = { first_name: "required:first_name|type:string", last_name: "required:last_name|type:string", email: "required:email|email|type:string", phone_code: "required:phone_code|type:string", phone: "required:phone|type:string" };
+const schemaPassword = { current_password: "required:current_password|minLength:8|type:string", password: "required:password|minLength:8|maxLength:16|type:string", password_confirmation: "required:password_confirmation|type:string" };
+
+function ChangePasswordDialog({ onClose, successMsg, failedMsg }: { onClose: () => void; successMsg: string; failedMsg: string; }) {
+  const { t } = useTranslation();
+  const [values, setValues] = useState({ current_password: "", password: "", password_confirmation: "" });
+  const [loading, setLoading] = useState(false);
+  const set = (k: keyof typeof values) => (v: string) => setValues(p => ({ ...p, [k]: v }));
+  const handleSubmit = async () => {
+    try { setLoading(true); const fd = new FormData(); fd.append("current_password", values.current_password); fd.append("password", values.password); fd.append("password_confirmation", values.password_confirmation); await api.post("/profile/change-password", fd); toast.success(successMsg); onClose(); }
+    catch (e: any) { toast.error(failedMsg, e?.response?.data?.message); }
+    finally { setLoading(false); }
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} /><div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-2xl">
+      <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        <div className="flex items-center gap-2"><div className="flex size-8 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600"><KeyRound size={14} /></div><h3 className="text-sm font-bold text-text">{t("PROFILE.changePassword")}</h3></div>
+        <button type="button" onClick={onClose} className="flex size-8 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-app-muted hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"><X size={14} /></button>
+      </div>
+      <Form schema={schemaPassword} values={values} onSubmit={handleSubmit}>{({ errors, field, touch }) => (
+        <div className="space-y-4 px-6 py-5">
+          <BaseTextInput name="current_password" label={t("PROFILE.currentPassword")} type="password" value={values.current_password} onInput={v => { set("current_password")(v); touch("current_password"); }} prependInputIcon={Lock} {...field("current_password", errors)} />
+          <BaseTextInput name="password" label={t("PROFILE.newPassword")} type="password" value={values.password} onInput={v => { set("password")(v); touch("password"); }} prependInputIcon={Lock} {...field("password", errors)} />
+          <BaseTextInput name="password_confirmation" label={t("PROFILE.confirmPassword")} type="password" value={values.password_confirmation} onInput={v => { set("password_confirmation")(v); touch("password_confirmation"); }} prependInputIcon={Lock} {...field("password_confirmation", errors)} />
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-semibold text-app-muted hover:text-text transition-all"><X size={14} /> {t("BUTTONS.cancel")}</button>
+            <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={14} />}{t("BUTTONS.saveChanges")}</button>
+          </div>
+        </div>
+      )}</Form>
+    </div></div>
+  );
+}
+
+export default function ProfileEdit() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user, fetchProfile } = useAuthStore();
+  const [imageValue] = useState<any>(user?.image ? { id: user.image?.id ?? null, media: user.image?.media ?? user.image } : null);
+  const [imageFile, setImageFile] = useState<FileOutputItem | null>(null);
+  const [imageLoading, setImgLoad] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [pwOpen, setPwOpen] = useState(false);
+  const [values, setValues] = useState({ first_name: user?.first_name ?? "", last_name: user?.last_name ?? "", email: user?.email ?? "", phone_code: user?.phone_code ?? "966", phone: user?.phone ?? "" });
+  const set = <K extends keyof typeof values>(k: K, v: string) => setValues(p => ({ ...p, [k]: v }));
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const fd = new FormData();
+      if (imageFile?.str) fd.append("image", imageFile.str);
+      fd.append("first_name", values.first_name); fd.append("last_name", values.last_name);
+      fd.append("email", values.email); fd.append("phone_code", values.phone_code); fd.append("phone", values.phone);
+      fd.append("_method", "PUT");
+      const res = await api.post("profile", fd);
+      const updated = res.data?.data ?? {};
+      const { token: _t, verification_token: _vt, permissions: _p, permissions_of_roles: _por, ...userData } = updated;
+      Cookies.set(USER_DATA_KEY, JSON.stringify(userData));
+      await fetchProfile();
+      toast.success(res.data?.message);
+      navigate("/profile");
+    } catch (e: any) { toast.error(t("PROFILE.updateFailed"), e?.response?.data?.message); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div className="space-y-0">
+      <div className="relative -mx-6 overflow-hidden bg-linear-to-r from-[#0f0a2a]/10 via-[#1a0f45]/6 to-[#0a1628]/8 dark:from-[#0f0a2a] dark:via-[#1a0f45] dark:to-[#0a1628] px-6 py-7 border-b border-purple-500/10 dark:border-purple-500/20 mb-8">
+        <div className="relative">
+          <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("PROFILE.title"), href: "/profile", icon: UserCircle }, { label: t("PROFILE.editTitle"), icon: User }]} />
+          <div className="relative flex items-end gap-4"><div className="w-0.5 self-stretch rounded-full bg-linear-to-b from-purple-400 to-blue-500" /><h1 className="text-2xl font-black tracking-tight text-slate-800 dark:text-white">{t("PROFILE.editTitle")}</h1></div>
+        </div>
+      </div>
+      <Form schema={schemaProfile} values={values} onSubmit={handleSubmit}>
+        {({ errors, field, touch }) => (
+          <div className="space-y-6">
+            <SectionCard icon={ImageIcon} title={t("PROFILE.profilePhoto")} subtitle="" color="sky" step={1}>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+                <div className="w-full sm:max-w-xs"><BaseFilesInput name="image" accept="image/*" attachment model="users" value={imageValue} onChange={v => setImageFile(Array.isArray(v) ? v[0] : v)} onLoadingChange={setImgLoad} /></div>
+                <button type="button" onClick={() => setPwOpen(true)} className="inline-flex items-center gap-2 self-start rounded-xl border border-purple-500/30 bg-purple-50 dark:bg-purple-950/20 px-4 py-2.5 text-sm font-semibold text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-950/40 transition-all"><KeyRound size={14} />{t("PROFILE.changePassword")}</button>
+              </div>
+            </SectionCard>
+            <SectionCard icon={User} title={t("PROFILE.basicInfo")} subtitle="" color="emerald" step={2}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <BaseTextInput name="first_name" label={t("TITLES.firstName")} placeholder={t("LABELS.firstName")} value={values.first_name} prependInputIcon={User} onInput={v => { set("first_name", v); touch("first_name"); }} {...field("first_name", errors)} />
+                <BaseTextInput name="last_name" label={t("TITLES.lastName")} placeholder={t("LABELS.lastName")} value={values.last_name} prependInputIcon={User} onInput={v => { set("last_name", v); touch("last_name"); }} {...field("last_name", errors)} />
+              </div>
+            </SectionCard>
+            <SectionCard icon={Contact} title={t("PROFILE.contactInfo")} subtitle="" color="purple" step={3}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <BaseTextInput name="email" label={t("TITLES.email")} placeholder={t("LABELS.email")} type="email" value={values.email} prependInputIcon={AtSign} onInput={v => { set("email", v); touch("email"); }} {...field("email", errors)} />
+                <BasePhoneInput phoneCode={values.phone_code} phone={values.phone} label={t("TITLES.phone")} onPhoneCode={v => { set("phone_code", v); touch("phone_code"); }} onPhone={v => { set("phone", v); touch("phone"); }} errorCode={errors.phone_code} errorPhone={errors.phone} touched={!!errors.phone} />
+              </div>
+            </SectionCard>
+            <div className="flex items-center justify-end gap-3 pt-2 pb-4">
+              <button type="button" onClick={() => navigate("/profile")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 px-5 py-2.5 text-sm font-semibold text-app-muted hover:text-text transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="submit" disabled={loading || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-600/30 hover:bg-purple-700 active:scale-95 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={15} />}{t("BUTTONS.saveChanges")}</button>
+            </div>
+          </div>
+        )}
+      </Form>
+      {pwOpen && <ChangePasswordDialog onClose={() => setPwOpen(false)} successMsg={t("PROFILE.passwordUpdated")} failedMsg={t("PROFILE.passwordFailed")} />}
+    </div>
+  );
+}
+
+
