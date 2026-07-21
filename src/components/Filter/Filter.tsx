@@ -16,8 +16,8 @@ export function Filter({ items, defaultOpen = true }: FilterProps) {
   return (
     <div className="rounded-2xl border border-border bg-body overflow-hidden">
       <button type="button" onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5">
-        <div className="flex items-center gap-2 text-sm font-medium text-text"><SlidersHorizontal size={15} className="text-purple-500" /><span>{t("TITLES.filters")}</span></div>
-        <ChevronDown size={16} className={`text-app-muted transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+        <div className="flex items-center gap-2 text-sm font-medium text-text"><SlidersHorizontal size={15} className="text-accent" /><span>{t("TITLES.filters")}</span></div>
+        <ChevronDown size={16} className={`text-muted transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
       </button>
       <div className="grid transition-all duration-300 ease-in-out" style={{ gridTemplateRows: open ? "1fr" : "0fr" }}>
         <div className="overflow-hidden">

@@ -10,8 +10,7 @@ import { SectionCard } from "../../components/Shared/SectionCard";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
 import { useTranslation } from "react-i18next";
-
-const schema = { name_ar: "required:name_ar|type:string", name_en: "required:name_en|type:string", phone_code: "required:phone_code|type:string", phone_length: "required:phone_length", currency_ar: "required:currency_ar|type:string", currency_en: "required:currency_en|type:string", estimated_arrival_days: "required:estimated_arrival_days|type:string" };
+import { schemas } from "../../lib/schemas";
 
 export default function CountryForm() {
   const { t } = useTranslation();
@@ -62,17 +61,16 @@ export default function CountryForm() {
 
   return (
     <div className="space-y-0">
-      <div className="relative -mx-6 overflow-hidden bg-linear-to-r from-[#0f0a2a]/10 via-[#1a0f45]/6 to-[#0a1628]/8 dark:from-[#0f0a2a] dark:via-[#1a0f45] dark:to-[#0a1628] px-6 py-7 border-b border-purple-500/10 dark:border-purple-500/20 mb-8">
-        <div className="pointer-events-none absolute top-0 left-1/4 h-32 w-52 -translate-y-1/2 rounded-full bg-purple-600/15 blur-3xl" />
+      <div className="page-header relative -mx-6 overflow-hidden px-6 py-7 mb-8">
         <div className="relative">
           <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.countries"), href: "/countries", icon: Earth }, { label: editing ? t("TITLES.edit", { count: "" as any }) : t("TITLES.add", { count: "" as any }) }]} />
           <div className="flex items-end gap-4">
-            <div className="w-0.5 self-stretch rounded-full bg-linear-to-b from-purple-400 to-blue-500" />
-            <h1 className="text-2xl font-black tracking-tight text-slate-800 dark:text-white">{editing ? t("TITLES.edit", { count: t("TITLES.country") as any }) : t("TITLES.add", { count: t("TITLES.country") as any })}</h1>
+            <div className="w-0.5 self-stretch rounded-full bg-primary opacity-70" />
+            <h1 className="text-2xl font-black tracking-tight text-text">{editing ? t("TITLES.edit", { count: t("TITLES.country") as any }) : t("TITLES.add", { count: t("TITLES.country") as any })}</h1>
           </div>
         </div>
       </div>
-      <Form schema={schema} values={{ ...values, flag: flagFile ?? flagValue }} onSubmit={handleSubmit}>
+      <Form schema={schemas.country} values={{ ...values, flag: flagFile ?? flagValue }} onSubmit={handleSubmit}>
         {({ errors, field, touch }) => (
           <div className="space-y-6">
             <SectionCard icon={ImageIcon} title={t("TITLES.flag")} subtitle={t("LABELS.flagImageDesc")} color="sky" step={1}>
@@ -94,8 +92,8 @@ export default function CountryForm() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/countries")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 px-5 py-2.5 text-sm font-semibold text-app-muted hover:text-text hover:border-slate-300 transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loadingForm || flagLoading} className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-600/30 hover:bg-purple-700 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
+              <button type="button" onClick={() => navigate("/countries")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted hover:text-text hover:bg-panel-alt transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="submit" disabled={loadingForm || flagLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
                 {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>

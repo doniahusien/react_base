@@ -45,8 +45,8 @@ function StatCard({ icon: Icon, label, value, accent }: StatCardProps) {
   );
 }
 
-const SkeletonCard = () => (<div className="rounded-xl border border-border bg-white/70 dark:bg-slate-800/40 p-5"><div className="flex items-center gap-4"><div className="skeleton-item size-12 rounded-full" /><div className="flex-1 space-y-2"><div className="skeleton-item h-3 w-1/3 rounded-full" /><div className="skeleton-item h-6 w-1/2 rounded-full" /></div></div></div>);
-const SkeletonChart = ({ height = 300 }: { height?: number }) => (<div className="rounded-xl border border-border bg-white/70 dark:bg-slate-800/40 p-5"><div className="skeleton-item mb-5 h-4 w-40 rounded-full" /><div className="skeleton-item rounded-xl" style={{ height }} /></div>);
+const SkeletonCard = () => (<div className="rounded-xl border border-border bg-panel p-5"><div className="flex items-center gap-4"><div className="skeleton-item size-12 rounded-full" /><div className="flex-1 space-y-2"><div className="skeleton-item h-3 w-1/3 rounded-full" /><div className="skeleton-item h-6 w-1/2 rounded-full" /></div></div></div>);
+const SkeletonChart = ({ height = 300 }: { height?: number }) => (<div className="rounded-xl border border-border bg-panel p-5"><div className="skeleton-item mb-5 h-4 w-40 rounded-full" /><div className="skeleton-item rounded-xl" style={{ height }} /></div>);
 
 type ChartType = "area" | "bar";
 
@@ -111,8 +111,8 @@ export default function Home() {
     <div className="space-y-8 pb-10">
       <div>
         <h1 className="text-2xl font-black tracking-tight text-text">{t("ANALYTICS.title")}</h1>
-        <p className="mt-1 text-sm text-app-muted">{t("ANALYTICS.description")}</p>
-        {(stats as any).filter?.reference_date && <p className="mt-0.5 text-xs text-app-muted/60">{t("ANALYTICS.lastUpdated")}: {(stats as any).filter.reference_date}</p>}
+        <p className="mt-1 text-sm text-muted">{t("ANALYTICS.description")}</p>
+        {(stats as any).filter?.reference_date && <p className="mt-0.5 text-xs text-muted/60">{t("ANALYTICS.lastUpdated")}: {(stats as any).filter.reference_date}</p>}
       </div>
 
       {loading ? <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}</div>
@@ -124,11 +124,11 @@ export default function Home() {
           </div>}
 
       {loading ? <SkeletonChart height={300} /> : (
-        <div className="rounded-xl border border-border bg-white/70 dark:bg-slate-800/40 p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-panel p-5 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <h3 className="text-base font-bold text-text">{t("ANALYTICS.revenueOverview")}</h3>
-            <div className="flex items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 p-1">
-              {(["bar", "area"] as ChartType[]).map((tp) => <button key={tp} type="button" onClick={() => setChartType(tp)} className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all ${chartType === tp ? "bg-white dark:bg-slate-700 text-text shadow-sm" : "text-app-muted hover:text-text"}`}>{tp === "bar" ? t("ANALYTICS.bar") : t("ANALYTICS.area")}</button>)}
+            <div className="flex items-center gap-1 rounded-lg bg-panel-soft border border-border p-1">
+              {(["bar", "area"] as ChartType[]).map((tp) => <button key={tp} type="button" onClick={() => setChartType(tp)} className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all ${chartType === tp ? "bg-panel text-text shadow-sm border border-border" : "text-muted hover:text-text"}`}>{tp === "bar" ? t("ANALYTICS.bar") : t("ANALYTICS.area")}</button>)}
             </div>
           </div>
           <ApexChart type={chartType} height={300} options={revenueOptions} series={revenueSeries} />
@@ -136,13 +136,13 @@ export default function Home() {
       )}
 
       {loading ? <SkeletonChart height={350} /> : topProducts.length > 0 ? (
-        <div className="rounded-xl border border-border bg-white/70 dark:bg-slate-800/40 p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-panel p-5 shadow-sm">
           <h3 className="mb-5 text-base font-bold text-text">{t("ANALYTICS.topSellingProducts")}</h3>
           <ApexChart type="bar" height={350} options={topProductsOptions} series={topProductsSeries} />
         </div>
       ) : !loading && (
-        <div className="rounded-xl border border-dashed border-border bg-white/40 dark:bg-slate-800/20 p-10 text-center">
-          <p className="text-sm text-app-muted">{t("ANALYTICS.noProducts")}</p>
+        <div className="rounded-xl border border-dashed border-border bg-panel-soft p-10 text-center">
+          <p className="text-sm text-muted">{t("ANALYTICS.noProducts")}</p>
         </div>
       )}
     </div>

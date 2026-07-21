@@ -16,7 +16,7 @@ function getQueryParams() { const p = new URLSearchParams(window.location.search
 function Avatar({ src, name }: { src?: string; name?: string }) {
   const initials = (name || "").split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   if (src) return <ImagePreviewTrigger src={src} alt={name} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" />;
-  return <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-border bg-purple-100 dark:bg-purple-950/40 text-xs font-bold text-purple-600">{initials}</span>;
+  return <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-border bg-primary/10 text-xs font-bold text-primary">{initials}</span>;
 }
 
 export default function UsersShowAll() {
@@ -49,18 +49,18 @@ export default function UsersShowAll() {
 
   const renderCell = (field: string, item: User, index: number) => {
     switch (field) {
-      case "index": return <span className="text-sm text-app-muted">#{index + 1}</span>;
+      case "index": return <span className="text-sm text-muted">#{index + 1}</span>;
       case "name": return (
         <div className="flex items-center gap-3">
           <div className="relative shrink-0"><Avatar src={item.image} name={item.full_name || item.name} /><span className="absolute -bottom-0.5 -inset-e-0.5 h-3 w-3 rounded-full border-2 border-body bg-green-500" /></div>
           <p className="text-sm font-medium text-text">{item.full_name}</p>
         </div>
       );
-      case "email": return <div className="flex items-center gap-1.5"><Mail size={14} className="shrink-0 text-app-muted" /><a href={`mailto:${item.email}`} className="text-sm text-purple-600 hover:text-purple-700 transition-colors">{item.email}</a></div>;
-      case "phone": return item.phone ? <a href={`tel:${item.phone_code}${item.phone}`} className="flex items-center gap-1.5"><Phone size={14} className="shrink-0 text-app-muted" /><bdo dir="ltr" className="text-sm text-text">+{item.phone_code} {item.phone}</bdo></a> : <span className="text-sm text-app-muted">—</span>;
+      case "email": return <div className="flex items-center gap-1.5"><Mail size={14} className="shrink-0 text-muted" /><a href={`mailto:${item.email}`} className="text-sm text-primary hover:opacity-80 transition-colors">{item.email}</a></div>;
+      case "phone": return item.phone ? <a href={`tel:${item.phone_code}${item.phone}`} className="flex items-center gap-1.5"><Phone size={14} className="shrink-0 text-muted" /><bdo dir="ltr" className="text-sm text-text">+{item.phone_code} {item.phone}</bdo></a> : <span className="text-sm text-muted">—</span>;
       case "actions": return (
         <div className="relative w-9" onClick={(e) => e.stopPropagation()}>
-          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-body text-app-muted hover:border-purple-400 hover:text-purple-600 transition-all"><MoreHorizontal size={16} /></button>
+          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-body text-muted hover:border-primary/50 hover:text-primary transition-all"><MoreHorizontal size={16} /></button>
           {activeMenu === item.id && <ActionsMenu data={item} showUrl={`/users/${item.id}`} editUrl={`/users/form/${item.id}`} deleteUrl={`/users/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((u) => u.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );

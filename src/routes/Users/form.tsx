@@ -14,9 +14,7 @@ import { Skeleton } from "../../components/UI/Skeleton";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
 import type { UserFormValues } from "../../types/user";
-
-const schemaCreate: Record<string, string> = { first_name: "required:first_name|type:string", last_name: "required:last_name|type:string", email: "required:email|email|type:string", password: "required:password|minLength:8|maxLength:16|type:string", password_confirmation: "required:password_confirmation", phone_code: "required:phone_code|type:string", phone: "required:phone|type:string" };
-const schemaEdit: Record<string, string> = { first_name: "required:first_name|type:string", last_name: "required:last_name|type:string", email: "required:email|email|type:string", phone_code: "required:phone_code|type:string", phone: "required:phone|type:string" };
+import { schemas } from "../../lib/schemas";
 
 export default function UserForm() {
   const { t } = useTranslation();
@@ -66,20 +64,18 @@ export default function UserForm() {
 
   if (loadingData) return <div className="space-y-5"><Skeleton sections={[{ fields: [{}] }, { fields: [{}, {}] }, { fields: [{}, {}] }, { fields: [{}, {}] }, { fields: [{}, {}, {}] }]} /></div>;
 
-  const schema = editing ? schemaEdit : schemaCreate;
-
   return (
     <div className="space-y-0">
-      <div className="relative -mx-6 overflow-hidden bg-linear-to-r from-[#0f0a2a]/10 via-[#1a0f45]/6 to-[#0a1628]/8 dark:from-[#0f0a2a] dark:via-[#1a0f45] dark:to-[#0a1628] px-6 py-7 border-b border-purple-500/10 dark:border-purple-500/20 mb-8">
+      <div className="relative -mx-6 overflow-hidden bg-page-header px-6 py-7 border-b border-border/50 mb-8">
         <div className="relative">
           <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.users"), href: "/users", icon: Users }, { label: editing ? t("TITLES.edit", { count: "" as any }) : t("TITLES.add", { count: "" as any }) }]} />
           <div className="flex items-end gap-4">
-            <div className="w-0.5 self-stretch rounded-full bg-linear-to-b from-purple-400 to-blue-500" />
-            <h1 className="text-2xl font-black tracking-tight text-slate-800 dark:text-white">{editing ? t("TITLES.edit", { count: t("TITLES.user") as any }) : t("TITLES.add", { count: t("TITLES.user") as any })}</h1>
+            <div className="w-0.5 self-stretch rounded-full bg-accent" />
+            <h1 className="text-2xl font-black tracking-tight text-text">{editing ? t("TITLES.edit", { count: t("TITLES.user") as any }) : t("TITLES.add", { count: t("TITLES.user") as any })}</h1>
           </div>
         </div>
       </div>
-      <Form schema={schema} values={values as any} onSubmit={handleSubmit}>
+      <Form schema={editing ? schemas.userEdit : schemas.userCreate} values={values as any} onSubmit={handleSubmit}>
         {({ errors, touched, field, touch }) => (
           <div className="space-y-6">
             <SectionCard icon={ImageIcon} title={t("TITLES.profilePhoto")} subtitle={t("LABELS.profilePhotoDesc")} color="sky" step={1}>
@@ -91,7 +87,7 @@ export default function UserForm() {
                 <BaseTextInput name="last_name" label={t("TITLES.lastName")} placeholder={t("LABELS.lastName")} value={values.last_name} onInput={(v) => { set("last_name", v); touch("last_name"); }} prependInputIcon={User} {...field("last_name", errors)} />
               </div>
             </SectionCard>
-            <SectionCard icon={Contact} title={t("TITLES.contactInfo")} subtitle={t("LABELS.contactInfo")} color="purple" step={3}>
+            <SectionCard icon={Contact} title={t("TITLES.contactInfo")} subtitle={t("LABELS.contactInfo")} color="blue" step={3}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <BaseTextInput name="email" label={t("TITLES.email")} placeholder={t("LABELS.email")} type="email" value={values.email} onInput={(v) => { set("email", v); touch("email"); }} prependInputIcon={AtSign} {...field("email", errors)} />
                 <BasePhoneInput phoneCode={values.phone_code} phone={values.phone} onPhoneCode={(v) => { set("phone_code", v); touch("phone_code"); }} onPhone={(v) => { set("phone", v); touch("phone"); }} label={t("TITLES.phone")} errorCode={errors.phone_code} errorPhone={errors.phone} touched={touched["phone_code"] || touched["phone"]} />
@@ -110,8 +106,8 @@ export default function UserForm() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 px-5 py-2.5 text-sm font-semibold text-app-muted hover:text-text transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-purple-600/30 hover:bg-purple-700 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
+              <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-border bg-panel px-5 py-2.5 text-sm font-semibold text-muted hover:text-text transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/30 hover:bg-primary-hover active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
                 {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>

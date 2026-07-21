@@ -39,10 +39,10 @@ export function FilterInputText({ item }: { item: FilterTextItem }) {
 
   return (
     <div className="relative">
-      {PrependIcon && <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center"><PrependIcon size={16} className="text-app-muted" /></span>}
+      {PrependIcon && <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center"><PrependIcon size={16} className="text-muted" /></span>}
       <input type="text" placeholder={placeholder} value={val} onChange={(e) => onInput(e.target.value)} autoComplete="off"
-        className={["w-full rounded-full border border-border bg-slate-50 dark:bg-slate-800/60 py-2.5 text-sm text-text placeholder:text-app-muted outline-none transition-all duration-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20", PrependIcon ? "ps-10 pe-4" : "px-4", AppendIcon ? "pe-10" : ""].filter(Boolean).join(" ")} />
-      {AppendIcon && <span className="pointer-events-none absolute inset-y-0 end-0 flex w-10 items-center justify-center"><AppendIcon size={16} className="text-app-muted" /></span>}
+        className={["w-full rounded-full border border-border bg-panel-soft py-2.5 text-sm text-text placeholder:text-muted outline-none transition-all duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20", PrependIcon ? "ps-10 pe-4" : "px-4", AppendIcon ? "pe-10" : ""].filter(Boolean).join(" ")} />
+      {AppendIcon && <span className="pointer-events-none absolute inset-y-0 end-0 flex w-10 items-center justify-center"><AppendIcon size={16} className="text-muted" /></span>}
     </div>
   );
 }

@@ -60,25 +60,29 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
   const open = (e: React.MouseEvent) => { e.stopPropagation(); if (!isOpen) fetchOptions(); setIsOpen((v) => !v); };
   const pick = (opt: SelectOption | null) => { setSelected(opt); pushParam(item.key, opt ? String(opt.id) : ""); setIsOpen(false); };
 
-  const triggerCls = ["relative flex w-full items-center gap-2 rounded-full border border-border bg-slate-50 dark:bg-slate-800/60 py-2.5 text-sm text-start transition-all duration-200 cursor-pointer focus:outline-none", isOpen ? "border-purple-500 ring-2 ring-purple-500/20" : "", PrependIcon ? "ps-10 pe-4" : "px-4"].filter(Boolean).join(" ");
+  const triggerCls = [
+    "relative flex w-full items-center gap-2 rounded-full border border-border bg-panel-soft py-2.5 text-sm text-start transition-all duration-200 cursor-pointer focus:outline-none",
+    isOpen ? "border-primary shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]" : "",
+    PrependIcon ? "ps-10 pe-4" : "px-4",
+  ].filter(Boolean).join(" ");
 
   return (
     <div className="relative" ref={triggerRef}>
-      {PrependIcon && <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center z-10"><PrependIcon size={16} className="text-app-muted" /></span>}
+      {PrependIcon && <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center z-10"><PrependIcon size={16} className="text-muted" /></span>}
       <button type="button" onClick={open} className={triggerCls}>
-        <span className="flex-1 truncate">{selected ? <span className="text-text">{selected.name}</span> : <span className="text-app-muted">{item.placeholder}</span>}</span>
-        {selected && <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); pick(null); }} className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-border/50 transition-colors"><X size={12} className="text-app-muted" /></span>}
-        <ChevronDown size={16} className={`shrink-0 text-app-muted transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+        <span className="flex-1 truncate">{selected ? <span className="text-text">{selected.name}</span> : <span className="text-muted">{item.placeholder}</span>}</span>
+        {selected && <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); pick(null); }} className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-panel-alt transition-colors"><X size={12} className="text-muted" /></span>}
+        <ChevronDown size={16} className={`shrink-0 text-muted transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
       {isOpen && createPortal(
-        <div ref={dropdownRef} style={{ position: "absolute", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 9999 }} className="overflow-hidden rounded-2xl border border-border bg-body shadow-lg shadow-slate-950/10">
+        <div ref={dropdownRef} style={{ position: "absolute", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 9999 }} className="overflow-hidden rounded-2xl border border-border bg-panel shadow-lg">
           <div className="max-h-52 overflow-y-auto py-1">
-            {loading ? <p className="px-3 py-2 text-sm text-app-muted">Loading…</p>
-              : options.length === 0 ? <p className="px-3 py-2 text-sm text-app-muted">No data</p>
+            {loading ? <p className="px-3 py-2 text-sm text-muted">Loading…</p>
+              : options.length === 0 ? <p className="px-3 py-2 text-sm text-muted">No data</p>
               : options.map((opt) => (
-                <button key={opt.id} type="button" onClick={() => pick(opt)} className={`relative flex w-full items-center px-3 py-2 text-sm transition-colors ${selected?.id === opt.id ? "bg-purple-50 dark:bg-purple-950/30 text-purple-600 font-medium" : "text-text hover:bg-border/20"}`}>
+                <button key={opt.id} type="button" onClick={() => pick(opt)} className={`relative flex w-full items-center px-3 py-2 text-sm transition-colors ${selected?.id === opt.id ? "bg-primary/10 text-primary font-medium" : "text-text hover:bg-panel-alt"}`}>
                   <span className="flex-1 text-start truncate">{opt.name}</span>
-                  {selected?.id === opt.id && <Check size={14} className="shrink-0 text-purple-600" />}
+                  {selected?.id === opt.id && <Check size={14} className="shrink-0 text-primary" />}
                 </button>
               ))}
           </div>

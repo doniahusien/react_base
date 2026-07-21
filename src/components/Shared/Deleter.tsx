@@ -42,7 +42,7 @@ export function Deleter({ url, method = "DELETE", body, disabled, text, onReload
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setVisible(false)} />
           <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-body p-6 shadow-2xl shadow-slate-950/20">
             <h3 className="text-base font-semibold text-text mb-2">{t("TITLES.confirmDelete")}</h3>
-            <p className="text-sm text-app-muted mb-6">{t("MESSAGES.confirmDelete")}</p>
+            <p className="text-sm text-muted mb-6">{t("MESSAGES.confirmDelete")}</p>
             <div className="flex items-center gap-3">
               <Button reverse className="flex-1 max-w-full" onClick={() => setVisible(false)}>{t("BUTTONS.cancel")}</Button>
               <Button className="flex-1 max-w-full !bg-red-600 hover:!bg-red-700" loading={loading} onClick={() => { submit(); setVisible(false); }}>{t("BUTTONS.delete")}</Button>

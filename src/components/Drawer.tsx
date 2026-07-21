@@ -24,8 +24,8 @@ export function Drawer() {
     {
       groupKey: "groupManagement", groupLabelStr: "Management",
       items: [
-        { href: "/users", label: t("SIDEBAR.Users"), labelStr: "Users", icon: Users, children: [{ href: "/users", label: t("TITLES.viewAll"), labelStr: "Users", icon: Users }, { href: "/users/form", label: t("TITLES.add"), labelStr: "Add User", icon: BadgePlus }] },
-        { href: "/categories", label: t("SIDEBAR.Categories"), labelStr: "Categories", icon: Library, children: [{ href: "/categories", label: t("TITLES.viewAll"), labelStr: "Category", icon: Library }, { href: "/categories/form", label: t("TITLES.add"), labelStr: "Add Category", icon: BadgePlus }] },
+        { href: "/users", label: t("SIDEBAR.Users"), labelStr: "Users", icon: Users, children: [{ href: "/users", label: t("TITLES.viewAll"), labelStr: "Users", icon: Users }, { href: "/users/form", label: t("TITLES.add", { count: t("TITLES.user") as any }), labelStr: "Add User", icon: BadgePlus }] },
+        { href: "/categories", label: t("SIDEBAR.Categories"), labelStr: "Categories", icon: Library, children: [{ href: "/categories", label: t("TITLES.viewAll"), labelStr: "Category", icon: Library }, { href: "/categories/form", label: t("TITLES.add", { count: t("TITLES.category") as any }), labelStr: "Add Category", icon: BadgePlus }] },
       ],
     },
     { groupKey: "groupPlaces", groupLabelStr: "Places", items: [{ href: "/countries", label: t("SIDEBAR.Countries"), labelStr: "Countries", icon: Earth }, { href: "/cities", label: t("SIDEBAR.Cities"), labelStr: "Cities", icon: Earth }] },

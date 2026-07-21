@@ -9,8 +9,7 @@ import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
 import { useAppStore } from "../../store";
 import type { Locale } from "../../i18n";
-
-const schema = { email: "required:email|email|type:string", password: "required:password|minLength:8|maxLength:16|type:string" };
+import { schemas } from "../../lib/schemas";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -76,7 +75,7 @@ export default function Login() {
 
         <div className="lp-card">
           <div className="lp-card-accent" aria-hidden="true" />
-          <Form schema={schema} values={values} onSubmit={handleSubmit} className="lp-form">
+          <Form schema={schemas.login} values={values} onSubmit={handleSubmit} className="lp-form">
             {({ errors, field, touch }) => (
               <>
                 <BaseTextInput name="email" label={t("TITLES.email")} placeholder={t("LABELS.email")} type="email" value={values.email} onInput={(v) => { set("email")(v); touch("email"); }} prependInputIcon={AtSign} {...field("email", errors)} />

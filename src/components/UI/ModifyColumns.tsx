@@ -31,7 +31,7 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
 
   return (
     <div className="relative" ref={ref}>
-      <button type="button" onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }} className="flex items-center gap-2 rounded-full border border-border bg-slate-50 dark:bg-slate-800/60 px-3 py-2 text-sm text-text hover:border-purple-400 transition-all duration-200">
+      <button type="button" onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }} className="flex items-center gap-2 rounded-full border border-border bg-panel-soft px-3 py-2 text-sm text-text hover:border-accent transition-all duration-200">
         <SlidersVertical size={15} />
         <span className="hidden sm:inline">{t("TITLES.columns")}</span>
         <ChevronDown size={12} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
@@ -40,12 +40,12 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
         <div className="absolute top-full mt-2 end-0 w-60 overflow-hidden rounded-2xl border border-border bg-body shadow-xl shadow-slate-950/10 z-[100]" onClick={(e) => e.stopPropagation()}>
           <div className="px-4 py-3 border-b border-border">
             <p className="text-sm font-semibold text-text">{t("LABELS.columns")}</p>
-            <p className="text-xs text-app-muted mt-0.5">{t("LABELS.columnsDesc")}</p>
+            <p className="text-xs text-muted mt-0.5">{t("LABELS.columnsDesc")}</p>
           </div>
           <div className="max-h-60 overflow-y-auto">
             {columns.map((col, i) => (
-              <button key={col.field} type="button" onClick={() => toggle(col)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-border/20 ${i % 2 === 0 ? "bg-slate-50/50 dark:bg-slate-800/20" : ""}`}>
-                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${checked(col) ? "bg-purple-600 border-purple-600" : "border-border"}`}>
+              <button key={col.field} type="button" onClick={() => toggle(col)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-border/20 ${i % 2 === 0 ? "bg-panel-soft/50" : ""}`}>
+                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${checked(col) ? "bg-primary border-primary" : "border-border"}`}>
                   {checked(col) && <Check size={11} className="text-white" />}
                 </span>
                 <span className="flex-1 text-start text-text">{col.header}</span>
@@ -53,8 +53,8 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
             ))}
           </div>
           <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
-            <button onClick={() => onChange([...columns])} className="text-xs font-medium text-purple-600 hover:text-purple-700 transition-colors">{t("ACTIONS.selectAll")}</button>
-            <button onClick={() => onChange([])} className="text-xs font-medium text-app-muted hover:text-text transition-colors">{t("ACTIONS.deselectAll")}</button>
+            <button onClick={() => onChange([...columns])} className="text-xs font-medium text-accent hover:text-accent-hover transition-colors">{t("ACTIONS.selectAll")}</button>
+            <button onClick={() => onChange([])} className="text-xs font-medium text-muted hover:text-text transition-colors">{t("ACTIONS.deselectAll")}</button>
           </div>
         </div>
       )}

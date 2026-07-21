@@ -70,29 +70,29 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
   const wrapperCls = ["relative rounded-xl border overflow-hidden transition-all duration-200",
     disabled ? "opacity-50 cursor-not-allowed" : "",
     hasError ? "bg-red-50/40 dark:bg-red-950/10 border-red-400"
-      : isOpen ? "bg-white dark:bg-slate-800/60 border-app-accent shadow-[0_0_0_3px_rgba(107,56,248,0.12)]"
-      : "bg-white dark:bg-slate-800/40 border-border hover:border-app-accent/40"].filter(Boolean).join(" ");
+      : isOpen ? "bg-panel border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]"
+      : "bg-panel border-border hover:border-primary/40"].filter(Boolean).join(" ");
 
   return (
     <div className="space-y-1">
       <div className="relative" ref={ref}>
         {label && <label htmlFor={id} className={["block mb-1.5 text-sm font-medium select-none", hasError ? "text-red-500" : "text-text"].join(" ")}>{label}</label>}
         <div className={wrapperCls}>
-          {PrependIcon && <span className="pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center z-10"><PrependIcon size={15} className={hasError ? "text-red-400" : isOpen ? "text-app-accent" : "text-app-muted/50"} /></span>}
+          {PrependIcon && <span className="pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center z-10"><PrependIcon size={15} className={hasError ? "text-red-400" : isOpen ? "text-primary" : "text-muted"} /></span>}
           <button id={id} type="button" disabled={disabled} onClick={handleOpen} className={["flex w-full items-center gap-2 h-11 outline-none transition-all duration-200 py-0 px-4", PrependIcon ? "ps-11" : "", disabled ? "cursor-not-allowed" : "cursor-pointer"].filter(Boolean).join(" ")}>
             <span className="flex-1 truncate text-start text-sm">{display ? <span className="text-text">{display}</span> : <span className="text-transparent select-none">·</span>}</span>
-            {display && !disabled && <span role="button" tabIndex={0} onClick={handleClear} className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"><X size={11} className="text-app-muted" /></span>}
-            <ChevronDown size={15} className={`shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${hasError ? "text-red-400" : "text-app-muted/60"}`} />
+            {display && !disabled && <span role="button" tabIndex={0} onClick={handleClear} className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-panel-alt transition-colors"><X size={11} className="text-muted" /></span>}
+            <ChevronDown size={15} className={`shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${hasError ? "text-red-400" : "text-muted"}`} />
           </button>
         </div>
         {isOpen && (
-          <div className="absolute top-full z-50 mt-1.5 w-full overflow-hidden rounded-2xl border border-border bg-white dark:bg-slate-900 shadow-xl shadow-slate-950/10">
+          <div className="absolute top-full z-50 mt-1.5 w-full overflow-hidden rounded-2xl border border-border bg-panel shadow-xl">
             <div className="max-h-56 overflow-y-auto py-1.5">
-              {loading ? <p className="px-4 py-2.5 text-sm text-app-muted">Loading…</p>
-                : options.length === 0 ? <p className="px-4 py-2.5 text-sm text-app-muted">No options</p>
+              {loading ? <p className="px-4 py-2.5 text-sm text-muted">Loading…</p>
+                : options.length === 0 ? <p className="px-4 py-2.5 text-sm text-muted">No options</p>
                 : options.map((opt) => (
-                  <button key={opt.id} type="button" onClick={() => handleSelect(opt)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isSelected(opt) ? "bg-purple-50 dark:bg-purple-950/30 text-purple-600 font-medium" : "text-text hover:bg-slate-50 dark:hover:bg-slate-800/60"}`}>
-                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-purple-600 border-purple-600" : "border-border"}`}>{isSelected(opt) && <Check size={10} className="text-white" />}</span>
+                  <button key={opt.id} type="button" onClick={() => handleSelect(opt)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isSelected(opt) ? "bg-primary/10 text-primary font-medium" : "text-text hover:bg-panel-alt"}`}>
+                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-primary border-primary" : "border-border"}`}>{isSelected(opt) && <Check size={10} className="text-white" />}</span>
                     <span className="flex-1 truncate">{opt.name}</span>
                   </button>
                 ))}

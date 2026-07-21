@@ -41,7 +41,7 @@ export function Layout({ children }: LayoutProps) {
               <div className="w-px h-6 bg-black/10 dark:bg-white/10 mx-0.5" />
               <Link to="/profile" className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-glass/50 transition-all duration-200 border border-transparent hover:border-black/6 dark:hover:border-white/8" title={user?.name ?? user?.full_name ?? "Profile"}>
                 {user?.image ? <img src={user.image?.media ?? user.image} alt={user.name} className="size-7 rounded-full object-cover ring-2 ring-violet-500/20" /> : <div className="size-7 rounded-full header-avatar flex items-center justify-center text-[11px] font-bold">{(user?.name ?? user?.full_name ?? "?")[0]?.toUpperCase()}</div>}
-                <span className="hidden md:block text-sm font-medium text-app-text max-w-[110px] truncate">{user?.name ?? user?.full_name}</span>
+                <span className="hidden md:block text-sm font-medium text-text max-w-[110px] truncate">{user?.name ?? user?.full_name}</span>
               </Link>
             </div>
           </div>
