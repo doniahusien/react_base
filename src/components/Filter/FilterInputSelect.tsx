@@ -60,31 +60,82 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
   const open = (e: React.MouseEvent) => { e.stopPropagation(); if (!isOpen) fetchOptions(); setIsOpen((v) => !v); };
   const pick = (opt: SelectOption | null) => { setSelected(opt); pushParam(item.key, opt ? String(opt.id) : ""); setIsOpen(false); };
 
-  const triggerCls = [
-    "relative flex w-full items-center gap-2 rounded-full border border-border bg-panel-soft py-2.5 text-sm text-start transition-all duration-200 cursor-pointer focus:outline-none",
-    isOpen ? "border-primary shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]" : "",
-    PrependIcon ? "ps-10 pe-4" : "px-4",
-  ].filter(Boolean).join(" ");
-
   return (
     <div className="relative" ref={triggerRef}>
-      {PrependIcon && <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center z-10"><PrependIcon size={16} className="text-muted" /></span>}
-      <button type="button" onClick={open} className={triggerCls}>
-        <span className="flex-1 truncate">{selected ? <span className="text-text">{selected.name}</span> : <span className="text-muted">{item.placeholder}</span>}</span>
-        {selected && <span role="button" tabIndex={0} onClick={(e) => { e.stopPropagation(); pick(null); }} className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-panel-alt transition-colors"><X size={12} className="text-muted" /></span>}
-        <ChevronDown size={16} className={`shrink-0 text-muted transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+      {PrependIcon && (
+        <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center z-10">
+          <PrependIcon size={16} className="text-muted" />
+        </span>
+      )}
+      <button 
+        type="button" 
+        onClick={open} 
+        className={[
+          "relative flex w-full items-center gap-2 rounded-xl bg-panel-soft border text-sm text-start transition-all duration-200 cursor-pointer focus:outline-none py-2.5",
+          isOpen ? "border-primary ring-2 ring-primary/20" : "border-border",
+          PrependIcon ? "ps-10 pe-4" : "px-4"
+        ].filter(Boolean).join(" ")}
+      >
+        <span className="flex-1 truncate">
+          {selected ? (
+            <span className="text-text">{selected.name}</span>
+          ) : (
+            <span className="text-muted">{item.placeholder}</span>
+          )}
+        </span>
+        {selected && (
+          <span 
+            role="button" 
+            tabIndex={0} 
+            onClick={(e) => { e.stopPropagation(); pick(null); }} 
+            className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-panel-alt transition-colors"
+          >
+            <X size={12} className="text-muted" />
+          </span>
+        )}
+        <ChevronDown 
+          size={16} 
+          className="shrink-0 text-muted transition-transform duration-200"
+          style={{ transform: isOpen ? "rotate(180deg)" : "none" }}
+        />
       </button>
       {isOpen && createPortal(
-        <div ref={dropdownRef} style={{ position: "absolute", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 9999 }} className="overflow-hidden rounded-2xl border border-border bg-panel shadow-lg">
+        <div 
+          ref={dropdownRef} 
+          style={{ 
+            position: "absolute", 
+            top: dropdownStyle.top, 
+            left: dropdownStyle.left, 
+            width: dropdownStyle.width, 
+            zIndex: 9999
+          }} 
+          className="overflow-hidden rounded-xl bg-panel border border-border shadow-lg"
+        >
           <div className="max-h-52 overflow-y-auto py-1">
-            {loading ? <p className="px-3 py-2 text-sm text-muted">Loading…</p>
-              : options.length === 0 ? <p className="px-3 py-2 text-sm text-muted">No data</p>
-              : options.map((opt) => (
-                <button key={opt.id} type="button" onClick={() => pick(opt)} className={`relative flex w-full items-center px-3 py-2 text-sm transition-colors ${selected?.id === opt.id ? "bg-primary/10 text-primary font-medium" : "text-text hover:bg-panel-alt"}`}>
-                  <span className="flex-1 text-start truncate">{opt.name}</span>
-                  {selected?.id === opt.id && <Check size={14} className="shrink-0 text-primary" />}
+            {loading ? (
+              <p className="px-3 py-2 text-sm text-muted">Loading…</p>
+            ) : options.length === 0 ? (
+              <p className="px-3 py-2 text-sm text-muted">No data</p>
+            ) : (
+              options.map((opt) => (
+                <button 
+                  key={opt.id} 
+                  type="button" 
+                  onClick={() => pick(opt)} 
+                  className={[
+                    "relative flex w-full items-center px-3 py-2 text-sm transition-colors text-start",
+                    selected?.id === opt.id 
+                      ? "bg-primary/10 text-primary font-semibold" 
+                      : "text-text hover:bg-panel-alt"
+                  ].join(" ")}
+                >
+                  <span className="flex-1 truncate">{opt.name}</span>
+                  {selected?.id === opt.id && (
+                    <Check size={14} className="shrink-0 text-primary" />
+                  )}
                 </button>
-              ))}
+              ))
+            )}
           </div>
         </div>,
         document.body

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Toast } from "../types/toast";
+import type { Toast, ToastType } from "../types/toast";
 
 let _id = 0;
 
@@ -7,6 +7,14 @@ interface ToastStore {
   toasts: Toast[];
   addToast: (toast: Omit<Toast, "id">) => number;
   removeToast: (id: number) => void;
+}
+
+interface ShowToastOptions {
+  type: ToastType;
+  title?: string;
+  description?: string;
+  message?: string;
+  duration?: number;
 }
 
 export const useToastStore = create<ToastStore>((set, get) => ({
@@ -22,6 +30,14 @@ export const useToastStore = create<ToastStore>((set, get) => ({
     set({ toasts: get().toasts.filter((t) => t.id !== id) });
   },
 }));
+
+export const showToast = ({ type, title, description, message, duration }: ShowToastOptions) =>
+  useToastStore.getState().addToast({
+    type,
+    title: title ?? message ?? "",
+    description: description ?? "",
+    duration,
+  });
 
 // Imperative helper — can be called outside React components
 export const toast = {

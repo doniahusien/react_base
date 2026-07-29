@@ -3,7 +3,7 @@ export const ar = {
     Dashboard: "لوحة التحكم", Users: "المستخدمون", Countries: "الدول",
     Categories: "التصنيفات", Logout: "تسجيل الخروج", profile: "الملف الشخصي",
     groupMain: "الرئيسية", groupManagement: "الإدارة", groupSettings: "الإعدادات",
-    groupPlaces: "الأماكن", Cities: "المدن",
+    groupPlaces: "الأماكن", Cities: "المدن", Pinned: "المثبتة",
   },
   TITLES: {
     viewAll: "عرض الكل", cities: "المدن", created_at: "تاريخ الإنشاء", city: "المدينة",
@@ -22,7 +22,8 @@ export const ar = {
     interests: "الاهتمامات", activeAccount: "حساب نشط", add: "إضافة {{count}}", 
     filters: "الفلاتر", search: "ابحث عن {{count}}...", columns: "الأعمدة", 
     edit: "تعديل {{count}}", confirmDelete: "تأكيد الحذف", digits: "أرقام", 
-    changeStatus: "تغيير الحالة", otherInfo: "معلومات أخرى", 
+    changeStatus: "تغيير الحالة", otherInfo: "معلومات أخرى",
+    apply: "تطبيق", clearAll: "مسح الكل", 
     nameArabic: "الاسم (بالعربية)", nameEnglish: "الاسم (بالإنجليزية)", 
     phoneNumberLimit: "حد رقم الهاتف", currencyArabic: "العملة (بالعربية)", 
     currencyEnglish: "العملة (بالإنجليزية)", estimatedArrivalDays: "أيام الوصول المقدرة", 

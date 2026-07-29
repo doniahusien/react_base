@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Library, Search, MoreHorizontal, LayoutDashboard, Filter as FilterIcon } from "lucide-react";
+import { Library, Search, MoreHorizontal, LayoutDashboard, Filter as FilterIcon, CheckSquare, SlidersHorizontal } from "lucide-react";
 import { PageHeader } from "../../components/UI/PageHeader";
-import { Filter, type FilterItem } from "../../components/Filter/Filter";
+import { Filter, type FilterSection } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { Switcher } from "../../components/Shared/Switcher";
 import { ActionsMenu } from "../../components/Shared/ActionsMenu";
@@ -30,9 +30,26 @@ export default function CategoriesShowAll() {
     { index: 5, field: "actions", header: t("TITLES.actions") },
   ];
 
-  const filterItems: FilterItem[] = [
-    { type: "text", key: "search", placeholder: "category", prependInputIcon: Search as any },
-    { type: "select", key: "is_active", placeholder: t("TITLES.status"), prependInputIcon: FilterIcon as any, items: [{ id: "1", name: t("TITLES.active") }, { id: "0", name: t("TITLES.inactive") }] },
+  const filterSections: FilterSection[] = [
+    { 
+      key: "search", 
+      label: t("TITLES.search", { count: t("TITLES.category") }),
+      icon: Search,
+      type: "text",
+      placeholder: t("TITLES.search", { count: t("TITLES.category") }),
+      defaultOpen: true
+    },
+    { 
+      key: "is_active", 
+      label: t("TITLES.status"),
+      icon: CheckSquare,
+      type: "radio",
+      options: [
+        { id: "1", label: t("TITLES.active") },
+        { id: "0", label: t("TITLES.inactive") }
+      ],
+      defaultOpen: true
+    },
   ];
 
   const fetchData = async () => {
@@ -66,8 +83,34 @@ export default function CategoriesShowAll() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="categories" subtitle="categoryDesc" icon={Library} total={data.meta?.total ?? data.data.length} addHref="/categories/form" addLabel="category" path={[{ label: "home", href: "/", icon: LayoutDashboard }, { label: "categories", icon: Library }]} />
-      <Filter items={filterItems} />
+      <PageHeader 
+        title="categories" 
+        subtitle="categoryDesc" 
+        icon={Library} 
+        total={data.meta?.total ?? data.data.length} 
+        addHref="/categories/form" 
+        addLabel="category" 
+        path={[
+          { label: "home", href: "/", icon: LayoutDashboard }, 
+          { label: "categories", icon: Library }
+        ]} 
+        rightActions={
+          <Filter 
+            sections={filterSections} 
+            onApply={fetchData} 
+            onClear={fetchData}
+            triggerButton={
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-all shadow-sm"
+              >
+                <SlidersHorizontal size={18} />
+                <span>{t("TITLES.filters")}</span>
+              </button>
+            }
+          />
+        }
+      />
       <UITable data={data} columns={columns} title="categories" loading={loading} renderCell={renderCell} />
     </div>
   );

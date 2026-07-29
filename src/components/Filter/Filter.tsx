@@ -1,38 +1,461 @@
-import { useState } from "react";
-import { SlidersHorizontal, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { FilterInputText, type FilterTextItem } from "./FilterInputText";
-import { FilterInputSelect, type FilterSelectItem } from "./FilterInputSelect";
+import type { ComponentType } from "react";
 
-export type FilterItem =
-  | ({ type: "text" } & FilterTextItem)
-  | ({ type: "select" } & FilterSelectItem);
+// Filter section types
+export interface FilterCheckboxOption {
+  id: string | number;
+  label: string;
+  checked?: boolean;
+}
 
-interface FilterProps { items: FilterItem[]; defaultOpen?: boolean; }
+export interface FilterSection {
+  key: string;
+  label: string;
+  icon?: ComponentType<{ size?: number; className?: string }>;
+  type: "checkbox" | "radio" | "select" | "text";
+  options?: FilterCheckboxOption[];
+  defaultOpen?: boolean;
+  placeholder?: string;
+  items?: Array<{ id: string | number; name?: string; title?: string }>;
+  url?: string;
+}
 
-export function Filter({ items, defaultOpen = true }: FilterProps) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(defaultOpen);
+interface FilterProps {
+  sections: FilterSection[];
+  onApply?: () => void;
+  onClear?: () => void;
+  triggerButton?: React.ReactNode;
+}
+
+function FilterSectionComponent({ 
+  section, 
+  tempValues, 
+  onTempChange 
+}: { 
+  section: FilterSection;
+  tempValues: Record<string, string>;
+  onTempChange: (key: string, value: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(section.defaultOpen ?? true);
+  const Icon = section.icon;
+
+  const handleRadioChange = (optionId: string | number) => {
+    onTempChange(section.key, String(optionId));
+  };
+
+  const handleCheckboxChange = (optionId: string | number, checked: boolean) => {
+    const currentValue = tempValues[section.key] || "";
+    const values = currentValue ? currentValue.split(",") : [];
+    
+    if (checked) {
+      if (!values.includes(String(optionId))) {
+        values.push(String(optionId));
+      }
+    } else {
+      const index = values.indexOf(String(optionId));
+      if (index > -1) {
+        values.splice(index, 1);
+      }
+    }
+    
+    onTempChange(section.key, values.join(","));
+  };
+
+  const isRadioSelected = (optionId: string | number) => {
+    return tempValues[section.key] === String(optionId);
+  };
+
+  const isCheckboxChecked = (optionId: string | number) => {
+    const currentValue = tempValues[section.key] || "";
+    return currentValue.split(",").includes(String(optionId));
+  };
+
   return (
-    <div className="rounded-2xl border border-border bg-body overflow-hidden">
-      <button type="button" onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/5">
-        <div className="flex items-center gap-2 text-sm font-medium text-text"><SlidersHorizontal size={15} className="text-accent" /><span>{t("TITLES.filters")}</span></div>
-        <ChevronDown size={16} className={`text-muted transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+    <div className="border-b border-border last:border-b-0">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex w-full items-center justify-between px-5 py-3.5 text-left transition-all hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent group"
+      >
+        <div className="flex items-center gap-2.5">
+          {Icon && (
+            <div className="relative">
+              <Icon size={18} className="text-primary transition-transform group-hover:scale-110" />
+              {/* Indicator dot if section has value */}
+              {tempValues[section.key] && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
+              )}
+            </div>
+          )}
+          <span className="text-sm font-semibold text-text transition-colors group-hover:text-primary">
+            {section.label}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {tempValues[section.key] && (
+            <span className="px-2 py-0.5 text-xs font-bold text-primary bg-primary/10 rounded-full">
+              {section.type === "radio" ? "1" : tempValues[section.key].split(",").filter(Boolean).length}
+            </span>
+          )}
+          {isOpen ? (
+            <ChevronUp size={16} className="text-muted transition-transform group-hover:text-primary" />
+          ) : (
+            <ChevronDown size={16} className="text-muted transition-transform group-hover:text-primary" />
+          )}
+        </div>
       </button>
-      <div className="grid transition-all duration-300 ease-in-out" style={{ gridTemplateRows: open ? "1fr" : "0fr" }}>
+
+      <div
+        className="grid transition-all duration-300 ease-in-out"
+        style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+      >
         <div className="overflow-hidden">
-          <div className="border-t border-border px-4 py-3">
-            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-2">
-              {items.map((item) => (
-                <div key={item.key}>
-                  {item.type === "text"   && <FilterInputText   item={item} />}
-                  {item.type === "select" && <FilterInputSelect item={item} />}
-                </div>
+          {section.type === "radio" && section.options && (
+            <div className="px-5 pb-4 space-y-2.5">
+              {section.options.map((option, index) => (
+                <label
+                  key={option.id}
+                  className="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-primary/5 transition-all"
+                  style={{ 
+                    animation: isOpen ? `filterOptionSlide 0.3s ease-out ${index * 0.05}s both` : 'none'
+                  }}
+                >
+                  <div className="relative flex items-center">
+                    <input
+                      type="radio"
+                      name={section.key}
+                      checked={isRadioSelected(option.id)}
+                      onChange={() => handleRadioChange(option.id)}
+                      className="peer h-5 w-5 rounded-full border-2 border-border bg-panel appearance-none cursor-pointer transition-all checked:border-primary checked:shadow-[0_0_10px_rgba(139,125,216,0.3)] focus:ring-2 focus:ring-primary/20"
+                    />
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-primary pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0" 
+                      style={{ 
+                        boxShadow: isRadioSelected(option.id) ? '0 0 8px rgba(139, 125, 216, 0.6)' : 'none'
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm text-text group-hover:text-primary transition-colors font-medium">
+                    {option.label}
+                  </span>
+                </label>
               ))}
             </div>
-          </div>
+          )}
+
+          {section.type === "checkbox" && section.options && (
+            <div className="px-5 pb-4 space-y-2.5">
+              {section.options.map((option, index) => (
+                <label
+                  key={option.id}
+                  className="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-primary/5 transition-all"
+                  style={{ 
+                    animation: isOpen ? `filterOptionSlide 0.3s ease-out ${index * 0.05}s both` : 'none'
+                  }}
+                >
+                  <div className="relative flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={isCheckboxChecked(option.id)}
+                      onChange={(e) => handleCheckboxChange(option.id, e.target.checked)}
+                      className="peer h-5 w-5 rounded border-2 border-border bg-panel appearance-none cursor-pointer transition-all checked:bg-primary checked:border-primary checked:shadow-[0_0_10px_rgba(139,125,216,0.3)] focus:ring-2 focus:ring-primary/20"
+                    />
+                    <svg
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="2 6 5 9 10 3" />
+                    </svg>
+                  </div>
+                  <span className="text-sm text-text group-hover:text-primary transition-colors font-medium">
+                    {option.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
+
+          {section.type === "select" && (
+            <div className="px-5 pb-4">
+              <select
+                value={tempValues[section.key] || ""}
+                onChange={(e) => onTempChange(section.key, e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-panel-soft border border-border text-sm text-text focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+              >
+                <option value="">{section.placeholder || "Select..."}</option>
+                {section.items?.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name || item.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {section.type === "text" && (
+            <div className="px-5 pb-4">
+              <input
+                type="text"
+                placeholder={section.placeholder}
+                value={tempValues[section.key] || ""}
+                onChange={(e) => onTempChange(section.key, e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-panel-soft border border-border text-sm text-text placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+export function Filter({ sections, onApply, onClear, triggerButton }: FilterProps) {
+  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const [tempValues, setTempValues] = useState<Record<string, string>>({});
+  const [position, setPosition] = useState({ top: 0, right: 0 });
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  // Count active filters
+  const activeFilterCount = Object.values(tempValues).filter(v => v).length;
+
+  // Calculate position based on trigger button
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + window.scrollY + 8,
+        right: window.innerWidth - rect.right - window.scrollX
+      });
+    }
+  }, [isOpen]);
+
+  // Initialize temp values from URL on mount
+  useEffect(() => {
+    if (!sections || sections.length === 0) return;
+    
+    const params = new URLSearchParams(window.location.search);
+    const values: Record<string, string> = {};
+    sections.forEach((section) => {
+      const value = params.get(section.key);
+      if (value) {
+        values[section.key] = value;
+      }
+    });
+    setTempValues(values);
+  }, [sections]);
+
+  const handleTempChange = (key: string, value: string) => {
+    setTempValues((prev) => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const handleClear = () => {
+    // Clear temp values
+    setTempValues({});
+    
+    // Clear URL params
+    if (sections && sections.length > 0) {
+      const p = new URLSearchParams(window.location.search);
+      sections.forEach((section) => {
+        p.delete(section.key);
+      });
+      window.history.pushState({}, "", `${window.location.pathname}?${p.toString()}`);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    }
+    
+    onClear?.();
+  };
+
+  const handleApply = () => {
+    if (!sections || sections.length === 0) {
+      onApply?.();
+      setIsOpen(false);
+      return;
+    }
+    
+    // Apply temp values to URL
+    const p = new URLSearchParams(window.location.search);
+    
+    sections.forEach((section) => {
+      const value = tempValues[section.key];
+      if (value) {
+        p.set(section.key, value);
+        p.set("page", "1");
+      } else {
+        p.delete(section.key);
+      }
+    });
+    
+    window.history.pushState({}, "", `${window.location.pathname}?${p.toString()}`);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    
+    onApply?.();
+    setIsOpen(false);
+  };
+
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Close on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen]);
+
+  return (
+    <>
+      {/* Trigger Button with badge */}
+      <div ref={triggerRef} onClick={() => setIsOpen(!isOpen)} className="relative">
+        {triggerButton}
+        {activeFilterCount > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-5 h-5 px-1.5 bg-primary text-white text-xs font-bold rounded-full shadow-lg animate-bounce">
+            {activeFilterCount}
+          </span>
+        )}
+      </div>
+
+      {/* Floating Filter Panel - Positioned relative to trigger button */}
+      {isOpen && (
+        <div
+          ref={panelRef}
+          className="fixed w-[340px] max-h-[calc(100vh-100px)] overflow-hidden bg-panel rounded-2xl z-50 flex flex-col border border-border backdrop-blur-sm"
+          style={{ 
+            top: `${position.top}px`,
+            right: `${position.right}px`,
+            animation: "slideInRight 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(139, 125, 216, 0.1)"
+          }}
+        >
+          {/* Decorative gradient top */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/70 to-primary animate-gradient" />
+          
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0 bg-gradient-to-r from-primary/5 to-transparent">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-bold text-text">{t("TITLES.filters")}</h3>
+              {activeFilterCount > 0 && (
+                <span className="px-2 py-0.5 text-xs font-bold text-primary bg-primary/10 rounded-full">
+                  {activeFilterCount}
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-panel-soft hover:rotate-90 transition-all duration-300 text-muted hover:text-text"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Scrollable Filter Sections */}
+          <div className="flex-1 overflow-y-auto">
+            {sections && sections.length > 0 ? (
+              sections.map((section) => (
+                <FilterSectionComponent 
+                  key={section.key} 
+                  section={section} 
+                  tempValues={tempValues}
+                  onTempChange={handleTempChange}
+                />
+              ))
+            ) : (
+              <div className="px-5 py-8 text-center text-muted text-sm">
+                No filter sections configured
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3 px-5 py-4 border-t border-border shrink-0 bg-gradient-to-r from-transparent to-primary/5">
+            <button
+              type="button"
+              onClick={handleApply}
+              className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-hover text-white text-sm font-semibold hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm relative overflow-hidden group"
+            >
+              <span className="relative z-10">{t("TITLES.apply") || "Apply"}</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+            </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="flex-1 px-4 py-2.5 rounded-xl bg-panel-soft text-text text-sm font-semibold hover:bg-panel-alt hover:scale-105 active:scale-95 transition-all duration-200 border border-border"
+            >
+              {t("TITLES.clearAll") || "Clear all"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideInRight {
+          from { 
+            opacity: 0;
+            transform: translateX(20px) scale(0.95);
+          }
+          to { 
+            opacity: 1;
+            transform: translateX(0) scale(1);
+          }
+        }
+        @keyframes filterOptionSlide {
+          from {
+            opacity: 0;
+            transform: translateX(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        @keyframes gradient {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient 3s ease infinite;
+        }
+      `}</style>
+    </>
   );
 }

@@ -11,6 +11,7 @@ interface PageHeaderProps {
   addHref?: string;
   addLabel?: string;
   path?: Array<string | { label: string; href?: string; icon?: React.ComponentType<any> }>;
+  rightActions?: React.ReactNode;
 }
 
 export function PageHeader({
@@ -21,6 +22,7 @@ export function PageHeader({
   addHref,
   addLabel,
   path = [],
+  rightActions,
 }: PageHeaderProps) {
   const { t } = useTranslation();
   return (
@@ -72,14 +74,19 @@ export function PageHeader({
             )}
           </div>
 
-          {addHref && (
-            <a
-              href={addHref}
-              className="group inline-flex w-fit items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-5 py-2.5 text-sm font-semibold transition-all page-header-btn hover:bg-primary/20 hover:border-primary/60 active:scale-95"
-            >
-              <Plus size={15} className="transition-transform duration-200 group-hover:rotate-90" />
-              {t("TITLES.add", { count: t(`TITLES.${addLabel ?? title}`) as any })}
-            </a>
+          {(addHref || rightActions) && (
+            <div className="flex items-center gap-3">
+              {rightActions}
+              {addHref && (
+                <a
+                  href={addHref}
+                  className="group inline-flex w-fit items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-5 py-2.5 text-sm font-semibold transition-all page-header-btn hover:bg-primary/20 hover:border-primary/60 active:scale-95"
+                >
+                  <Plus size={15} className="transition-transform duration-200 group-hover:rotate-90" />
+                  {t("TITLES.add", { count: t(`TITLES.${addLabel ?? title}`) as any })}
+                </a>
+              )}
+            </div>
           )}
         </div>
       </div>

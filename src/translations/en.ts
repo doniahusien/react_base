@@ -3,7 +3,7 @@ export const en = {
     Cities: "Cities", Dashboard: "Dashboard", Users: "Users",
     Countries: "Countries", Categories: "Categories", Logout: "Logout",
     profile: "Profile", groupMain: "Main", groupManagement: "Management",
-    groupSettings: "Settings", groupPlaces: "Places",
+    groupSettings: "Settings", groupPlaces: "Places", Pinned: "Pinned",
   },
   TITLES: {
     viewAll: "View All", cities: "Cities", created_at: "Created At",
@@ -22,6 +22,7 @@ export const en = {
     activeAccount: "Active account", add: "Add {{count}}", filters: "Filters",
     columns: "Columns", edit: "Edit {{count}}", confirmDelete: "Confirm Delete",
     digits: "Digits", changeStatus: "Change Status", otherInfo: "Other Info",
+    apply: "Apply", clearAll: "Clear all",
     nameArabic: "Name (Arabic)", nameEnglish: "Name (English)",
     phoneNumberLimit: "Phone Number Limit", currencyArabic: "Currency (Arabic)",
     currencyEnglish: "Currency (English)", estimatedArrivalDays: "Estimated Arrival Days",
