@@ -63,6 +63,7 @@ export const en = {
     categoryImageDesc: "Upload the category image (PNG, JPG up to 2 MB)",
     basicInfoCategoryDesc: "Category name in both languages",
     columns: "Manage columns", columnsDesc: "Toggle columns to display",
+    gridColumns: "Grid columns",
     nameArabic: "Enter Arabic country name", nameEnglish: "Enter English country name",
     phoneNumberLimit: "e.g. 9", currencyArabic: "Enter Arabic currency name",
     currencyEnglish: "Enter English currency name",

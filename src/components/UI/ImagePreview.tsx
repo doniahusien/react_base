@@ -43,8 +43,8 @@ export function ImagePreviewTrigger({ src, alt = "", className = "", wrapperClas
   return (
     <span ref={wrapperRef} className={`group relative inline-block cursor-zoom-in ${wrapperClassName}`} onClick={handleOpen} role="button" tabIndex={0} aria-label={`Preview image${alt ? `: ${alt}` : ""}`} onKeyDown={(e) => e.key === "Enter" && handleOpen(e)}>
       <img src={src} alt={alt} className={className} />
-      <span className="absolute inset-0 flex items-center justify-center rounded-[inherit] bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100" aria-hidden="true">
-        <ZoomIn size={16} className="text-white drop-shadow" />
+      <span className="absolute inset-0 flex items-center justify-center rounded-[inherit] bg-foreground/0 opacity-0 transition-all duration-200 group-hover:bg-foreground/20 group-hover:opacity-100" aria-hidden="true">
+        <ZoomIn size={16} className="text-text drop-shadow" />
       </span>
     </span>
   );

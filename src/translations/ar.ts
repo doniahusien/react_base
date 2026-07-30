@@ -65,6 +65,7 @@ export const ar = {
     basicInfoCategoryDesc: "اسم التصنيف بالعربية والإنجليزية",
     countryDesc: "إدارة الدول، رموز الهاتف والأعلام",
     columns: "إدارة الأعمدة", columnsDesc: "تبديل الأعمدة للعرض",
+    gridColumns: "أعمدة الشبكة",
     nameArabic: "أدخل اسم الدولة بالعربية", nameEnglish: "أدخل اسم الدولة بالإنجليزية",
     phoneNumberLimit: "مثال 9", currencyArabic: "أدخل اسم العملة بالعربية",
     currencyEnglish: "أدخل اسم العملة بالإنجليزية",

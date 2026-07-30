@@ -116,7 +116,7 @@ function Pagination({
               onClick={() => onPage(p as number)}
               className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-semibold transition-all ${
                 page === p
-                  ? "bg-primary text-white shadow-sm"
+                  ? "bg-primary text-text shadow-sm"
                   : "text-muted hover:bg-primary/10 hover:text-primary"
               }`}
             >
@@ -138,6 +138,8 @@ export function UITable<T extends { id?: any }>({
   const { t } = useTranslation();
   const [selectedCols, setSelectedCols] = useState<TableColumn[]>(columns);
   const [view, setView] = useState<"table" | "grid">("table");
+    const [gridCols, setGridCols] = useState<1 | 2 | 3 | 4>(3);
+  const romanMap = { 1: "I", 2: "II", 3: "III", 4: "IV" } as const;
   const [page, setPage] = useState(pageFromUrl());
   const [quickItem, setQuickItem] = useState<T | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -285,7 +287,29 @@ export function UITable<T extends { id?: any }>({
         </div>
         <div className="flex items-center gap-2 ms-auto">
           <ModifyColumns columns={columns} selected={selectedCols} onChange={setSelectedCols} />
-          <div className="flex items-center gap-0.5 rounded-xl bg-panel-soft p-1 border border-border">
+          {view === "grid" && (
+            <div className="flex items-center gap-1 rounded-xl border border-border   px-2 py-1">
+             {/*  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+                {t("LABELS.gridColumns")}
+              </span> */}
+              {[1, 2, 3, 4].map((cols) => (
+                <button
+                  key={cols}
+                  type="button"
+                  onClick={() => setGridCols(cols as 1 | 2 | 3 | 4)}
+                  className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-semibold transition-all ${
+                    gridCols === cols
+                      ? "bg-panel text-primary shadow-sm border border-border"
+                      : "text-muted hover:text-text"
+                  }`}
+                  aria-label={`${cols} columns`}
+                >
+                  {romanMap[cols as 1 | 2 | 3 | 4]}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center gap-0.5 rounded-xl   p-1 border border-border">
             {(["table", "grid"] as const).map((v) => (
               <button
                 key={v}
@@ -340,7 +364,7 @@ export function UITable<T extends { id?: any }>({
                 Array.from({ length: 7 }).map((_, i) => (
                   <tr key={i}>
                     <td colSpan={selectedCols.length + 1} className="px-0 py-0">
-                      <div className="rounded-2xl bg-panel-soft">
+                      <div className="rounded-2xl  ">
                         <SkeletonRow cols={selectedCols.length} />
                       </div>
                     </td>
@@ -380,7 +404,7 @@ export function UITable<T extends { id?: any }>({
                               <button
                                 type="button"
                                 onClick={() => setQuickItem(row.original)}
-                                className="flex size-7 items-center justify-center rounded-xl bg-panel-soft text-muted hover:bg-primary/10 hover:text-primary transition-all"
+                                className="flex size-7 items-center justify-center rounded-xl   text-muted hover:bg-primary/10 hover:text-primary transition-all"
                                 aria-label="Quick view"
                               >
                                 <Eye size={13} />
@@ -406,7 +430,7 @@ export function UITable<T extends { id?: any }>({
           {rows.length === 0 ? (
             <EmptyState />
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}>
               {table.getRowModel().rows.map((row) => {
                 const selected = row.getIsSelected();
                 const item = row.original;
@@ -454,7 +478,7 @@ export function UITable<T extends { id?: any }>({
                           <button
                             type="button"
                             onClick={() => setQuickItem(item)}
-                            className="flex items-center gap-1.5 rounded-xl bg-panel-soft px-3 py-1.5 text-xs font-semibold text-muted hover:bg-primary/10 hover:text-primary border border-border transition-all"
+                            className="flex items-center gap-1.5 rounded-xl   px-3 py-1.5 text-xs font-semibold text-muted hover:bg-primary/10 hover:text-primary border border-border transition-all"
                           >
                             <Eye size={12} />
                             View
@@ -472,7 +496,7 @@ export function UITable<T extends { id?: any }>({
 
       {/* ── Grid skeleton ── */}
       {view === "grid" && loading && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(gridCols + 1, 4)}, minmax(0, 1fr))` }}>
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="rounded-2xl bg-panel border border-border p-4 space-y-3">
               <div className="skeleton-item h-3.5 rounded-full w-1/3" />
@@ -495,7 +519,7 @@ export function UITable<T extends { id?: any }>({
       {quickItem && (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
           <div
-            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            className="absolute inset-0 bg-background/70! backdrop-blur-sm"
             onClick={() => setQuickItem(null)}
           />
           <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-panel border border-border shadow-2xl">
@@ -506,7 +530,7 @@ export function UITable<T extends { id?: any }>({
               </div>
               <button
                 onClick={() => setQuickItem(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-2xl bg-panel-soft text-muted hover:bg-panel-alt border border-border transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-2xl   text-muted hover:bg-panel-alt border border-border transition-all"
                 aria-label="Close"
               >
                 <X size={14} />

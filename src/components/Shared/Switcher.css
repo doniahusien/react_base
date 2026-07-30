@@ -1,47 +1,43 @@
 .heart-switch {
-  --duration: 0.45s;
-  --stroke: #D1D6EE;
-  --stroke-active: #ec4472;
-  --fill: #fff;
-  --fill-active: #ec638e;
-  --shadow: rgba(0, 9, 61, 0.25);
+  --track: #e6e9f2; /* idle track color */
+  --track-active: #3b82f6; /* active track color (blue) */
+  --thumb: #ffffff;
+  --shadow: rgba(2,6,23,0.12);
   cursor: pointer;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 25px;
-  transform: scale(var(--s, 1)) translateZ(0);
-  transition: transform 0.2s;
+  width: 42px;
+  height: 24px;
+  border-radius: 9999px;
+  padding: 3px;
+  box-sizing: border-box;
+  transition: background-color 200ms ease, transform 120ms ease;
+  background: var(--track);
   -webkit-tap-highlight-color: transparent;
 }
-.heart-switch:active { --s: 0.95; }
+.heart-switch:active { transform: scale(0.97); }
+
+/* hide the legacy SVG track (keeps markup unchanged) */
+.heart-switch svg { display: none; }
+
+/* the knob */
 .heart-switch input {
   -webkit-appearance: none; -moz-appearance: none; appearance: none;
   position: absolute; outline: none; border: none; pointer-events: none;
-  z-index: 1; margin: 0; padding: 0; left: 1px; top: 1px;
+  z-index: 2; margin: 0; padding: 0;
+  left: 3px; top: 3px;
   width: 18px; height: 18px; border-radius: 50%;
-  background: #fff; box-shadow: 0 1px 3px 0 var(--shadow);
+  background: var(--thumb); box-shadow: 0 3px 6px var(--shadow);
+  transition: transform 200ms cubic-bezier(.2,.9,.2,1);
+  transform: translateX(0);
 }
-.heart-switch input + svg {
-  width: 36px; height: 25px; fill: var(--fill); stroke: var(--stroke);
-  stroke-width: 1px; stroke-linejoin: round; display: block;
-  transition: stroke var(--duration), fill var(--duration);
-}
-.heart-switch input:not(:checked) { animation: uncheck var(--duration) linear forwards; }
-.heart-switch input:checked { animation: check var(--duration) linear forwards; }
-.heart-switch input:checked + svg { --fill: var(--fill-active); --stroke: var(--stroke-active); }
-.heart-switch input:disabled { opacity: 0.65; }
-@keyframes uncheck {
-  0% { transform: rotate(-30deg) translateX(13.5px) translateY(8px); }
-  50% { transform: rotate(30deg) translateX(9px); }
-  75% { transform: rotate(30deg) translateX(4.5px) scaleX(1.1); }
-  100% { transform: rotate(30deg); }
-}
-@keyframes check {
-  0% { transform: rotate(30deg); }
-  25% { transform: rotate(30deg) translateX(4.5px) scaleX(1.1); }
-  50% { transform: rotate(30deg) translateX(9px); }
-  100% { transform: rotate(-30deg) translateX(13.5px) translateY(8px); }
-}
+
+/* when active, move knob to the right and change track color */
+.heart-switch.is-active { background: var(--track-active); }
+.heart-switch.is-active input { transform: translateX(18px); }
+
+/* disabled state */
+.heart-switch input:disabled,
+.heart-switch.opacity-50 { opacity: 0.65; pointer-events: none; }

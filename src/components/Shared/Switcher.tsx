@@ -41,7 +41,7 @@ export function Switcher({ value, url, body, method = "PUT", onReload }: Switche
       </label>
       {showDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDialog(false)} />
+          <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={() => setShowDialog(false)} />
           <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-body p-6 shadow-2xl shadow-slate-950/20">
             <h3 className="text-base font-semibold text-text mb-2">{t("TITLES.changeStatus")}</h3>
             <p className="text-sm text-muted mb-6">{t("MESSAGES.changeStatus", { status: enabled ? t("TITLES.inactive") : t("TITLES.active") })}</p>

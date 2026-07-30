@@ -72,8 +72,8 @@ export default function CityForm() {
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
               <button type="button" onClick={() => navigate("/cities")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted hover:text-text hover:bg-panel-alt transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loadingForm} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
-                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={15} />}
+              <button type="submit" disabled={loadingForm} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-text shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
+                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>
             </div>

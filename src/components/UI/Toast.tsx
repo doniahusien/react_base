@@ -3,10 +3,10 @@ import { useToastStore } from "../../stores/toast";
 import type { Toast } from "../../types/toast";
 
 const config = {
-  success: { icon: CheckCircle, cls: "bg-green-50 border-green-200 dark:bg-green-950/40 dark:border-green-800", iconCls: "text-green-500", titleCls: "text-green-800 dark:text-green-300", descCls: "text-green-700 dark:text-green-400" },
-  error:   { icon: XCircle,     cls: "bg-red-50 border-red-200 dark:bg-red-950/40 dark:border-red-800",       iconCls: "text-red-500",   titleCls: "text-red-800 dark:text-red-300",   descCls: "text-red-700 dark:text-red-400"   },
-  info:    { icon: Info,        cls: "bg-blue-50 border-blue-200 dark:bg-blue-950/40 dark:border-blue-800",    iconCls: "text-blue-500",  titleCls: "text-blue-800 dark:text-blue-300", descCls: "text-blue-700 dark:text-blue-400" },
-  warning: { icon: AlertTriangle, cls: "bg-yellow-50 border-yellow-200 dark:bg-yellow-950/40 dark:border-yellow-800", iconCls: "text-yellow-500", titleCls: "text-yellow-800 dark:text-yellow-300", descCls: "text-yellow-700 dark:text-yellow-400" },
+  success: { icon: CheckCircle, cls: "bg-primary/10 border-primary/30 dark:bg-primary/20 dark:border-primary/40", iconCls: "text-primary", titleCls: "text-primary dark:text-primary-foreground", descCls: "text-foreground dark:text-foreground" },
+  error:   { icon: XCircle,     cls: "bg-destructive/10 border-destructive/30 dark:bg-destructive/20 dark:border-destructive/40", iconCls: "text-destructive", titleCls: "text-destructive dark:text-destructive", descCls: "text-foreground dark:text-foreground" },
+  info:    { icon: Info,        cls: "bg-accent/10 border-accent/30 dark:bg-accent/20 dark:border-accent/40", iconCls: "text-accent", titleCls: "text-accent dark:text-accent-foreground", descCls: "text-foreground dark:text-foreground" },
+  warning: { icon: AlertTriangle, cls: "bg-secondary/10 border-secondary/30 dark:bg-secondary/20 dark:border-secondary/40", iconCls: "text-secondary", titleCls: "text-secondary dark:text-secondary-foreground", descCls: "text-foreground dark:text-foreground" },
 } as const;
 
 function ToastItem({ t }: { t: Toast }) {
@@ -19,7 +19,7 @@ function ToastItem({ t }: { t: Toast }) {
         <p className={`text-sm font-semibold ${titleCls}`}>{t.title}</p>
         {t.description && <p className={`text-xs mt-0.5 ${descCls}`}>{t.description}</p>}
       </div>
-      <button onClick={() => removeToast(t.id)} className="shrink-0 opacity-50 hover:opacity-100 transition-opacity rounded p-0.5 hover:bg-black/5" aria-label="Dismiss">
+      <button onClick={() => removeToast(t.id)} className="shrink-0 opacity-50 hover:opacity-100 transition-opacity rounded p-0.5 hover:bg-foreground/10" aria-label="Dismiss">
         <X size={13} />
       </button>
     </div>

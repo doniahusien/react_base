@@ -20,12 +20,12 @@ export default function ProfileShow() {
       <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("PROFILE.title"), icon: UserCircle }]} />
       <div className="relative overflow-hidden rounded-2xl border border-border bg-panel shadow-sm">
         <div className="h-28 bg-primary relative overflow-hidden opacity-90">
-          <div className="pointer-events-none absolute inset-0 bg-black/30" />
+          <div className="pointer-events-none absolute inset-0 bg-foreground/20" />
         </div>
         <div className="px-6 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 -mt-10">
             <div className="relative">
-              {user.image ? <ImagePreviewTrigger src={user.image} alt={user.name || user.full_name} className="size-20 rounded-full border-4 border-panel object-cover shadow-lg" wrapperClassName="rounded-full" /> : <div className="flex size-20 items-center justify-center rounded-full border-4 border-panel bg-primary text-2xl font-black text-white shadow-lg">{initials || <User size={28} />}</div>}
+              {user.image ? <ImagePreviewTrigger src={user.image} alt={user.name || user.full_name} className="size-20 rounded-full border-4 border-panel object-cover shadow-lg" wrapperClassName="rounded-full" /> : <div className="flex size-20 items-center justify-center rounded-full border-4 border-panel bg-primary text-2xl font-black text-text shadow-lg">{initials || <User size={28} />}</div>}
               <span className="absolute bottom-1 inset-e-1 size-4 rounded-full border-2 border-panel bg-green-500" />
             </div>
             <button type="button" onClick={() => navigate("/profile/edit")} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><Pencil size={14} />{t("PROFILE.editTitle")}</button>

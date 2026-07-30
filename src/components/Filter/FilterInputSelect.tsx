@@ -71,7 +71,7 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
         type="button" 
         onClick={open} 
         className={[
-          "relative flex w-full items-center gap-2 rounded-xl bg-panel-soft border text-sm text-start transition-all duration-200 cursor-pointer focus:outline-none py-2.5",
+          "relative flex w-full items-center gap-2 rounded-xl   border text-sm text-start transition-all duration-200 cursor-pointer focus:outline-none py-2.5",
           isOpen ? "border-primary ring-2 ring-primary/20" : "border-border",
           PrependIcon ? "ps-10 pe-4" : "px-4"
         ].filter(Boolean).join(" ")}

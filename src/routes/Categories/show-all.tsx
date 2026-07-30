@@ -67,7 +67,7 @@ export default function CategoriesShowAll() {
   const renderCell = (field: string, item: Category, index: number) => {
     switch (field) {
       case "index": return <span className="text-sm text-muted">#{index + 1}</span>;
-      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-panel-soft"><Library size={16} className="text-muted" /></div>;
+      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border  "><Library size={16} className="text-muted" /></div>;
       case "name": return <span className="text-sm font-medium text-text">{item.name ?? item.en?.name ?? item.ar?.name ?? "—"}</span>;
       case "created_at": return <span className="text-sm text-muted">{formatDate(item.created_at)}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/categories/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
@@ -102,7 +102,7 @@ export default function CategoriesShowAll() {
             triggerButton={
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-all shadow-sm"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-text text-sm font-semibold hover:bg-primary-hover transition-all shadow-sm"
               >
                 <SlidersHorizontal size={18} />
                 <span>{t("TITLES.filters")}</span>

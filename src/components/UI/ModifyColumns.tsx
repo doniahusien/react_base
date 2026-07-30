@@ -31,7 +31,7 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
 
   return (
     <div className="relative" ref={ref}>
-      <button type="button" onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }} className="flex items-center gap-2 rounded-full border border-border bg-panel-soft px-3 py-2 text-sm text-text hover:border-accent transition-all duration-200">
+      <button type="button" onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }} className="flex items-center gap-2 rounded-full border border-border   px-3 py-2 text-sm text-text hover:border-accent transition-all duration-200">
         <SlidersVertical size={15} />
         <span className="hidden sm:inline">{t("TITLES.columns")}</span>
         <ChevronDown size={12} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
@@ -44,9 +44,9 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
           </div>
           <div className="max-h-60 overflow-y-auto">
             {columns.map((col, i) => (
-              <button key={col.field} type="button" onClick={() => toggle(col)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-border/20 ${i % 2 === 0 ? "bg-panel-soft/50" : ""}`}>
+              <button key={col.field} type="button" onClick={() => toggle(col)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-border/20 ${i % 2 === 0 ? " /50" : ""}`}>
                 <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${checked(col) ? "bg-primary border-primary" : "border-border"}`}>
-                  {checked(col) && <Check size={11} className="text-white" />}
+                  {checked(col) && <Check size={11} className="text-text" />}
                 </span>
                 <span className="flex-1 text-start text-text">{col.header}</span>
               </button>

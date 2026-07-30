@@ -46,7 +46,7 @@ export default function CategoryShow() {
             <h1 className="text-2xl font-black tracking-tight text-text mb-1">{displayName}</h1>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
               <span className="flex items-center gap-1.5"><CalendarDays size={13} />{formatDate(category.created_at)}</span>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${category.is_active ? "bg-green-500/10 text-green-600" : "bg-panel-soft text-muted"}`}>{category.is_active ? t("TITLES.active") : t("TITLES.inactive")}</span>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${category.is_active ? "bg-green-500/10 text-green-600" : "  text-muted"}`}>{category.is_active ? t("TITLES.active") : t("TITLES.inactive")}</span>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">

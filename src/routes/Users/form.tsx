@@ -107,8 +107,8 @@ export default function UserForm() {
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
               <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-border bg-panel px-5 py-2.5 text-sm font-semibold text-muted hover:text-text transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/30 hover:bg-primary-hover active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
-                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={15} />}
+              <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-text shadow-sm shadow-primary/30 hover:bg-primary-hover active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
+                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>
             </div>

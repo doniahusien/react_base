@@ -45,11 +45,11 @@ export function ThemeSwitcherExample() {
               className={`group relative flex flex-col items-start gap-2 rounded-xl border p-3 transition-all hover:shadow-md ${
                 isActive
                   ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border bg-panel-soft hover:border-border/60'
+                  : 'border-border   hover:border-border/60'
               }`}
             >
               {isActive && (
-                <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-white shadow-sm">
+                <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-text shadow-sm">
                   <Check size={12} strokeWidth={3} />
                 </div>
               )}
@@ -81,7 +81,7 @@ export function ThemeSwitcherExample() {
           💡 <strong>Tip:</strong> To permanently change the theme, update the{' '}
           <code className="rounded bg-primary/10 px-1.5 py-0.5 text-primary">--brand-500</code> and{' '}
           <code className="rounded bg-primary/10 px-1.5 py-0.5 text-primary">--brand-600</code>{' '}
-          values in <code className="rounded bg-panel-soft px-1.5 py-0.5">src/index.css</code>
+          values in <code className="rounded   px-1.5 py-0.5">src/index.css</code>
         </p>
       </div>
     </div>
@@ -136,7 +136,7 @@ export function ThemeSwitcherCompact() {
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all ${
                       isActive
                         ? 'bg-primary/10 text-primary'
-                        : 'text-text hover:bg-panel-soft'
+                        : 'text-text hover: '
                     }`}
                   >
                     <div className="flex items-center gap-1.5">

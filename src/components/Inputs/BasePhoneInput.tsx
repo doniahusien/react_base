@@ -41,7 +41,7 @@ export function BasePhoneInput({ phoneCode = "", phone = "", onPhoneCode, onPhon
   const filtered = search ? countries.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()) || c.phone_code.includes(search.replace(/\D/g, ""))) : countries;
   const selectCountry = (c: Country) => { onPhoneCode(c.phone_code); setOpen(false); setSearch(""); };
 
-  const borderCls = hasError ? "border-red-400" : focused || open ? "border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]" : "border-border hover:border-primary/40";
+  const borderCls = hasError ? "border-destructive" : focused || open ? "border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]" : "border-border hover:border-primary/40";
   const labelCls = ["block mb-1.5 text-sm font-medium select-none", hasError ? "text-red-500" : "text-text"].join(" ");
 
   return (

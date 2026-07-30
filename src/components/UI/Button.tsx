@@ -24,7 +24,7 @@ export function Button({
 
   const styles = reverse
     ? "bg-body border border-border text-text hover:bg-primary/10"
-    : "bg-primary text-white hover:opacity-90 active:opacity-80 shadow-sm";
+    : "bg-primary text-text hover:opacity-90 active:opacity-80 shadow-sm";
 
   return (
     <button

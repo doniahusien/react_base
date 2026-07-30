@@ -69,7 +69,7 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
 
   const wrapperCls = ["relative rounded-xl border overflow-hidden transition-all duration-200",
     disabled ? "opacity-50 cursor-not-allowed" : "",
-    hasError ? "bg-red-50/40 dark:bg-red-950/10 border-red-400"
+    hasError ? "bg-destructive/10 dark:bg-destructive/20 border-destructive"
       : isOpen ? "bg-panel border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]"
       : "bg-panel border-border hover:border-primary/40"].filter(Boolean).join(" ");
 
@@ -92,7 +92,7 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
                 : options.length === 0 ? <p className="px-4 py-2.5 text-sm text-muted">No options</p>
                 : options.map((opt) => (
                   <button key={opt.id} type="button" onClick={() => handleSelect(opt)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isSelected(opt) ? "bg-primary/10 text-primary font-medium" : "text-text hover:bg-panel-alt"}`}>
-                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-primary border-primary" : "border-border"}`}>{isSelected(opt) && <Check size={10} className="text-white" />}</span>
+                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-primary border-primary" : "border-border"}`}>{isSelected(opt) && <Check size={10} className="text-text" />}</span>
                     <span className="flex-1 truncate">{opt.name}</span>
                   </button>
                 ))}

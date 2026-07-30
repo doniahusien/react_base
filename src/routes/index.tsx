@@ -20,25 +20,25 @@ function productName(p: TopProduct, locale: string): string {
 function isDark() { return document.documentElement.classList.contains("dark"); }
 
 const ACCENT = {
-  violet:  { bar: "bg-violet-500",  glow: "bg-violet-500/20",  text: "text-violet-400",  icon: "bg-violet-500/15 text-violet-400",  ring: "ring-violet-500/20"  },
-  blue:    { bar: "bg-blue-500",    glow: "bg-blue-500/20",    text: "text-blue-400",    icon: "bg-blue-500/15 text-blue-400",      ring: "ring-blue-500/20"    },
-  emerald: { bar: "bg-emerald-500", glow: "bg-emerald-500/20", text: "text-emerald-400", icon: "bg-emerald-500/15 text-emerald-400", ring: "ring-emerald-500/20" },
-  amber:   { bar: "bg-amber-500",   glow: "bg-amber-400/20",   text: "text-amber-400",   icon: "bg-amber-500/15 text-amber-400",    ring: "ring-amber-500/20"   },
+  violet:  { bar: "bg-accent-violet",  glow: "bg-accent-violet-soft",  text: "text-accent-violet",  icon: "icon-accent-violet",  ring: "ring-accent-violet"  },
+  blue:    { bar: "bg-accent-blue",    glow: "bg-accent-blue-soft",    text: "text-accent-blue",    icon: "icon-accent-blue",      ring: "ring-accent-blue"    },
+  emerald: { bar: "bg-accent-emerald", glow: "bg-accent-emerald-soft", text: "text-accent-emerald", icon: "icon-accent-emerald", ring: "ring-accent-emerald" },
+  amber:   { bar: "bg-accent-amber",   glow: "bg-accent-amber-soft",   text: "text-accent-amber",   icon: "icon-accent-amber",    ring: "ring-accent-amber"   },
 };
 
 function StatCard({ icon: Icon, label, value, accent }: StatCardProps) {
   const c = ACCENT[accent];
   return (
-    <div className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 dark:border-slate-700/60 bg-white dark:bg-slate-900/80 p-5 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 ring-1 ${c.ring} transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl`}>
+    <div className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border/80 bg-panel p-5 shadow-sm ring-1 ${c.ring} transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}>
       <div className={`absolute top-0 inset-x-0 h-0.5 ${c.bar} opacity-80`} />
       <div className="pointer-events-none absolute -bottom-4 -inset-e-4 opacity-[0.06] dark:opacity-[0.08]"><Icon size={110} strokeWidth={1} /></div>
       <div className={`pointer-events-none absolute -top-8 -inset-e-8 h-28 w-28 rounded-full ${c.glow} blur-3xl`} />
       <div className="relative flex items-start justify-between">
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">{label}</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
         <div className={`flex size-9 items-center justify-center rounded-xl ring-1 ${c.ring} ${c.icon}`}><Icon size={16} strokeWidth={2.5} /></div>
       </div>
       <div className="relative mt-5">
-        <p className="text-3xl font-black tracking-tight text-slate-800 dark:text-white">{value}</p>
+        <p className="text-3xl font-black tracking-tight text-foreground">{value}</p>
         <div className={`mt-2 h-0.5 w-10 rounded-full ${c.bar} opacity-60`} />
       </div>
     </div>
@@ -127,7 +127,7 @@ export default function Home() {
         <div className="rounded-xl border border-border bg-panel p-5 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <h3 className="text-base font-bold text-text">{t("ANALYTICS.revenueOverview")}</h3>
-            <div className="flex items-center gap-1 rounded-lg bg-panel-soft border border-border p-1">
+            <div className="flex items-center gap-1 rounded-lg   border border-border p-1">
               {(["bar", "area"] as ChartType[]).map((tp) => <button key={tp} type="button" onClick={() => setChartType(tp)} className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all ${chartType === tp ? "bg-panel text-text shadow-sm border border-border" : "text-muted hover:text-text"}`}>{tp === "bar" ? t("ANALYTICS.bar") : t("ANALYTICS.area")}</button>)}
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function Home() {
           <ApexChart type="bar" height={350} options={topProductsOptions} series={topProductsSeries} />
         </div>
       ) : !loading && (
-        <div className="rounded-xl border border-dashed border-border bg-panel-soft p-10 text-center">
+        <div className="rounded-xl border border-dashed border-border   p-10 text-center">
           <p className="text-sm text-muted">{t("ANALYTICS.noProducts")}</p>
         </div>
       )}

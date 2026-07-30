@@ -50,7 +50,7 @@ export function BaseTextInput({
     "relative rounded-xl border overflow-hidden transition-all duration-200",
     disabled ? "opacity-50 cursor-not-allowed" : "",
     hasError
-      ? "bg-red-50/40 dark:bg-red-950/10 border-red-400"
+      ? "bg-destructive/10 dark:bg-destructive/20 border-destructive"
       : focused
       ? "bg-panel border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]"
       : "bg-panel border-border hover:border-primary/40",

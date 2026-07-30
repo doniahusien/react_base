@@ -27,10 +27,10 @@ function ChangePasswordDialog({ onClose, successMsg, failedMsg }: { onClose: () 
     finally { setLoading(false); }
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} /><div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-panel border border-border shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} /><div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-background border border-border shadow-2xl">
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
         <div className="flex items-center gap-2"><div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"><KeyRound size={14} /></div><h3 className="text-sm font-bold text-text">{t("PROFILE.changePassword")}</h3></div>
-        <button type="button" onClick={onClose} className="flex size-8 items-center justify-center rounded-xl bg-panel-soft text-muted hover:bg-panel-alt border border-border transition-all"><X size={14} /></button>
+        <button type="button" onClick={onClose} className="flex size-8 items-center justify-center rounded-xl   text-muted hover:bg-panel-alt border border-border transition-all"><X size={14} /></button>
       </div>
       <Form schema={schemas.profilePassword} values={values} onSubmit={handleSubmit}>{({ errors, field, touch }) => (
         <div className="space-y-4 px-6 py-5">
@@ -39,7 +39,7 @@ function ChangePasswordDialog({ onClose, successMsg, failedMsg }: { onClose: () 
           <BaseTextInput name="password_confirmation" label={t("PROFILE.confirmPassword")} type="password" value={values.password_confirmation} onInput={v => { set("password_confirmation")(v); touch("password_confirmation"); }} prependInputIcon={Lock} {...field("password_confirmation", errors)} />
           <div className="flex items-center justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted hover:text-text transition-all"><X size={14} /> {t("BUTTONS.cancel")}</button>
-            <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={14} />}{t("BUTTONS.saveChanges")}</button>
+            <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={14} />}{t("BUTTONS.saveChanges")}</button>
           </div>
         </div>
       )}</Form>
@@ -109,7 +109,7 @@ export default function ProfileEdit() {
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
               <button type="button" onClick={() => navigate("/profile")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted hover:text-text hover:bg-panel-alt transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loading || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Shield size={15} />}{t("BUTTONS.saveChanges")}</button>
+              <button type="submit" disabled={loading || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}{t("BUTTONS.saveChanges")}</button>
             </div>
           </div>
         )}
