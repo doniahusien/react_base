@@ -415,7 +415,7 @@ export function UITable<T extends { id?: any }>({
                         {header.isPlaceholder ? null : (
                           <div className="flex items-center justify-between gap-2">
                             <span className="inline-flex items-center gap-1">
-                              {isSelect ? "Select" : flexRender(header.column.columnDef.header, header.getContext())}
+                              {isSelect ? t("ACTIONS.select") : flexRender(header.column.columnDef.header, header.getContext())}
                               {header.column.getCanSort() && !isSelect && <SortIcon column={header.column} />}
                             </span>
                           </div>

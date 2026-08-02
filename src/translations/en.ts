@@ -29,6 +29,23 @@ export const en = {
     Dark: "Dark",
     Close: "Close",
   },
+  LOGIN: {
+    secureAuth: "Secure Authentication",
+    secureAuthDesc: "Enterprise-grade security",
+    availability: "Availability 24/7",
+    availabilityDesc: "Access anytime, anywhere",
+    lightning: "Lightning Fast",
+    lightningDesc: "Optimized performance",
+    secureLogin: "Secure Login",
+    enterCredentials: "Enter your credentials to access your account",
+    authenticating: "Authenticating...",
+    sslSecured: "SSL Secured",
+    encrypted: "Encrypted",
+    termsFooter: "By continuing, you agree to our Terms of Service and Privacy Policy",
+    uptime: "Uptime",
+    activeUsers: "Active Users",
+    security: "Security",
+  },
   TITLES: {
     viewAll: "View All", cities: "Cities", created_at: "Created At",
     loading: "Loading...", noResults: "No results", adminPanel: "Admin Panel",
@@ -143,6 +160,12 @@ export const en = {
   ACTIONS: {
     edit: "Edit", show: "Show", delete: "Delete",
     selectAll: "Select All", deselectAll: "Deselect All", changeFlag: "Change Flag",
+    select: "Select",
+  },
+  SELECT: {
+    selected: "selected",
+    loading: "Loading…",
+    noOptions: "No options",
   },
   PROFILE: {
     title: "Profile", editTitle: "Edit Profile",

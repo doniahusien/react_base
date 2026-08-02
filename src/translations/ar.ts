@@ -29,6 +29,23 @@ export const ar = {
     Dark: "داكن",
     Close: "إغلاق",
   },
+  LOGIN: {
+    secureAuth: "مصادقة آمنة",
+    secureAuthDesc: "أمان على مستوى المؤسسات",
+    availability: "متاح على مدار الساعة",
+    availabilityDesc: "الوصول في أي وقت ومن أي مكان",
+    lightning: "سريع كالبرق",
+    lightningDesc: "أداء محسّن",
+    secureLogin: "تسجيل دخول آمن",
+    enterCredentials: "أدخل بياناتك للوصول إلى حسابك",
+    authenticating: "جارِ المصادقة...",
+    sslSecured: "محمي بـ SSL",
+    encrypted: "مشفر",
+    termsFooter: "بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية",
+    uptime: "وقت التشغيل",
+    activeUsers: "مستخدمون نشطون",
+    security: "الأمان",
+  },
   TITLES: {
     viewAll: "عرض الكل", cities: "المدن", created_at: "تاريخ الإنشاء", city: "المدينة",
     loading: "جارٍ التحميل...", noResults: "لا توجد نتائج", adminPanel: "لوحة الإدارة",
@@ -144,6 +161,12 @@ export const ar = {
   ACTIONS: {
     edit: "تعديل", show: "عرض", delete: "حذف",
     selectAll: "تحديد الجميع", deselectAll: "إلغاء تحديد الجميع", changeFlag: "تغيير العلم",
+    select: "تحديد",
+  },
+  SELECT: {
+    selected: "محدد",
+    loading: "جارٍ التحميل…",
+    noOptions: "لا توجد خيارات",
   },
   PROFILE: {
     title: "الملف الشخصي", editTitle: "تعديل الملف الشخصي",

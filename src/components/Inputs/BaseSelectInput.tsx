@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useId, useCallback } from "react";
 import type { ComponentType } from "react";
 import { ChevronDown, X, Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import api from "../../lib/axios";
 
 export interface SelectOption { id: string | number; name: string; slug?: string; }
@@ -18,6 +19,7 @@ interface BaseSelectInputProps {
 }
 
 export function BaseSelectInput({ name, label, items = [], url, itemValue = "id", itemLabel, optionMapper, value, onChange, multiple = false, disabled = false, error, touched = false, prependInputIcon: PrependIcon }: BaseSelectInputProps) {
+  const { t } = useTranslation();
   const uid = useId();
   const id = `${uid}-${name}`;
   const ref = useRef<HTMLDivElement>(null);
