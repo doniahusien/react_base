@@ -24,14 +24,13 @@ export default function CountriesShowAll() {
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
   const columns: TableColumn[] = [
-    { index: 0, field: "index", header: "#" },
-    { index: 1, field: "flag", header: t("TITLES.flag") as ReactNode },
-    { index: 2, field: "name", header: t("TITLES.name") as ReactNode, sortable: true },
-    { index: 3, field: "phone_code", header: t("TITLES.phoneCode") as ReactNode },
-    { index: 4, field: "phone_length", header: t("TITLES.phoneLimit") as ReactNode },
-    { index: 5, field: "currency", header: t("TITLES.Currency") as ReactNode },
-    { index: 6, field: "status", header: t("TITLES.status") as ReactNode },
-    { index: 7, field: "actions", header: t("TITLES.actions") as ReactNode },
+    { index: 0, field: "flag", header: t("TITLES.flag") as ReactNode },
+    { index: 1, field: "name", header: t("TITLES.name") as ReactNode, sortable: true },
+    { index: 2, field: "phone_code", header: t("TITLES.phoneCode") as ReactNode },
+    { index: 3, field: "phone_length", header: t("TITLES.phoneLimit") as ReactNode },
+    { index: 4, field: "currency", header: t("TITLES.Currency") as ReactNode },
+    { index: 5, field: "status", header: t("TITLES.status") as ReactNode },
+    { index: 6, field: "actions", header: t("TITLES.actions") as ReactNode },
   ];
 
   const filterSections: FilterSection[] = [
@@ -96,12 +95,11 @@ export default function CountriesShowAll() {
 
   const renderCell = (field: string, item: Country, index: number) => {
     switch (field) {
-      case "index": return <span className="text-sm text-muted-foreground">#{index + 1}</span>;
-      case "flag": return item.flag ? <ImagePreviewTrigger src={item.flag} alt={item.name} className="h-8 w-12 rounded-lg border border-border object-cover" wrapperClassName="rounded-lg" /> : <div className="flex h-8 w-12 items-center justify-center rounded-lg border border-border  "><Earth size={16} className="text-muted-foreground" /></div>;
-      case "name": return <span className="text-sm font-medium text-foreground">{item.name}</span>;
-      case "phone_code": return <div className="flex items-center gap-1.5"><Phone size={13} className="text-muted-foreground" /><span className="text-sm text-foreground">+{item.phone_code}</span></div>;
-      case "phone_length": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-foreground">{item.phone_length} {t("TITLES.digits")}</span>;
-      case "currency": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-foreground">{item.currency ?? "—"}</span>;
+      case "flag": return item.flag ? <ImagePreviewTrigger src={item.flag} alt={item.name} className="h-8 w-12 rounded-lg border border-border object-cover" wrapperClassName="rounded-lg" /> : <div className="flex h-8 w-12 items-center justify-center rounded-lg border border-border  "><Earth size={16} className="text-muted" /></div>;
+      case "name": return <span className="text-sm font-medium text-text">{item.name}</span>;
+      case "phone_code": return <div className="flex items-center gap-1.5"><Phone size={13} className="text-muted" /><span className="text-sm text-text">+{item.phone_code}</span></div>;
+      case "phone_length": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-text">{item.phone_length} {t("TITLES.digits")}</span>;
+      case "currency": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-text">{item.currency ?? "—"}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/countries/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
         <div className="relative w-9" onClick={(e) => e.stopPropagation()}>

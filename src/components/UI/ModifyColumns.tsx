@@ -44,7 +44,12 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
           </div>
           <div className="max-h-60 overflow-y-auto">
             {columns.map((col, i) => (
-              <button key={col.field} type="button" onClick={() => toggle(col)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-border/20 ${i % 2 === 0 ? " /50" : ""}`}>
+              <button
+                key={col.field}
+                type="button"
+                onClick={() => toggle(col)}
+                className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-border/20 ${i % 2 === 0 ? "bg-panel/5" : ""}`}
+              >
                 <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${checked(col) ? "bg-primary border-primary" : "border-border"}`}>
                   {checked(col) && <Check size={11} className="text-foreground" />}
                 </span>

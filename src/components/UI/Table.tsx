@@ -13,6 +13,7 @@ import {
   getPaginationRowModel,
   flexRender,
   type ColumnDef,
+  type ColumnSizingState,
   type SortingState,
   type VisibilityState,
   type RowSelectionState,
@@ -47,6 +48,11 @@ function setPageUrl(p: number) {
   params.set("page", String(p));
   window.history.pushState({}, "", `${window.location.pathname}?${params}`);
   window.dispatchEvent(new PopStateEvent("popstate"));
+}
+function getDefaultColumnSize(header: string | ReactNode, index: number) {
+  const label = typeof header === "string" ? header : String(header ?? "");
+  const base = Math.max(120, Math.min(240, label.length * 10));
+  return index === 0 ? Math.max(base, 60) : base;
 }
 
 function SkeletonRow({ cols }: { cols: number }) {
@@ -136,14 +142,21 @@ export function UITable<T extends { id?: any }>({
   data, columns, title = "", loading = false, renderCell, renderQuickView,
 }: UITableProps<T>) {
   const { t } = useTranslation();
-  const [selectedCols, setSelectedCols] = useState<TableColumn[]>(columns);
   const [view, setView] = useState<"table" | "grid">("table");
-    const [gridCols, setGridCols] = useState<1 | 2 | 3 | 4>(3);
+  const [gridCols, setGridCols] = useState<1 | 2 | 3 | 4>(3);
   const romanMap = { 1: "I", 2: "II", 3: "III", 4: "IV" } as const;
   const [page, setPage] = useState(pageFromUrl());
   const [quickItem, setQuickItem] = useState<T | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ select: true });
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() => {
+    const initial: ColumnSizingState = {};
+    columns.forEach((col, index) => {
+      initial[col.field] = getDefaultColumnSize(col.header, index);
+    });
+    return initial;
+  });
 
   // Convert custom columns to TanStack columns
   const tableColumns = useMemo<ColumnDef<T>[]>(() => {
@@ -152,14 +165,16 @@ export function UITable<T extends { id?: any }>({
         id: "select",
         header: ({ table }) => {
           const checkbox = (
-            <input
-              type="checkbox"
-              checked={table.getIsAllRowsSelected()}
-              onChange={table.getToggleAllRowsSelectedHandler()}
-              className="h-3.5 w-3.5 rounded accent-primary cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={table.getIsAllRowsSelected()}
+                onChange={table.getToggleAllRowsSelectedHandler()}
+                className="h-3.5 w-3.5 rounded accent-primary cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+              />
+              <span className="text-[11px] font-semibold text-muted/80">#</span>
+            </div>
           );
-          // Set indeterminate via ref after render
           if (table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()) {
             setTimeout(() => {
               const input = document.querySelector('thead input[type="checkbox"]') as HTMLInputElement;
@@ -169,23 +184,27 @@ export function UITable<T extends { id?: any }>({
           return checkbox;
         },
         cell: ({ row }) => (
-          <input
-            type="checkbox"
-            checked={row.getIsSelected()}
-            onChange={row.getToggleSelectedHandler()}
-            className="size-3.5 rounded accent-primary cursor-pointer"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={row.getIsSelected()}
+              onChange={row.getToggleSelectedHandler()}
+              className="size-3.5 rounded accent-primary cursor-pointer"
+            />
+            <span className="text-[11px] font-semibold text-muted/80">{row.index + 1}</span>
+          </div>
         ),
-        size: 40,
+        size: 84,
       },
     ];
 
-    columns.forEach((col) => {
+    columns.forEach((col, index) => {
       cols.push({
         id: col.field,
         accessorKey: col.field,
         header: col.header as string,
         enableSorting: col.sortable ?? false,
+        size: getDefaultColumnSize(col.header, index),
         cell: ({ row, cell }) => {
           const index = row.index;
           const item = row.original;
@@ -197,16 +216,21 @@ export function UITable<T extends { id?: any }>({
     return cols;
   }, [columns, renderCell]);
 
-  // Column visibility state
-  const columnVisibility = useMemo<VisibilityState>(() => {
-    const visibility: VisibilityState = { select: true };
-    columns.forEach((col) => {
-      visibility[col.field] = selectedCols.some((c) => c.field === col.field);
-    });
-    return visibility;
-  }, [columns, selectedCols]);
-
   const rows = useMemo(() => Array.isArray(data.data) ? data.data : [], [data.data]);
+  const selectedCols = useMemo(
+    () => columns.filter((col) => columnVisibility[col.field] !== false),
+    [columns, columnVisibility],
+  );
+
+  const handleColumnSelectionChange = (nextSelected: TableColumn[]) => {
+    setColumnVisibility((prev) => {
+      const next: VisibilityState = { ...prev, select: true };
+      columns.forEach((col) => {
+        next[col.field] = nextSelected.some((selectedCol) => selectedCol.field === col.field);
+      });
+      return next;
+    });
+  };
 
   const table = useReactTable({
     data: rows,
@@ -215,10 +239,19 @@ export function UITable<T extends { id?: any }>({
       sorting,
       rowSelection,
       columnVisibility,
+      columnSizing,
     },
     enableRowSelection: true,
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnSizingChange: setColumnSizing,
+    defaultColumn: {
+      minSize: 80,
+      maxSize: 320,
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -227,7 +260,31 @@ export function UITable<T extends { id?: any }>({
     getRowId: (row: any) => String(row.id ?? row.index),
   });
 
-  useEffect(() => setSelectedCols(columns), [columns]);
+  useEffect(() => {
+    setColumnVisibility((prev) => {
+      const next: VisibilityState = { ...prev, select: true };
+      columns.forEach((col) => {
+        if (typeof next[col.field] !== "boolean") {
+          next[col.field] = true;
+        }
+      });
+      return next;
+    });
+  }, [columns]);
+  useEffect(() => {
+    setColumnSizing((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      columns.forEach((col, index) => {
+        const defaultSize = getDefaultColumnSize(col.header, index);
+        if (typeof next[col.field] !== "number") {
+          next[col.field] = defaultSize;
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [columns]);
   useEffect(() => {
     const check = () => setView(window.innerWidth < 1024 ? "grid" : "table");
     check();
@@ -286,7 +343,7 @@ export function UITable<T extends { id?: any }>({
           )}
         </div>
         <div className="flex items-center gap-2 ms-auto">
-          <ModifyColumns columns={columns} selected={selectedCols} onChange={setSelectedCols} />
+          <ModifyColumns columns={columns} selected={selectedCols} onChange={handleColumnSelectionChange} />
           {view === "grid" && (
             <div className="flex items-center gap-1 rounded-xl border border-border   px-2 py-1">
              {/*  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
@@ -331,7 +388,7 @@ export function UITable<T extends { id?: any }>({
       {/* ── Table view ── */}
       {view === "table" && (
         <div className="w-full overflow-x-auto rounded-2xl">
-          <table className="w-full min-w-140 border-separate border-spacing-y-1 text-sm">
+          <table className="w-full min-w-140 border-separate border-spacing-y-1 text-sm" style={{ width: "100%", tableLayout: "fixed" }}>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
@@ -341,17 +398,36 @@ export function UITable<T extends { id?: any }>({
                       <th
                         key={header.id}
                         onClick={header.column.getToggleSortingHandler()}
-                        className={`px-3 pb-2 text-start text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground whitespace-nowrap ${
-                          isSelect ? "w-10" : ""
+                        style={{
+                          width: header.getSize(),
+                          minWidth: header.getSize(),
+                          boxSizing: "border-box",
+                          ...(header.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 20 } : {}),
+                        }}
+                        className={`relative px-3 pb-2 text-start text-[10px] font-extrabold uppercase tracking-widest text-muted whitespace-nowrap ${
+                          isSelect ? "w-[84px]" : ""
                         } ${
                           header.column.getCanSort() ? "cursor-pointer select-none hover:text-primary transition-colors" : ""
+                        } ${
+                          header.column.id === "actions" ? "bg-panel" : ""
                         }`}
                       >
                         {header.isPlaceholder ? null : (
-                          <span className="inline-flex items-center gap-1">
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {header.column.getCanSort() && <SortIcon column={header.column} />}
-                          </span>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="inline-flex items-center gap-1">
+                              {isSelect ? "Select" : flexRender(header.column.columnDef.header, header.getContext())}
+                              {header.column.getCanSort() && !isSelect && <SortIcon column={header.column} />}
+                            </span>
+                          </div>
+                        )}
+                        {header.column.getCanResize() && (
+                          <div
+                            role="presentation"
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            onClick={(event) => event.stopPropagation()}
+                            className={`absolute end-0 top-0 h-full w-3 touch-none ${header.column.getIsResizing() ? "bg-primary/20" : "cursor-col-resize hover:bg-primary/10"}`}
+                          />
                         )}
                       </th>
                     );
@@ -387,9 +463,17 @@ export function UITable<T extends { id?: any }>({
                         return (
                           <td
                             key={cell.id}
-                            className={`${cellBase} ${cellHover} ${selected ? cellSelected : "bg-card"} ${
+                            style={{
+                              width: cell.column.getSize(),
+                              minWidth: cell.column.getSize(),
+                              boxSizing: "border-box",
+                              ...(cell.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 10 } : {}),
+                            }}
+                            className={`${cellBase} ${cellHover} ${selected ? cellSelected : "bg-panel"} ${
                               isFirst ? "rounded-s-2xl" : ""
-                            } ${isLast ? "rounded-e-2xl" : ""}`}
+                            } ${isLast ? "rounded-e-2xl" : ""} ${
+                              cell.column.id === "actions" ? "bg-panel" : ""
+                            }`}
                           >
                             {isFirst ? (
                               <div className="flex h-full items-center">
