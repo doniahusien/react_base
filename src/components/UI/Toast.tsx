@@ -5,7 +5,7 @@ import type { Toast } from "../../types/toast";
 const config = {
   success: { icon: CheckCircle, cls: "bg-primary/10 border-primary/30 dark:bg-primary/20 dark:border-primary/40", iconCls: "text-primary", titleCls: "text-primary dark:text-primary-foreground", descCls: "text-foreground dark:text-foreground" },
   error:   { icon: XCircle,     cls: "bg-destructive/10 border-destructive/30 dark:bg-destructive/20 dark:border-destructive/40", iconCls: "text-destructive", titleCls: "text-destructive dark:text-destructive", descCls: "text-foreground dark:text-foreground" },
-  info:    { icon: Info,        cls: "bg-accent/10 border-accent/30 dark:bg-accent/20 dark:border-accent/40", iconCls: "text-accent", titleCls: "text-accent dark:text-accent-foreground", descCls: "text-foreground dark:text-foreground" },
+  info:    { icon: Info,        cls: "bg-accent/10 border-accent/30 dark:bg-accent/20 dark:border-accent/40", iconCls: "text-primary", titleCls: "text-primary dark:text-accent-foreground", descCls: "text-foreground dark:text-foreground" },
   warning: { icon: AlertTriangle, cls: "bg-secondary/10 border-secondary/30 dark:bg-secondary/20 dark:border-secondary/40", iconCls: "text-secondary", titleCls: "text-secondary dark:text-secondary-foreground", descCls: "text-foreground dark:text-foreground" },
 } as const;
 

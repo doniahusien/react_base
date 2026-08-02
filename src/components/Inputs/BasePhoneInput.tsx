@@ -42,43 +42,43 @@ export function BasePhoneInput({ phoneCode = "", phone = "", onPhoneCode, onPhon
   const selectCountry = (c: Country) => { onPhoneCode(c.phone_code); setOpen(false); setSearch(""); };
 
   const borderCls = hasError ? "border-destructive" : focused || open ? "border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]" : "border-border hover:border-primary/40";
-  const labelCls = ["block mb-1.5 text-sm font-medium select-none", hasError ? "text-red-500" : "text-text"].join(" ");
+  const labelCls = ["block mb-1.5 text-sm font-medium select-none", hasError ? "text-destructive" : "text-foreground"].join(" ");
 
   return (
     <div className="space-y-1">
       {label && <label className={labelCls}>{label}</label>}
       <div className="relative" ref={dropdownRef}>
-        <div className={`relative flex items-stretch rounded-xl border bg-panel transition-all duration-200 overflow-hidden ${borderCls} ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
-          <button type="button" onClick={() => setOpen((v) => !v)} className="flex h-11 shrink-0 items-center gap-1.5 border-e border-border px-3 text-sm transition-colors hover:bg-panel-alt">
-            {selected ? (<><img src={selected.flag} alt={selected.name} className="h-4 w-6 rounded-sm object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /><span className="font-semibold text-text text-sm leading-none"><bdo dir="ltr">+{selected.phone_code}</bdo></span></>) : (<><Phone size={14} className="text-muted shrink-0" /><span className="text-muted text-sm">+{phoneCode || "—"}</span></>)}
-            <ChevronDown size={13} className={`shrink-0 text-muted transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <div className={`relative flex items-stretch rounded-xl border bg-card transition-all duration-200 overflow-hidden ${borderCls} ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
+          <button type="button" onClick={() => setOpen((v) => !v)} className="flex h-11 shrink-0 items-center gap-1.5 border-e border-border px-3 text-sm transition-colors hover:bg-muted">
+            {selected ? (<><img src={selected.flag} alt={selected.name} className="h-4 w-6 rounded-sm object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /><span className="font-semibold text-foreground text-sm leading-none"><bdo dir="ltr">+{selected.phone_code}</bdo></span></>) : (<><Phone size={14} className="text-muted-foreground shrink-0" /><span className="text-muted-foreground text-sm">+{phoneCode || "—"}</span></>)}
+            <ChevronDown size={13} className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
           </button>
           <div className="relative flex-1">
-            <input type="tel" value={phone} onChange={(e) => onPhone(e.target.value)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} placeholder="e.g. 501234567" disabled={disabled} className="block h-11 w-full bg-transparent py-0 px-3 text-sm text-text outline-none placeholder:text-muted" />
+            <input type="tel" value={phone} onChange={(e) => onPhone(e.target.value)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} placeholder="e.g. 501234567" disabled={disabled} className="block h-11 w-full bg-transparent py-0 px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground" />
           </div>
         </div>
         {open && (
-          <div className="absolute inset-s-0 top-full z-[200] mt-1.5 w-64 overflow-hidden rounded-2xl border border-border bg-panel shadow-xl">
+          <div className="absolute inset-s-0 top-full z-[200] mt-1.5 w-64 overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
             <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
-              <Search size={13} className="shrink-0 text-muted" />
-              <input ref={searchRef} type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("LABELS.phoneCode")} className="flex-1 bg-transparent text-sm text-text outline-none placeholder:text-muted" />
-              {search && <button type="button" onClick={() => setSearch("")}><X size={12} className="text-muted hover:text-text" /></button>}
+              <Search size={13} className="shrink-0 text-muted-foreground" />
+              <input ref={searchRef} type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("LABELS.phoneCode")} className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+              {search && <button type="button" onClick={() => setSearch("")}><X size={12} className="text-muted-foreground hover:text-foreground" /></button>}
             </div>
             <div className="max-h-52 overflow-y-auto py-1">
-              {loadingCountries ? <p className="px-4 py-3 text-sm text-muted">{t("TITLES.loading")}</p>
-                : filtered.length === 0 ? <p className="px-4 py-3 text-sm text-muted">{t("TITLES.noResults")}</p>
+              {loadingCountries ? <p className="px-4 py-3 text-sm text-muted-foreground">{t("TITLES.loading")}</p>
+                : filtered.length === 0 ? <p className="px-4 py-3 text-sm text-muted-foreground">{t("TITLES.noResults")}</p>
                 : filtered.map((c) => (
-                  <button key={c.id} type="button" onClick={() => selectCountry(c)} className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors ${c.phone_code === phoneCode ? "bg-primary/10 text-primary font-medium" : "text-text hover:bg-panel-alt"}`}>
+                  <button key={c.id} type="button" onClick={() => selectCountry(c)} className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors ${c.phone_code === phoneCode ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"}`}>
                     <img src={c.flag} alt={c.name} className="h-4 w-6 rounded-sm object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                     <span className="flex-1 truncate text-start">{c.name}</span>
-                    <span className="shrink-0 tabular-nums text-xs text-muted">+{c.phone_code}</span>
+                    <span className="shrink-0 tabular-nums text-xs text-muted-foreground">+{c.phone_code}</span>
                   </button>
                 ))}
             </div>
           </div>
         )}
       </div>
-      {hasError && <p className="flex items-center gap-1.5 px-1 text-xs text-red-500"><span className="inline-block h-1 w-1 rounded-full bg-red-500 shrink-0" />{errorCode || errorPhone}</p>}
+      {hasError && <p className="flex items-center gap-1.5 px-1 text-xs text-destructive"><span className="inline-block h-1 w-1 rounded-full bg-destructive shrink-0" />{errorCode || errorPhone}</p>}
     </div>
   );
 }

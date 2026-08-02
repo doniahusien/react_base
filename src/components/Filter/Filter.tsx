@@ -89,7 +89,7 @@ function FilterSectionComponent({
               )}
             </div>
           )}
-          <span className="text-sm font-semibold text-text transition-colors group-hover:text-primary">
+          <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
             {section.label}
           </span>
         </div>
@@ -100,9 +100,9 @@ function FilterSectionComponent({
             </span>
           )}
           {isOpen ? (
-            <ChevronUp size={16} className="text-muted transition-transform group-hover:text-primary" />
+            <ChevronUp size={16} className="text-muted-foreground transition-transform group-hover:text-primary" />
           ) : (
-            <ChevronDown size={16} className="text-muted transition-transform group-hover:text-primary" />
+            <ChevronDown size={16} className="text-muted-foreground transition-transform group-hover:text-primary" />
           )}
         </div>
       </button>
@@ -128,15 +128,15 @@ function FilterSectionComponent({
                       name={section.key}
                       checked={isRadioSelected(option.id)}
                       onChange={() => handleRadioChange(option.id)}
-                      className="peer h-5 w-5 rounded-full border-2 border-border bg-panel appearance-none cursor-pointer transition-all checked:border-primary checked:shadow-[0_0_10px_rgba(139,125,216,0.3)] focus:ring-2 focus:ring-primary/20"
+                      className="peer h-5 w-5 rounded-full border-2 border-border bg-card appearance-none cursor-pointer transition-all checked:border-primary checked:shadow-[0_0_10px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] focus:ring-2 focus:ring-primary/20"
                     />
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-primary pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0" 
                       style={{ 
-                        boxShadow: isRadioSelected(option.id) ? '0 0 8px rgba(139, 125, 216, 0.6)' : 'none'
+                        boxShadow: isRadioSelected(option.id) ? '0 0 8px color-mix(in srgb, var(--color-primary) 60%, transparent)' : 'none'
                       }}
                     />
                   </div>
-                  <span className="text-sm text-text group-hover:text-primary transition-colors font-medium">
+                  <span className="text-sm text-foreground group-hover:text-primary transition-colors font-medium">
                     {option.label}
                   </span>
                 </label>
@@ -159,10 +159,10 @@ function FilterSectionComponent({
                       type="checkbox"
                       checked={isCheckboxChecked(option.id)}
                       onChange={(e) => handleCheckboxChange(option.id, e.target.checked)}
-                      className="peer h-5 w-5 rounded border-2 border-border bg-panel appearance-none cursor-pointer transition-all checked:bg-primary checked:border-primary checked:shadow-[0_0_10px_rgba(139,125,216,0.3)] focus:ring-2 focus:ring-primary/20"
+                      className="peer h-5 w-5 rounded border-2 border-border bg-card appearance-none cursor-pointer transition-all checked:bg-primary checked:border-primary checked:shadow-[0_0_10px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] focus:ring-2 focus:ring-primary/20"
                     />
                     <svg
-                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-text pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0"
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-foreground pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0"
                       viewBox="0 0 12 12"
                       fill="none"
                       stroke="currentColor"
@@ -173,7 +173,7 @@ function FilterSectionComponent({
                       <polyline points="2 6 5 9 10 3" />
                     </svg>
                   </div>
-                  <span className="text-sm text-text group-hover:text-primary transition-colors font-medium">
+                  <span className="text-sm text-foreground group-hover:text-primary transition-colors font-medium">
                     {option.label}
                   </span>
                 </label>
@@ -186,7 +186,7 @@ function FilterSectionComponent({
               <select
                 value={tempValues[section.key] || ""}
                 onChange={(e) => onTempChange(section.key, e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl  border border-border text-sm text-text focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                className="w-full px-4 py-2.5 rounded-xl  border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               >
                 <option value="">{section.placeholder || "Select..."}</option>
                 {section.items?.map((item) => (
@@ -205,7 +205,7 @@ function FilterSectionComponent({
                 placeholder={section.placeholder}
                 value={tempValues[section.key] || ""}
                 onChange={(e) => onTempChange(section.key, e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl  border border-border text-sm text-text placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                className="w-full px-4 py-2.5 rounded-xl  border border-border text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               />
             </div>
           )}
@@ -343,7 +343,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
       <div ref={triggerRef} onClick={() => setIsOpen(!isOpen)} className="relative">
         {triggerButton}
         {activeFilterCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-5 h-5 px-1.5 bg-primary text-text text-xs font-bold rounded-full shadow-lg animate-bounce">
+          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-5 h-5 px-1.5 bg-primary text-foreground text-xs font-bold rounded-full shadow-lg animate-bounce">
             {activeFilterCount}
           </span>
         )}
@@ -353,12 +353,12 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
       {isOpen && (
         <div
           ref={panelRef}
-          className="fixed w-[340px] max-h-[calc(100vh-100px)] overflow-hidden bg-panel rounded-2xl z-50 flex flex-col border border-border backdrop-blur-sm"
+          className="fixed w-[340px] max-h-[calc(100vh-100px)] overflow-hidden bg-card rounded-2xl z-50 flex flex-col border border-border backdrop-blur-sm"
           style={{ 
             top: `${position.top}px`,
             right: `${position.right}px`,
             animation: "slideInRight 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(139, 125, 216, 0.1)"
+            boxShadow: "0 20px 60px color-mix(in srgb, var(--color-foreground) 15%, transparent), 0 0 0 1px color-mix(in srgb, var(--color-foreground) 5%, transparent), 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent)"
           }}
         >
           {/* Decorative gradient top */}
@@ -367,7 +367,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0 bg-gradient-to-r from-primary/5 to-transparent">
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-text">{t("TITLES.filters")}</h3>
+              <h3 className="text-lg font-bold text-foreground">{t("TITLES.filters")}</h3>
               {activeFilterCount > 0 && (
                 <span className="px-2 py-0.5 text-xs font-bold text-primary bg-primary/10 rounded-full">
                   {activeFilterCount}
@@ -377,7 +377,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center w-8 h-8 rounded-full hover: hover:rotate-90 transition-all duration-300 text-muted hover:text-text"
+              className="flex items-center justify-center w-8 h-8 rounded-full hover: hover:rotate-90 transition-all duration-300 text-muted-foreground hover:text-foreground"
             >
               <X size={18} />
             </button>
@@ -395,7 +395,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
                 />
               ))
             ) : (
-              <div className="px-5 py-8 text-center text-muted text-sm">
+              <div className="px-5 py-8 text-center text-muted-foreground text-sm">
                 No filter sections configured
               </div>
             )}
@@ -406,7 +406,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
             <button
               type="button"
               onClick={handleApply}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-hover text-text text-sm font-semibold hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm relative overflow-hidden group"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-foreground text-sm font-semibold hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm relative overflow-hidden group"
             >
               <span className="relative z-10">{t("TITLES.apply") || "Apply"}</span>
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -414,7 +414,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
             <button
               type="button"
               onClick={handleClear}
-              className="flex-1 px-4 py-2.5 rounded-xl  text-text text-sm font-semibold hover:bg-panel-alt hover:scale-105 active:scale-95 transition-all duration-200 border border-border"
+              className="flex-1 px-4 py-2.5 rounded-xl  text-foreground text-sm font-semibold hover:bg-muted hover:scale-105 active:scale-95 transition-all duration-200 border border-border"
             >
               {t("TITLES.clearAll") || "Clear all"}
             </button>

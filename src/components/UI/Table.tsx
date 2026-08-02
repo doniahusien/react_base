@@ -86,20 +86,20 @@ function Pagination({
   }
 
   const navBtn =
-    "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-muted transition-all hover:bg-primary/10 hover:text-primary disabled:opacity-25 disabled:cursor-not-allowed";
+    "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary disabled:opacity-25 disabled:cursor-not-allowed";
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <p className="text-xs text-muted">
-        <span className="font-semibold text-text">
+      <p className="text-xs text-muted-foreground">
+        <span className="font-semibold text-foreground">
           {meta.from ?? (page - 1) * meta.per_page + 1}
         </span>
         <span className="mx-1">–</span>
-        <span className="font-semibold text-text">
+        <span className="font-semibold text-foreground">
           {meta.to ?? Math.min(page * meta.per_page, meta.total)}
         </span>
         <span className="mx-1 opacity-50">of</span>
-        <span className="font-semibold text-text">{meta.total}</span>
+        <span className="font-semibold text-foreground">{meta.total}</span>
       </p>
       <div className="flex items-center gap-1 overflow-x-auto">
         <button onClick={() => onPage(page - 1)} disabled={page <= 1} className={navBtn}>
@@ -107,7 +107,7 @@ function Pagination({
         </button>
         {pages.map((p, i) =>
           p === "…" ? (
-            <span key={`d${i}`} className="flex h-8 w-8 shrink-0 items-center justify-center text-xs text-muted">
+            <span key={`d${i}`} className="flex h-8 w-8 shrink-0 items-center justify-center text-xs text-muted-foreground">
               ···
             </span>
           ) : (
@@ -116,8 +116,8 @@ function Pagination({
               onClick={() => onPage(p as number)}
               className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-semibold transition-all ${
                 page === p
-                  ? "bg-primary text-text shadow-sm"
-                  : "text-muted hover:bg-primary/10 hover:text-primary"
+                  ? "bg-primary text-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
               }`}
             >
               {p}
@@ -255,8 +255,8 @@ export function UITable<T extends { id?: any }>({
 
   /* ── shared cell surface ── */
   const cellBase =
-    "bg-panel px-3 py-3.5 text-text align-middle transition-all duration-150 shadow-[0_1px_3px_rgba(0,0,0,0.04)]";
-  const cellHover = "group-hover:bg-panel-alt";
+    "bg-card px-3 py-3.5 text-foreground align-middle transition-all duration-150 shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)]";
+  const cellHover = "group-hover:bg-muted";
   const cellSelected = "bg-primary/10";
 
   return (
@@ -265,7 +265,7 @@ export function UITable<T extends { id?: any }>({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2.5">
           {title && (
-            <span className="text-sm font-bold text-text tracking-tight">
+            <span className="text-sm font-bold text-foreground tracking-tight">
               {t(`TITLES.${title}`)}
             </span>
           )}
@@ -273,11 +273,11 @@ export function UITable<T extends { id?: any }>({
             {data.meta?.total ?? rows.length}
           </span>
           {selectedCount > 0 && (
-            <div className="flex items-center gap-2 rounded-xl bg-red-50 dark:bg-red-950/20 px-3 py-1.5">
-              <span className="text-xs font-semibold text-red-500">{selectedCount}</span>
+            <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-1.5">
+              <span className="text-xs font-semibold text-destructive">{selectedCount}</span>
               <button
                 type="button"
-                className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+                className="flex items-center gap-1 text-xs font-semibold text-destructive hover:text-destructive transition-colors"
               >
                 <Trash2 size={11} />
                 {t("ACTIONS.delete")}
@@ -289,7 +289,7 @@ export function UITable<T extends { id?: any }>({
           <ModifyColumns columns={columns} selected={selectedCols} onChange={setSelectedCols} />
           {view === "grid" && (
             <div className="flex items-center gap-1 rounded-xl border border-border   px-2 py-1">
-             {/*  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+             {/*  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                 {t("LABELS.gridColumns")}
               </span> */}
               {[1, 2, 3, 4].map((cols) => (
@@ -299,8 +299,8 @@ export function UITable<T extends { id?: any }>({
                   onClick={() => setGridCols(cols as 1 | 2 | 3 | 4)}
                   className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-semibold transition-all ${
                     gridCols === cols
-                      ? "bg-panel text-primary shadow-sm border border-border"
-                      : "text-muted hover:text-text"
+                      ? "bg-card text-primary shadow-sm border border-border"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                   aria-label={`${cols} columns`}
                 >
@@ -316,8 +316,8 @@ export function UITable<T extends { id?: any }>({
                 onClick={() => setView(v)}
                 className={`rounded-lg p-1.5 transition-all duration-200 ${
                   view === v
-                    ? "bg-panel text-primary shadow-sm border border-border"
-                    : "text-muted hover:text-text"
+                    ? "bg-card text-primary shadow-sm border border-border"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
                 aria-label={`${v} view`}
               >
@@ -341,7 +341,7 @@ export function UITable<T extends { id?: any }>({
                       <th
                         key={header.id}
                         onClick={header.column.getToggleSortingHandler()}
-                        className={`px-3 pb-2 text-start text-[10px] font-extrabold uppercase tracking-widest text-muted whitespace-nowrap ${
+                        className={`px-3 pb-2 text-start text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground whitespace-nowrap ${
                           isSelect ? "w-10" : ""
                         } ${
                           header.column.getCanSort() ? "cursor-pointer select-none hover:text-primary transition-colors" : ""
@@ -387,7 +387,7 @@ export function UITable<T extends { id?: any }>({
                         return (
                           <td
                             key={cell.id}
-                            className={`${cellBase} ${cellHover} ${selected ? cellSelected : "bg-panel"} ${
+                            className={`${cellBase} ${cellHover} ${selected ? cellSelected : "bg-card"} ${
                               isFirst ? "rounded-s-2xl" : ""
                             } ${isLast ? "rounded-e-2xl" : ""}`}
                           >
@@ -404,7 +404,7 @@ export function UITable<T extends { id?: any }>({
                               <button
                                 type="button"
                                 onClick={() => setQuickItem(row.original)}
-                                className="flex size-7 items-center justify-center rounded-xl   text-muted hover:bg-primary/10 hover:text-primary transition-all"
+                                className="flex size-7 items-center justify-center rounded-xl   text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all"
                                 aria-label="Quick view"
                               >
                                 <Eye size={13} />
@@ -440,7 +440,7 @@ export function UITable<T extends { id?: any }>({
                     className={`group flex flex-col overflow-hidden rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
                       selected
                         ? "bg-primary/10 ring-1 ring-primary/30"
-                        : "bg-panel shadow-sm border border-border"
+                        : "bg-card shadow-sm border border-border"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 px-4 py-3 border-b border-border">
@@ -450,7 +450,7 @@ export function UITable<T extends { id?: any }>({
                         onChange={row.getToggleSelectedHandler()}
                         className="size-3.5 rounded accent-primary cursor-pointer"
                       />
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                         # {(item as any).id}
                       </span>
                     </div>
@@ -459,10 +459,10 @@ export function UITable<T extends { id?: any }>({
                         .filter((c) => c.field !== "quick_view" && c.field !== "actions")
                         .map((col) => (
                           <div key={col.field} className="px-4 py-2.5">
-                            <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-muted/60">
+                            <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60">
                               {col.header}
                             </p>
-                            <div className="text-sm text-text">
+                            <div className="text-sm text-foreground">
                               {renderCell
                                 ? renderCell(col.field, item, row.index)
                                 : <span className="line-clamp-2">{String(dig(item, col.field) ?? "—")}</span>}
@@ -478,7 +478,7 @@ export function UITable<T extends { id?: any }>({
                           <button
                             type="button"
                             onClick={() => setQuickItem(item)}
-                            className="flex items-center gap-1.5 rounded-xl   px-3 py-1.5 text-xs font-semibold text-muted hover:bg-primary/10 hover:text-primary border border-border transition-all"
+                            className="flex items-center gap-1.5 rounded-xl   px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-primary/10 hover:text-primary border border-border transition-all"
                           >
                             <Eye size={12} />
                             View
@@ -498,7 +498,7 @@ export function UITable<T extends { id?: any }>({
       {view === "grid" && loading && (
         <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(gridCols + 1, 4)}, minmax(0, 1fr))` }}>
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-2xl bg-panel border border-border p-4 space-y-3">
+            <div key={i} className="rounded-2xl bg-card border border-border p-4 space-y-3">
               <div className="skeleton-item h-3.5 rounded-full w-1/3" />
               <div className="skeleton-item h-3 rounded-full w-4/5" />
               <div className="skeleton-item h-3 rounded-full w-2/3" />
@@ -522,15 +522,15 @@ export function UITable<T extends { id?: any }>({
             className="absolute inset-0 bg-background/70! backdrop-blur-sm"
             onClick={() => setQuickItem(null)}
           />
-          <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-panel border border-border shadow-2xl">
+          <div className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-card border border-border shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4">
               <div>
-                <h2 className="text-sm font-bold text-text">Quick View</h2>
-                <p className="text-xs text-muted mt-0.5">Record details</p>
+                <h2 className="text-sm font-bold text-foreground">Quick View</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Record details</p>
               </div>
               <button
                 onClick={() => setQuickItem(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-2xl   text-muted hover:bg-panel-alt border border-border transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-2xl   text-muted-foreground hover:bg-muted border border-border transition-all"
                 aria-label="Close"
               >
                 <X size={14} />
@@ -542,8 +542,8 @@ export function UITable<T extends { id?: any }>({
                 <div className="space-y-3">
                   {Object.entries(quickItem as Record<string, any>).map(([k, v]) => (
                     <div key={k} className="flex gap-4 text-sm">
-                      <span className="w-28 shrink-0 font-semibold text-text">{k}</span>
-                      <span className="text-muted break-all">
+                      <span className="w-28 shrink-0 font-semibold text-foreground">{k}</span>
+                      <span className="text-muted-foreground break-all">
                         {typeof v === "object" && v !== null ? JSON.stringify(v) : String(v ?? "—")}
                       </span>
                     </div>

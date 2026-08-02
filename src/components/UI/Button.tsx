@@ -23,8 +23,8 @@ export function Button({
     "inline-flex items-center justify-center gap-2 h-12 min-w-[100px] max-w-[200px] px-4 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed";
 
   const styles = reverse
-    ? "bg-body border border-border text-text hover:bg-primary/10"
-    : "bg-primary text-text hover:opacity-90 active:opacity-80 shadow-sm";
+    ? "bg-background border border-border text-foreground hover:bg-primary/10"
+    : "bg-primary text-primary-foreground hover:bg-secondary active:opacity-80 shadow-sm";
 
   return (
     <button

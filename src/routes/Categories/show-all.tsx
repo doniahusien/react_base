@@ -66,14 +66,14 @@ export default function CategoriesShowAll() {
 
   const renderCell = (field: string, item: Category, index: number) => {
     switch (field) {
-      case "index": return <span className="text-sm text-muted">#{index + 1}</span>;
-      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border  "><Library size={16} className="text-muted" /></div>;
-      case "name": return <span className="text-sm font-medium text-text">{item.name ?? item.en?.name ?? item.ar?.name ?? "—"}</span>;
-      case "created_at": return <span className="text-sm text-muted">{formatDate(item.created_at)}</span>;
+      case "index": return <span className="text-sm text-muted-foreground">#{index + 1}</span>;
+      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border  "><Library size={16} className="text-muted-foreground" /></div>;
+      case "name": return <span className="text-sm font-medium text-foreground">{item.name ?? item.en?.name ?? item.ar?.name ?? "—"}</span>;
+      case "created_at": return <span className="text-sm text-muted-foreground">{formatDate(item.created_at)}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/categories/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
         <div className="relative w-9" onClick={(e) => e.stopPropagation()}>
-          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex size-9 items-center justify-center rounded-full border border-border bg-body text-muted hover:border-primary/50 hover:text-primary transition-all"><MoreHorizontal size={16} /></button>
+          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"><MoreHorizontal size={16} /></button>
           {activeMenu === item.id && <ActionsMenu data={item} showUrl={`/categories/${item.id}`} editUrl={`/categories/form/${item.id}`} deleteUrl={`/categories/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
@@ -102,7 +102,7 @@ export default function CategoriesShowAll() {
             triggerButton={
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-text text-sm font-semibold hover:bg-primary-hover transition-all shadow-sm"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-foreground text-sm font-semibold hover:bg-secondary transition-all shadow-sm"
               >
                 <SlidersHorizontal size={18} />
                 <span>{t("TITLES.filters")}</span>

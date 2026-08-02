@@ -22,14 +22,14 @@ export function ThemeSwitcherExample() {
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-panel p-6">
+    <div className="rounded-2xl border border-border bg-card p-6">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <Palette size={20} />
         </div>
         <div>
-          <h3 className="text-base font-bold text-text">Brand Theme</h3>
-          <p className="text-sm text-muted">Choose your brand color scheme</p>
+          <h3 className="text-base font-bold text-foreground">Brand Theme</h3>
+          <p className="text-sm text-muted-foreground">Choose your brand color scheme</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@ export function ThemeSwitcherExample() {
               }`}
             >
               {isActive && (
-                <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-text shadow-sm">
+                <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-foreground shadow-sm">
                   <Check size={12} strokeWidth={3} />
                 </div>
               )}
@@ -66,22 +66,22 @@ export function ThemeSwitcherExample() {
               </div>
               
               <div className="text-left">
-                <p className={`text-xs font-semibold ${isActive ? 'text-primary' : 'text-text'}`}>
+                <p className={`text-xs font-semibold ${isActive ? 'text-primary' : 'text-foreground'}`}>
                   {theme.name}
                 </p>
-                <p className="text-[10px] text-muted">{theme.description}</p>
+                <p className="text-[10px] text-muted-foreground">{theme.description}</p>
               </div>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-5 rounded-xl border border-border bg-panel-alt p-4">
-        <p className="text-xs font-medium text-muted">
+      <div className="mt-5 rounded-xl border border-border bg-muted p-4">
+        <p className="text-xs font-medium text-muted-foreground">
           💡 <strong>Tip:</strong> To permanently change the theme, update the{' '}
-          <code className="rounded bg-primary/10 px-1.5 py-0.5 text-primary">--brand-500</code> and{' '}
-          <code className="rounded bg-primary/10 px-1.5 py-0.5 text-primary">--brand-600</code>{' '}
-          values in <code className="rounded   px-1.5 py-0.5">src/index.css</code>
+          <code className="rounded bg-primary/10 px-1.5 py-0.5 text-primary">--color-primary</code> and{' '}
+          <code className="rounded bg-primary/10 px-1.5 py-0.5 text-primary">--color-secondary</code>{' '}
+          values in <code className="rounded px-1.5 py-0.5">src/index.css</code>
         </p>
       </div>
     </div>
@@ -106,7 +106,7 @@ export function ThemeSwitcherCompact() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-xl border border-border bg-panel px-3 py-2 text-sm font-medium text-text hover:bg-panel-alt transition-all"
+        className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-all"
         aria-label="Change theme"
       >
         <Palette size={16} />
@@ -119,10 +119,10 @@ export function ThemeSwitcherCompact() {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-border bg-panel shadow-xl">
+          <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
             <div className="border-b border-border px-4 py-3">
-              <p className="text-sm font-semibold text-text">Brand Theme</p>
-              <p className="text-xs text-muted">Preview available themes</p>
+              <p className="text-sm font-semibold text-foreground">Brand Theme</p>
+              <p className="text-xs text-muted-foreground">Preview available themes</p>
             </div>
             <div className="max-h-80 overflow-y-auto p-2">
               {Object.entries(brandPresets).map(([key, theme]) => {
@@ -136,7 +136,7 @@ export function ThemeSwitcherCompact() {
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all ${
                       isActive
                         ? 'bg-primary/10 text-primary'
-                        : 'text-text hover: '
+                        : 'text-foreground hover: '
                     }`}
                   >
                     <div className="flex items-center gap-1.5">

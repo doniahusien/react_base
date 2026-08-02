@@ -1,12 +1,16 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import i18n from "../i18n";
 
 const TOKEN_NAME = import.meta.env.VITE_TOKEN_NAME ?? "admin_token";
 const BASE_URL = import.meta.env.VITE_BASE_URL ?? "";
 
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: { Accept: "application/json" },
+  headers: { 
+    Accept: "application/json",
+    "Accept-Language": i18n.language || "en",
+  },
 });
 
 const savedToken = Cookies.get(TOKEN_NAME);
@@ -22,7 +26,11 @@ function handleUnauthorized(error: any) {
 }
 
 api.interceptors.request.use(
-  (config) => config,
+  (config) => {
+    // Update Accept-Language header on every request to reflect current language
+    config.headers["Accept-Language"] = i18n.language || "en";
+    return config;
+  },
   (error) => { handleUnauthorized(error); return Promise.reject(error); }
 );
 api.interceptors.response.use(

@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import type { Locale } from "./i18n";
 import i18n from "./i18n";
+import { emitLanguageChange } from "./lib/languageChangeEvent";
+
+export type SidebarMode = "vertical" | "horizontal" | "two-column";
 
 function getInitialLocale(): Locale {
   try { return (localStorage.getItem("locale") as Locale) || "en"; } catch { return "en"; }
@@ -11,17 +14,23 @@ function getInitialTheme(): "light" | "dark" {
 function getInitialCollapsed(): boolean {
   try { return localStorage.getItem("sidebarCollapsed") === "1"; } catch { return false; }
 }
-function getInitialMode(): "vertical" | "horizontal" {
-  try { return localStorage.getItem("sidebarMode") === "horizontal" ? "horizontal" : "vertical"; } catch { return "vertical"; }
+function getInitialMode(): SidebarMode {
+  try {
+    const stored = localStorage.getItem("sidebarMode");
+    if (stored === "horizontal" || stored === "two-column" || stored === "vertical") return stored;
+    return "vertical";
+  } catch {
+    return "vertical";
+  }
 }
 function getInitialPinnedItems(): string[] {
-  try { 
+  try {
     const stored = localStorage.getItem("pinnedItems");
     return stored ? JSON.parse(stored) : [];
   } catch { return []; }
 }
 function getInitialPinnedItemsV2(): PinnedItem[] {
-  try { 
+  try {
     const stored = localStorage.getItem("pinnedItemsV2");
     return stored ? JSON.parse(stored) : [];
   } catch { return []; }
@@ -48,15 +57,19 @@ interface AppStore {
   lang: Locale;
   theme: "light" | "dark";
   sidebarCollapsed: boolean;
-  sidebarMode: "vertical" | "horizontal";
+  sidebarMode: SidebarMode;
   sidebarOpen: boolean;
+  activeNavGroupKey: string | null;
+  customizerOpen: boolean;
   pinnedItems: string[];
   pinnedItemsV2: PinnedItem[];
   setLang: (v: Locale) => void;
   setTheme: (v: "light" | "dark") => void;
   setSidebarCollapsed: (v: boolean) => void;
-  setSidebarMode: (v: "vertical" | "horizontal") => void;
+  setSidebarMode: (v: SidebarMode) => void;
   setSidebarOpen: (v: boolean) => void;
+  setActiveNavGroupKey: (v: string | null) => void;
+  setCustomizerOpen: (v: boolean) => void;
   togglePinItem: (href: string) => void;
   togglePinGroup: (groupKey: string, groupItems: any[]) => void;
   reorderPinnedItems: (newOrder: PinnedItem[]) => void;
@@ -73,6 +86,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
   sidebarCollapsed: getInitialCollapsed(),
   sidebarMode: getInitialMode(),
   sidebarOpen: false,
+  activeNavGroupKey: null,
+  customizerOpen: false,
   pinnedItems: getInitialPinnedItems(),
   pinnedItemsV2: getInitialPinnedItemsV2(),
 
@@ -81,6 +96,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
     applyDirection(v);
     i18n.changeLanguage(v);
     set({ lang: v });
+    // Emit global language change event
+    emitLanguageChange(v);
   },
   setTheme: (v) => {
     localStorage.setItem("theme", v);
@@ -96,44 +113,42 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set({ sidebarMode: v });
   },
   setSidebarOpen: (v) => set({ sidebarOpen: v }),
+  setActiveNavGroupKey: (v) => set({ activeNavGroupKey: v }),
+  setCustomizerOpen: (v) => set({ customizerOpen: v }),
   togglePinItem: (href) => {
     const current = get().pinnedItemsV2;
     const itemId = `item-${href}`;
     const exists = current.find(p => p.id === itemId);
-    
+
     const newPinned = exists
       ? current.filter(p => p.id !== itemId)
       : [...current, { id: itemId, type: "item", href }];
-    
+
     localStorage.setItem("pinnedItemsV2", JSON.stringify(newPinned));
     set({ pinnedItemsV2: newPinned });
   },
   togglePinGroup: (groupKey, groupItems) => {
     const current = get().pinnedItemsV2;
-    // Check if any item from this group is pinned
     const groupItemHrefs = groupItems.map(item => item.href);
     const hasAnyPinned = current.some(p => p.type === "item" && p.href && groupItemHrefs.includes(p.href));
-    
+
     let newPinned;
     if (hasAnyPinned) {
-      // Unpin all items from this group
       newPinned = current.filter(p => !(p.type === "item" && p.href && groupItemHrefs.includes(p.href)));
     } else {
-      // Pin all items from this group (without duplicates)
       const itemsToPinned = groupItems.map(item => ({
         id: `item-${item.href}`,
         type: "item" as const,
         href: item.href
       }));
-      
-      // Filter out items that are already pinned
-      const uniqueItems = itemsToPinned.filter(newItem => 
+
+      const uniqueItems = itemsToPinned.filter(newItem =>
         !current.some(p => p.id === newItem.id)
       );
-      
+
       newPinned = [...current, ...uniqueItems];
     }
-    
+
     localStorage.setItem("pinnedItemsV2", JSON.stringify(newPinned));
     set({ pinnedItemsV2: newPinned });
   },

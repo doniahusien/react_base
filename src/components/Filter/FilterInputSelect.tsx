@@ -64,7 +64,7 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
     <div className="relative" ref={triggerRef}>
       {PrependIcon && (
         <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center z-10">
-          <PrependIcon size={16} className="text-muted" />
+          <PrependIcon size={16} className="text-muted-foreground" />
         </span>
       )}
       <button 
@@ -78,9 +78,9 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
       >
         <span className="flex-1 truncate">
           {selected ? (
-            <span className="text-text">{selected.name}</span>
+            <span className="text-foreground">{selected.name}</span>
           ) : (
-            <span className="text-muted">{item.placeholder}</span>
+            <span className="text-muted-foreground">{item.placeholder}</span>
           )}
         </span>
         {selected && (
@@ -88,14 +88,14 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
             role="button" 
             tabIndex={0} 
             onClick={(e) => { e.stopPropagation(); pick(null); }} 
-            className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-panel-alt transition-colors"
+            className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-muted transition-colors"
           >
-            <X size={12} className="text-muted" />
+            <X size={12} className="text-muted-foreground" />
           </span>
         )}
         <ChevronDown 
           size={16} 
-          className="shrink-0 text-muted transition-transform duration-200"
+          className="shrink-0 text-muted-foreground transition-transform duration-200"
           style={{ transform: isOpen ? "rotate(180deg)" : "none" }}
         />
       </button>
@@ -109,13 +109,13 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
             width: dropdownStyle.width, 
             zIndex: 9999
           }} 
-          className="overflow-hidden rounded-xl bg-panel border border-border shadow-lg"
+          className="overflow-hidden rounded-xl bg-card border border-border shadow-lg"
         >
           <div className="max-h-52 overflow-y-auto py-1">
             {loading ? (
-              <p className="px-3 py-2 text-sm text-muted">Loading…</p>
+              <p className="px-3 py-2 text-sm text-muted-foreground">Loading…</p>
             ) : options.length === 0 ? (
-              <p className="px-3 py-2 text-sm text-muted">No data</p>
+              <p className="px-3 py-2 text-sm text-muted-foreground">No data</p>
             ) : (
               options.map((opt) => (
                 <button 
@@ -126,7 +126,7 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
                     "relative flex w-full items-center px-3 py-2 text-sm transition-colors text-start",
                     selected?.id === opt.id 
                       ? "bg-primary/10 text-primary font-semibold" 
-                      : "text-text hover:bg-panel-alt"
+                      : "text-foreground hover:bg-muted"
                   ].join(" ")}
                 >
                   <span className="flex-1 truncate">{opt.name}</span>

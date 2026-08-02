@@ -1,6 +1,6 @@
 /**
  * Theme Presets
- * 
+ *
  * Pre-configured brand color schemes for quick project setup.
  * Import and apply these in your app to instantly change the brand colors.
  */
@@ -71,13 +71,13 @@ export const brandPresets: Record<string, BrandTheme> = {
 
 /**
  * Apply a brand theme dynamically
- * 
+ *
  * @example
  * import { applyBrandTheme } from './theme-presets';
- * 
+ *
  * // Apply preset
  * applyBrandTheme('blue');
- * 
+ *
  * // Apply custom colors
  * applyBrandTheme({ brand500: '#ff0000', brand600: '#cc0000' });
  */
@@ -86,18 +86,21 @@ export function applyBrandTheme(
 ): void {
   const root = document.documentElement;
 
-  if (typeof themeKeyOrColors === 'string') {
-    const preset = brandPresets[themeKeyOrColors];
-    if (!preset) {
-      console.warn(`Theme preset "${themeKeyOrColors}" not found. Available: ${Object.keys(brandPresets).join(', ')}`);
-      return;
-    }
-    root.style.setProperty('--brand-500', preset.brand500);
-    root.style.setProperty('--brand-600', preset.brand600);
-  } else {
-    root.style.setProperty('--brand-500', themeKeyOrColors.brand500);
-    root.style.setProperty('--brand-600', themeKeyOrColors.brand600);
+  const colors =
+    typeof themeKeyOrColors === 'string'
+      ? brandPresets[themeKeyOrColors]
+      : themeKeyOrColors;
+
+  if (!colors) {
+    console.warn(
+      `Theme preset "${themeKeyOrColors}" not found. Available: ${Object.keys(brandPresets).join(', ')}`
+    );
+    return;
   }
+
+  root.style.setProperty('--color-primary', colors.brand500);
+  root.style.setProperty('--color-ring', colors.brand500);
+  root.style.setProperty('--color-secondary', colors.brand600);
 }
 
 /**
@@ -106,10 +109,10 @@ export function applyBrandTheme(
 export function getCurrentBrandTheme(): { brand500: string; brand600: string } {
   const root = document.documentElement;
   const computed = getComputedStyle(root);
-  
+
   return {
-    brand500: computed.getPropertyValue('--brand-500').trim(),
-    brand600: computed.getPropertyValue('--brand-600').trim(),
+    brand500: computed.getPropertyValue('--color-primary').trim(),
+    brand600: computed.getPropertyValue('--color-secondary').trim(),
   };
 }
 

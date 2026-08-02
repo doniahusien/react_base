@@ -18,14 +18,14 @@ export function BannerBreadcrumb({ items }: BannerBreadcrumbProps) {
         const isLast = i === items.length - 1;
         return (
           <span key={i} className="inline-flex items-center gap-1.5">
-            {i > 0 && <ChevronRight size={11} className="text-accent/40 rtl:rotate-180 shrink-0" />}
+            {i > 0 && <ChevronRight size={11} className="text-primary/40 rtl:rotate-180 shrink-0" />}
             {isLast ? (
-              <span className="inline-flex items-center gap-1 text-accent max-w-[180px] truncate">
+              <span className="inline-flex items-center gap-1 text-primary max-w-[180px] truncate">
                 {Icon && <Icon size={12} className="shrink-0 opacity-70" />}
                 <span className="truncate">{seg.label}</span>
               </span>
             ) : (
-              <a href={seg.href ?? "#"} className="inline-flex items-center gap-1 text-accent/50 hover:text-accent transition-colors max-w-[140px] truncate">
+              <a href={seg.href ?? "#"} className="inline-flex items-center gap-1 text-primary/50 hover:text-primary transition-colors max-w-[140px] truncate">
                 {Icon && <Icon size={12} className="shrink-0" />}
                 <span className="truncate uppercase">{seg.label}</span>
               </a>

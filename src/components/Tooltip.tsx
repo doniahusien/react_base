@@ -9,16 +9,35 @@ interface TooltipProps {
 
 export function Tooltip({ children, content, disabled = false }: TooltipProps) {
   const [visible, setVisible] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [pos, setPos] = useState({ top: 0, left: 0, transform: "translateY(-50%)" });
   const ref = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const updatePos = useCallback(() => {
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect();
+      const isRTL = document.documentElement.dir === "rtl" || document.body.dir === "rtl" || ref.current.closest('[dir="rtl"]') !== null;
+      
+      let left: number;
+      let transform: string;
+      
+      if (isRTL) {
+        // RTL: sidebar is on right side, tooltip should appear FULLY to the LEFT of icon
+        // Use rect.left (left edge of icon) as anchor point
+        // Transform moves tooltip 100% of its own width to the left, and centers vertically
+        left = rect.left - 8;
+        transform = "translate(-100%, -50%)";
+      } else {
+        // LTR: sidebar is on left side, tooltip should appear to the RIGHT of icon
+        // Use rect.right (right edge of icon) as anchor point
+        left = rect.right + 8;
+        transform = "translateY(-50%)";
+      }
+      
       setPos({
         top: rect.top + rect.height / 2,
-        left: rect.right + 12,
+        left,
+        transform,
       });
     }
   }, []);
@@ -36,7 +55,6 @@ export function Tooltip({ children, content, disabled = false }: TooltipProps) {
     setVisible(false);
   }, []);
 
-  // Clean up timer on unmount
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
   if (disabled) return children;
@@ -55,24 +73,11 @@ export function Tooltip({ children, content, disabled = false }: TooltipProps) {
         createPortal(
           <div
             role="tooltip"
+            className="app-tooltip"
             style={{
-              position: "fixed",
               top: pos.top,
               left: pos.left,
-              transform: "translateY(-50%)",
-              zIndex: 9999,
-              pointerEvents: "none",
-              padding: "0.45rem 0.85rem",
-              borderRadius: "0.75rem",
-              color: "#fff",
-              fontSize: "0.8125rem",
-              fontWeight: 600,
-              whiteSpace: "nowrap",
-              background: "linear-gradient(135deg, #8b7dd8 0%, #6a5acd 100%)",
-              boxShadow:
-                "0 8px 28px rgba(139, 125, 216, 0.35), 0 4px 12px rgba(0, 0, 0, 0.4)",
-              border: "1px solid rgba(139, 125, 216, 0.4)",
-              animation: "tooltipSlideIn 0.15s ease forwards",
+              transform: pos.transform,
             }}
           >
             {content}

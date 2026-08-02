@@ -37,8 +37,8 @@ export function BaseTextInput({
   const inputType = type === "password" ? (showPass ? "text" : "password") : type;
 
   const inputCls = [
-    "block w-full bg-transparent text-sm text-text outline-none transition-all duration-200",
-    "disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-muted",
+    "block w-full bg-transparent text-sm text-foreground outline-none transition-all duration-200",
+    "disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-muted-foreground",
     type === "textarea" ? "resize-none min-h-[80px] py-2.5 px-4" : "h-11 py-0 px-4",
     PrependIcon ? "ps-11" : "",
     AppendIcon || type === "password" ? "pe-11" : "",
@@ -52,15 +52,15 @@ export function BaseTextInput({
     hasError
       ? "bg-destructive/10 dark:bg-destructive/20 border-destructive"
       : focused
-      ? "bg-panel border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]"
-      : "bg-panel border-border hover:border-primary/40",
+      ? "bg-card border-primary shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_12%,transparent)]"
+      : "bg-card border-border hover:border-primary/40",
   ]
     .filter(Boolean)
     .join(" ");
 
   const labelCls = [
     "block mb-1.5 text-sm font-medium select-none",
-    hasError ? "text-red-500" : "text-text",
+    hasError ? "text-destructive" : "text-foreground",
   ].join(" ");
 
   return (
@@ -75,7 +75,7 @@ export function BaseTextInput({
           <span className="pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center">
             <PrependIcon
               size={15}
-              className={hasError ? "text-red-400" : focused ? "text-primary" : "text-muted"}
+              className={hasError ? "text-destructive" : focused ? "text-primary" : "text-muted-foreground"}
             />
           </span>
         )}
@@ -111,7 +111,7 @@ export function BaseTextInput({
 
         {AppendIcon && type !== "password" && (
           <span className="pointer-events-none absolute inset-y-0 inset-e-0 flex w-11 items-center justify-center">
-            <AppendIcon size={15} className={hasError ? "text-red-400" : "text-muted"} />
+            <AppendIcon size={15} className={hasError ? "text-destructive" : "text-muted-foreground"} />
           </span>
         )}
 
@@ -119,7 +119,7 @@ export function BaseTextInput({
           <button
             type="button"
             onClick={() => setShowPass((v) => !v)}
-            className="absolute inset-y-0 inset-e-0 flex w-11 items-center justify-center text-muted hover:text-text transition-colors"
+            className="absolute inset-y-0 inset-e-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Toggle password visibility"
           >
             {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -128,8 +128,8 @@ export function BaseTextInput({
       </div>
 
       {hasError && (
-        <p className="flex items-center gap-1.5 px-1 text-xs text-red-500">
-          <span className="inline-block h-1 w-1 rounded-full bg-red-500 shrink-0" />
+        <p className="flex items-center gap-1.5 px-1 text-xs text-destructive">
+          <span className="inline-block h-1 w-1 rounded-full bg-destructive shrink-0" />
           {error}
         </p>
       )}

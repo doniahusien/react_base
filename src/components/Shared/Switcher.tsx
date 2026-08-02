@@ -3,7 +3,6 @@ import { Check, X } from "lucide-react";
 import { Button } from "../UI/Button";
 import api from "../../lib/axios";
 import { toast } from "../../stores/toast";
-import "./Switcher.css";
 import { useTranslation } from "react-i18next";
 
 interface SwitcherProps {
@@ -42,9 +41,9 @@ export function Switcher({ value, url, body, method = "PUT", onReload }: Switche
       {showDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={() => setShowDialog(false)} />
-          <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-body p-6 shadow-2xl shadow-slate-950/20">
-            <h3 className="text-base font-semibold text-text mb-2">{t("TITLES.changeStatus")}</h3>
-            <p className="text-sm text-muted mb-6">{t("MESSAGES.changeStatus", { status: enabled ? t("TITLES.inactive") : t("TITLES.active") })}</p>
+          <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-background p-6 shadow-2xl shadow-slate-950/20">
+            <h3 className="text-base font-semibold text-foreground mb-2">{t("TITLES.changeStatus")}</h3>
+            <p className="text-sm text-muted-foreground mb-6">{t("MESSAGES.changeStatus", { status: enabled ? t("TITLES.inactive") : t("TITLES.active") })}</p>
             <div className="flex items-center gap-3">
               <Button className="flex-1 max-w-full" loading={busy} onClick={changeStatus}>{t("BUTTONS.yes")} <Check size={16} /></Button>
               <Button reverse className="flex-1 max-w-full" onClick={() => setShowDialog(false)}>{t("BUTTONS.no")} <X size={16} /></Button>

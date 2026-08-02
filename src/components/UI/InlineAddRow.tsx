@@ -87,10 +87,10 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           <Plus size={20} />
         </div>
         <div className="text-left">
-          <p className="text-sm font-semibold text-text group-hover:text-primary transition-colors">
+          <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
             {t("BUTTONS.add")} Quick Add
           </p>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-muted-foreground">
             Add a new row directly in the table
           </p>
         </div>
@@ -103,16 +103,16 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-text">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-foreground">
             <Plus size={16} />
           </div>
-          <h3 className="text-sm font-bold text-text">Quick Add New Row</h3>
+          <h3 className="text-sm font-bold text-foreground">Quick Add New Row</h3>
         </div>
         <button
           type="button"
           onClick={handleCancel}
           disabled={loading}
-          className="flex items-center justify-center w-8 h-8 rounded-full hover:  transition-colors text-muted hover:text-text disabled:opacity-50"
+          className="flex items-center justify-center w-8 h-8 rounded-full hover:  transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
         >
           <X size={16} />
         </button>
@@ -122,9 +122,9 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {fields.map((field) => (
           <div key={field.key} className="space-y-1">
-            <label className="text-xs font-semibold text-text flex items-center gap-1">
+            <label className="text-xs font-semibold text-foreground flex items-center gap-1">
               {field.label}
-              {field.required && <span className="text-red-500">*</span>}
+              {field.required && <span className="text-destructive">*</span>}
             </label>
             {field.type === "file" ? (
               <div className="relative">
@@ -132,10 +132,10 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
                   type="file"
                   onChange={(e) => handleChange(field.key, e.target.files?.[0])}
                   disabled={loading}
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-border   text-text file:mr-2 file:px-2 file:py-1 file:rounded file:border-0 file:bg-primary/10 file:text-primary file:text-xs file:font-semibold hover:file:bg-primary/20 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-border   text-foreground file:mr-2 file:px-2 file:py-1 file:rounded file:border-0 file:bg-primary/10 file:text-primary file:text-xs file:font-semibold hover:file:bg-primary/20 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
                 />
                 {errors[field.key] && (
-                  <p className="text-xs text-red-500 mt-1">{errors[field.key]}</p>
+                  <p className="text-xs text-destructive mt-1">{errors[field.key]}</p>
                 )}
               </div>
             ) : (
@@ -146,12 +146,12 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
                   onChange={(e) => handleChange(field.key, e.target.value)}
                   placeholder={field.placeholder}
                   disabled={loading}
-                  className={`w-full px-3 py-2 text-sm rounded-lg border   text-text placeholder:text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 ${
+                  className={`w-full px-3 py-2 text-sm rounded-lg border   text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 ${
                     errors[field.key] ? "border-destructive" : "border-border"
                   }`}
                 />
                 {errors[field.key] && (
-                  <p className="text-xs text-red-500 mt-1">{errors[field.key]}</p>
+                  <p className="text-xs text-destructive mt-1">{errors[field.key]}</p>
                 )}
               </div>
             )}
@@ -165,7 +165,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           type="button"
           onClick={handleSave}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-text text-sm font-semibold hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-foreground text-sm font-semibold hover:bg-secondary hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
         >
           <Check size={16} />
           <span>{loading ? "Saving..." : "Save"}</span>
@@ -174,7 +174,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           type="button"
           onClick={handleCancel}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg   text-text text-sm font-semibold hover:bg-panel-alt hover:scale-105 active:scale-95 transition-all border border-border disabled:opacity-50 disabled:hover:scale-100"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg   text-foreground text-sm font-semibold hover:bg-muted hover:scale-105 active:scale-95 transition-all border border-border disabled:opacity-50 disabled:hover:scale-100"
         >
           <X size={16} />
           <span>Cancel</span>

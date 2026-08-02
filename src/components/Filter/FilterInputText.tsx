@@ -41,7 +41,7 @@ export function FilterInputText({ item }: { item: FilterTextItem }) {
     <div className="relative">
       {PrependIcon && (
         <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center">
-          <PrependIcon size={16} className="text-muted" />
+          <PrependIcon size={16} className="text-muted-foreground" />
         </span>
       )}
       <input 
@@ -51,7 +51,7 @@ export function FilterInputText({ item }: { item: FilterTextItem }) {
         onChange={(e) => onInput(e.target.value)} 
         autoComplete="off"
         className={[
-          "w-full rounded-xl   border border-border text-sm text-text placeholder:text-muted outline-none transition-all duration-200",
+          "w-full rounded-xl   border border-border text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-200",
           "focus:border-primary focus:ring-2 focus:ring-primary/20",
           PrependIcon ? "ps-10 pe-4 py-2.5" : "px-4 py-2.5",
           AppendIcon ? "pe-10" : ""
@@ -59,7 +59,7 @@ export function FilterInputText({ item }: { item: FilterTextItem }) {
       />
       {AppendIcon && (
         <span className="pointer-events-none absolute inset-y-0 end-0 flex w-10 items-center justify-center">
-          <AppendIcon size={16} className="text-muted" />
+          <AppendIcon size={16} className="text-muted-foreground" />
         </span>
       )}
     </div>

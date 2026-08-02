@@ -66,12 +66,12 @@ export default function UserForm() {
 
   return (
     <div className="space-y-0">
-      <div className="relative -mx-6 overflow-hidden bg-page-header px-6 py-7 border-b border-border/50 mb-8">
+      <div className="relative -mx-6 overflow-hidden bg-background px-6 py-7 border-b border-border/50 mb-8">
         <div className="relative">
           <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.users"), href: "/users", icon: Users }, { label: editing ? t("TITLES.edit", { count: "" as any }) : t("TITLES.add", { count: "" as any }) }]} />
           <div className="flex items-end gap-4">
             <div className="w-0.5 self-stretch rounded-full bg-accent" />
-            <h1 className="text-2xl font-black tracking-tight text-text">{editing ? t("TITLES.edit", { count: t("TITLES.user") as any }) : t("TITLES.add", { count: t("TITLES.user") as any })}</h1>
+            <h1 className="text-2xl font-black tracking-tight text-foreground">{editing ? t("TITLES.edit", { count: t("TITLES.user") as any }) : t("TITLES.add", { count: t("TITLES.user") as any })}</h1>
           </div>
         </div>
       </div>
@@ -106,8 +106,8 @@ export default function UserForm() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-border bg-panel px-5 py-2.5 text-sm font-semibold text-muted hover:text-text transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-text shadow-sm shadow-primary/30 hover:bg-primary-hover active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
+              <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm shadow-primary/30 hover:bg-secondary active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
                 {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>

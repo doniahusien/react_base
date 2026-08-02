@@ -68,7 +68,7 @@ export function PageHeader({
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
                   <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
                 </span>
-                <span className="text-xs text-muted">{t("TITLES.total")}</span>
+                <span className="text-xs text-muted-foreground">{t("TITLES.total")}</span>
                 <span className="text-xs font-bold tabular-nums page-header-count">{total}</span>
               </div>
             )}

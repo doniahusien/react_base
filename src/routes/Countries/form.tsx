@@ -66,7 +66,7 @@ export default function CountryForm() {
           <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.countries"), href: "/countries", icon: Earth }, { label: editing ? t("TITLES.edit", { count: "" as any }) : t("TITLES.add", { count: "" as any }) }]} />
           <div className="flex items-end gap-4">
             <div className="w-0.5 self-stretch rounded-full bg-primary opacity-70" />
-            <h1 className="text-2xl font-black tracking-tight text-text">{editing ? t("TITLES.edit", { count: t("TITLES.country") as any }) : t("TITLES.add", { count: t("TITLES.country") as any })}</h1>
+            <h1 className="text-2xl font-black tracking-tight text-foreground">{editing ? t("TITLES.edit", { count: t("TITLES.country") as any }) : t("TITLES.add", { count: t("TITLES.country") as any })}</h1>
           </div>
         </div>
       </div>
@@ -92,8 +92,8 @@ export default function CountryForm() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/countries")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted hover:text-text hover:bg-panel-alt transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loadingForm || flagLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-text shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
+              <button type="button" onClick={() => navigate("/countries")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="submit" disabled={loadingForm || flagLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
                 {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>

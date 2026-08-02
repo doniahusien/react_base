@@ -29,8 +29,8 @@ function ChangePasswordDialog({ onClose, successMsg, failedMsg }: { onClose: () 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} /><div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-background border border-border shadow-2xl">
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
-        <div className="flex items-center gap-2"><div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"><KeyRound size={14} /></div><h3 className="text-sm font-bold text-text">{t("PROFILE.changePassword")}</h3></div>
-        <button type="button" onClick={onClose} className="flex size-8 items-center justify-center rounded-xl   text-muted hover:bg-panel-alt border border-border transition-all"><X size={14} /></button>
+        <div className="flex items-center gap-2"><div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"><KeyRound size={14} /></div><h3 className="text-sm font-bold text-foreground">{t("PROFILE.changePassword")}</h3></div>
+        <button type="button" onClick={onClose} className="flex size-8 items-center justify-center rounded-xl   text-muted-foreground hover:bg-muted border border-border transition-all"><X size={14} /></button>
       </div>
       <Form schema={schemas.profilePassword} values={values} onSubmit={handleSubmit}>{({ errors, field, touch }) => (
         <div className="space-y-4 px-6 py-5">
@@ -38,7 +38,7 @@ function ChangePasswordDialog({ onClose, successMsg, failedMsg }: { onClose: () 
           <BaseTextInput name="password" label={t("PROFILE.newPassword")} type="password" value={values.password} onInput={v => { set("password")(v); touch("password"); }} prependInputIcon={Lock} {...field("password", errors)} />
           <BaseTextInput name="password_confirmation" label={t("PROFILE.confirmPassword")} type="password" value={values.password_confirmation} onInput={v => { set("password_confirmation")(v); touch("password_confirmation"); }} prependInputIcon={Lock} {...field("password_confirmation", errors)} />
           <div className="flex items-center justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted hover:text-text transition-all"><X size={14} /> {t("BUTTONS.cancel")}</button>
+            <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"><X size={14} /> {t("BUTTONS.cancel")}</button>
             <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={14} />}{t("BUTTONS.saveChanges")}</button>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function ProfileEdit() {
       <div className="page-header relative -mx-6 overflow-hidden px-6 py-7 mb-8">
         <div className="relative">
           <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("PROFILE.title"), href: "/profile", icon: UserCircle }, { label: t("PROFILE.editTitle"), icon: User }]} />
-          <div className="relative flex items-end gap-4"><div className="w-0.5 self-stretch rounded-full bg-primary opacity-70" /><h1 className="text-2xl font-black tracking-tight text-text">{t("PROFILE.editTitle")}</h1></div>
+          <div className="relative flex items-end gap-4"><div className="w-0.5 self-stretch rounded-full bg-primary opacity-70" /><h1 className="text-2xl font-black tracking-tight text-foreground">{t("PROFILE.editTitle")}</h1></div>
         </div>
       </div>
       <Form schema={schemas.profileEdit} values={values} onSubmit={handleSubmit}>
@@ -108,7 +108,7 @@ export default function ProfileEdit() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/profile")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted hover:text-text hover:bg-panel-alt transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="button" onClick={() => navigate("/profile")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
               <button type="submit" disabled={loading || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}{t("BUTTONS.saveChanges")}</button>
             </div>
           </div>

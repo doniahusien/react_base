@@ -43,13 +43,13 @@ export default function CitiesShowAll() {
 
   const renderCell = (field: string, item: City, index: number) => {
     switch (field) {
-      case "index": return <span className="text-sm text-muted">#{index + 1}</span>;
-      case "name": return <span className="text-sm font-medium text-text">{item.name}</span>;
-      case "created_at": return <span className="text-sm text-muted">{new Date(item.created_at).toLocaleDateString()}</span>;
+      case "index": return <span className="text-sm text-muted-foreground">#{index + 1}</span>;
+      case "name": return <span className="text-sm font-medium text-foreground">{item.name}</span>;
+      case "created_at": return <span className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/cities/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
         <div className="relative w-9" onClick={(e) => e.stopPropagation()}>
-          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex size-9 items-center justify-center rounded-full border border-border bg-body text-muted hover:border-accent hover:text-accent transition-all"><MoreHorizontal size={16} /></button>
+          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-accent hover:text-primary transition-all"><MoreHorizontal size={16} /></button>
           {activeMenu === item.id && <ActionsMenu data={item} editUrl={`/cities/form/${item.id}`} deleteUrl={`/cities/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );

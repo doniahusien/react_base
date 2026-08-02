@@ -13,6 +13,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@floating-ui/react": "^0.27.20",
+    "@heroicons/react": "^2.2.0",
     "@heroui/react": "^3.2.2",
     "@heroui/styles": "^3.2.2",
     "@tanstack/react-table": "^8.20.5",
