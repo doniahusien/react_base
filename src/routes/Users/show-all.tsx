@@ -26,11 +26,10 @@ export default function UsersShowAll() {
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
   const columns: TableColumn[] = [
-    { index: 0, field: "index", header: "#" },
-    { index: 1, field: "name", header: t("TITLES.user") },
-    { index: 2, field: "email", header: t("TITLES.email"), sortable: true },
-    { index: 3, field: "phone", header: t("TITLES.phone") },
-    { index: 4, field: "actions", header: t("TITLES.actions") },
+    { index: 0, field: "name", header: t("TITLES.user") },
+    { index: 1, field: "email", header: t("TITLES.email"), sortable: true },
+    { index: 2, field: "phone", header: t("TITLES.phone") },
+    { index: 3, field: "actions", header: t("TITLES.actions") },
   ];
 
   const filterItems: FilterItem[] = [{ type: "text", key: "keyword", placeholder: "users", prependInputIcon: Search as any }];
@@ -49,7 +48,6 @@ export default function UsersShowAll() {
 
   const renderCell = (field: string, item: User, index: number) => {
     switch (field) {
-      case "index": return <span className="text-sm text-muted">#{index + 1}</span>;
       case "name": return (
         <div className="flex items-center gap-3">
           <div className="relative shrink-0"><Avatar src={item.image} name={item.full_name || item.name} /><span className="absolute -bottom-0.5 -inset-e-0.5 h-3 w-3 rounded-full border-2 border-body bg-green-500" /></div>

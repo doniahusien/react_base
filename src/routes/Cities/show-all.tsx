@@ -20,11 +20,10 @@ export default function CitiesShowAll() {
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
   const columns: TableColumn[] = [
-    { index: 0, field: "index", header: "#" },
-    { index: 1, field: "name", header: t("TITLES.name"), sortable: true },
-    { index: 2, field: "created_at", header: t("TITLES.created_at"), sortable: true },
-    { index: 3, field: "status", header: t("TITLES.status") },
-    { index: 4, field: "actions", header: t("TITLES.actions") },
+    { index: 0, field: "name", header: t("TITLES.name"), sortable: true },
+    { index: 1, field: "created_at", header: t("TITLES.created_at"), sortable: true },
+    { index: 2, field: "status", header: t("TITLES.status") },
+    { index: 3, field: "actions", header: t("TITLES.actions") },
   ];
 
   const filterItems: FilterItem[] = [{ type: "text", key: "keyword", placeholder: "city", prependInputIcon: Search as any }];
@@ -43,7 +42,6 @@ export default function CitiesShowAll() {
 
   const renderCell = (field: string, item: City, index: number) => {
     switch (field) {
-      case "index": return <span className="text-sm text-muted">#{index + 1}</span>;
       case "name": return <span className="text-sm font-medium text-text">{item.name}</span>;
       case "created_at": return <span className="text-sm text-muted">{new Date(item.created_at).toLocaleDateString()}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/cities/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;

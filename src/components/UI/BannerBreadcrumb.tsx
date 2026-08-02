@@ -25,7 +25,7 @@ export function BannerBreadcrumb({ items }: BannerBreadcrumbProps) {
                 <span className="truncate">{seg.label}</span>
               </span>
             ) : (
-              <a href={seg.href ?? "#"} className="inline-flex items-center gap-1 text-accent/50 hover:text-accent transition-colors max-w-[140px] truncate">
+              <a href={seg.href ?? "#"} className="inline-flex items-center gap-1 text-black/50 hover:text-black transition-colors max-w-[140px] truncate">
                 {Icon && <Icon size={12} className="shrink-0" />}
                 <span className="truncate uppercase">{seg.label}</span>
               </a>
