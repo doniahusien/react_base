@@ -45,7 +45,7 @@ export const ar = {
     uptime: "وقت التشغيل",
     activeUsers: "مستخدمون نشطون",
     security: "الأمان",
-  },
+   },
   TITLES: {
     viewAll: "عرض الكل", cities: "المدن", created_at: "تاريخ الإنشاء", city: "المدينة",
     loading: "جارٍ التحميل...", noResults: "لا توجد نتائج", adminPanel: "لوحة الإدارة",

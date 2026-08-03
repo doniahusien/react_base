@@ -45,7 +45,7 @@ export const en = {
     uptime: "Uptime",
     activeUsers: "Active Users",
     security: "Security",
-  },
+   },
   TITLES: {
     viewAll: "View All", cities: "Cities", created_at: "Created At",
     loading: "Loading...", noResults: "No results", adminPanel: "Admin Panel",
