@@ -346,9 +346,7 @@ export function UITable<T extends { id?: any }>({
           <ModifyColumns columns={columns} selected={selectedCols} onChange={handleColumnSelectionChange} />
           {view === "grid" && (
             <div className="flex items-center gap-1 rounded-xl border border-border   px-2 py-1">
-             {/*  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                {t("LABELS.gridColumns")}
-              </span> */}
+           
               {[1, 2, 3, 4].map((cols) => (
                 <button
                   key={cols}
