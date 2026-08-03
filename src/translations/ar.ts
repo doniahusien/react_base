@@ -85,6 +85,8 @@ export const ar = {
     district: "الحي", address: "العنوان", male: "ذكر", female: "أنثى",
   },
   LABELS: {
+    noData:"لا توجد بيانات", 
+    noRecords: "لا توجد سجلات للعرض",
     basicInfoCityDesc: "إدارة المدن، تفاصيلها وحالاتها",
     cityDesc: "إدارة المدن، تفاصيلها وحالاتها",
     lastName: "أدخل الاسم الأخير", firstName: "أدخل الاسم الأول",

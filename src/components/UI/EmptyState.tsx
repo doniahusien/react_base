@@ -1,8 +1,8 @@
 import { Inbox } from "lucide-react";
-
+import { t } from "i18next";
 interface EmptyStateProps { title?: string; description?: string; }
 
-export function EmptyState({ title = "No data found", description = "There are no records to display." }: EmptyStateProps) {
+export function EmptyState({ title = t("LABELS.noData"), description = t("LABELS.noRecords") }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">

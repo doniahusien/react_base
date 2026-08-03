@@ -84,6 +84,8 @@ export const en = {
     male: "Male", female: "Female",
   },
   LABELS: {
+    noData:"No data found",
+    noRecords: "There are no records to display.",
     basicInfoCityDesc: "Manage cities, their details and statuses",
     cityDesc: "Manage cities, their details and statuses",
     lastName: "Enter last name", firstName: "Enter first name",
