@@ -36,6 +36,12 @@ export const en = {
     tip: "Tip",
     tipText: "Theme colors are applied dynamically. To make permanent changes, edit the CSS variables in",
   },
+  THEME_CUSTOMIZER: {
+    subtitle: "Customize your dashboard experience",
+    font: "Font Family",
+    borderRadius: "Border Radius",
+    density: "Spacing Density",
+  },
   LOGIN: {
     secureAuth: "Secure Authentication",
     secureAuthDesc: "Enterprise-grade security",

@@ -6,6 +6,9 @@ import { emitLanguageChange } from "./lib/languageChangeEvent";
 export type SidebarMode = "vertical" | "horizontal" | "two-column";
 export type ThemeIntent = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
+export type FontFamily = "inter" | "system" | "changa";
+export type BorderRadius = "none" | "sm" | "md" | "lg" | "xl";
+export type Density = "compact" | "normal" | "comfortable";
 
 function getInitialLocale(): Locale {
   try { return (localStorage.getItem("locale") as Locale) || "en"; } catch { return "en"; }
@@ -27,6 +30,33 @@ function getInitialThemeIntent(): ThemeIntent {
 function getSystemPreference(): ResolvedTheme {
   if (typeof window === 'undefined') return 'light';
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function getInitialFontFamily(): FontFamily {
+  try {
+    const stored = localStorage.getItem("fontFamily");
+    if (stored === "inter" || stored === "system" || stored === "changa") return stored;
+    return "changa";
+  } catch {
+    return "changa";
+  }
+}
+function getInitialBorderRadius(): BorderRadius {
+  try {
+    const stored = localStorage.getItem("borderRadius");
+    if (stored === "none" || stored === "sm" || stored === "md" || stored === "lg" || stored === "xl") return stored;
+    return "md";
+  } catch {
+    return "md";
+  }
+}
+function getInitialDensity(): Density {
+  try {
+    const stored = localStorage.getItem("density");
+    if (stored === "compact" || stored === "normal" || stored === "comfortable") return stored;
+    return "normal";
+  } catch {
+    return "normal";
+  }
 }
 function getInitialCollapsed(): boolean {
   try { return localStorage.getItem("sidebarCollapsed") === "1"; } catch { return false; }
@@ -64,6 +94,34 @@ function resolveThemeIntent(intent: ThemeIntent, systemPref: ResolvedTheme): Res
   return intent === "system" ? systemPref : intent;
 }
 
+function applyFontFamily(value: FontFamily) {
+  const fontMap: Record<FontFamily, string> = {
+    inter: '"Inter", ui-sans-serif, system-ui, sans-serif',
+    system: 'ui-sans-serif, system-ui, sans-serif',
+    changa: '"Changa", Arial, sans-serif'
+  };
+  document.documentElement.style.setProperty('--font-sans', fontMap[value]);
+}
+
+function applyBorderRadius(value: BorderRadius) {
+  const radiusMap: Record<BorderRadius, { sm: string; md: string; lg: string; xl: string }> = {
+    none: { sm: '0', md: '0', lg: '0', xl: '0' },
+    sm: { sm: '0.25rem', md: '0.375rem', lg: '0.5rem', xl: '0.75rem' },
+    md: { sm: '0.375rem', md: '0.5rem', lg: '0.75rem', xl: '1rem' },
+    lg: { sm: '0.5rem', md: '0.75rem', lg: '1rem', xl: '1.25rem' },
+    xl: { sm: '0.75rem', md: '1rem', lg: '1.5rem', xl: '2rem' }
+  };
+  const radii = radiusMap[value];
+  document.documentElement.style.setProperty('--radius-sm', radii.sm);
+  document.documentElement.style.setProperty('--radius-md', radii.md);
+  document.documentElement.style.setProperty('--radius-lg', radii.lg);
+  document.documentElement.style.setProperty('--radius-xl', radii.xl);
+}
+
+function applyDensity(value: Density) {
+  document.documentElement.setAttribute('data-density', value);
+}
+
 interface PinnedItem {
   id: string;
   type: "item" | "group";
@@ -78,6 +136,9 @@ interface AppStore {
   theme: "light" | "dark";
   themeIntent: ThemeIntent;
   systemPreference: ResolvedTheme;
+  fontFamily: FontFamily;
+  borderRadius: BorderRadius;
+  density: Density;
   sidebarCollapsed: boolean;
   sidebarMode: SidebarMode;
   sidebarOpen: boolean;
@@ -89,6 +150,9 @@ interface AppStore {
   setTheme: (v: "light" | "dark") => void;
   setThemeIntent: (v: ThemeIntent) => void;
   setSystemPreference: (v: ResolvedTheme) => void;
+  setFontFamily: (v: FontFamily) => void;
+  setBorderRadius: (v: BorderRadius) => void;
+  setDensity: (v: Density) => void;
   setSidebarCollapsed: (v: boolean) => void;
   setSidebarMode: (v: SidebarMode) => void;
   setSidebarOpen: (v: boolean) => void;
@@ -101,12 +165,23 @@ interface AppStore {
 
 const initialLang = getInitialLocale();
 const initialTheme = getInitialTheme();
+const initialFontFamily = getInitialFontFamily();
+const initialBorderRadius = getInitialBorderRadius();
+const initialDensity = getInitialDensity();
 applyTheme(initialTheme);
 applyDirection(initialLang);
+applyFontFamily(initialFontFamily);
+applyBorderRadius(initialBorderRadius);
+applyDensity(initialDensity);
 
 export const useAppStore = create<AppStore>((set, get) => ({
   lang: initialLang,
   theme: initialTheme,
+  themeIntent: getInitialThemeIntent(),
+  systemPreference: getSystemPreference(),
+  fontFamily: initialFontFamily,
+  borderRadius: initialBorderRadius,
+  density: initialDensity,
   sidebarCollapsed: getInitialCollapsed(),
   sidebarMode: getInitialMode(),
   sidebarOpen: false,
@@ -127,6 +202,28 @@ export const useAppStore = create<AppStore>((set, get) => ({
     localStorage.setItem("theme", v);
     applyTheme(v);
     set({ theme: v });
+  },
+  setThemeIntent: (v) => {
+    localStorage.setItem("theme-intent", v);
+    set({ themeIntent: v });
+  },
+  setSystemPreference: (v) => {
+    set({ systemPreference: v });
+  },
+  setFontFamily: (v) => {
+    localStorage.setItem("fontFamily", v);
+    applyFontFamily(v);
+    set({ fontFamily: v });
+  },
+  setBorderRadius: (v) => {
+    localStorage.setItem("borderRadius", v);
+    applyBorderRadius(v);
+    set({ borderRadius: v });
+  },
+  setDensity: (v) => {
+    localStorage.setItem("density", v);
+    applyDensity(v);
+    set({ density: v });
   },
   setSidebarCollapsed: (v) => {
     localStorage.setItem("sidebarCollapsed", v ? "1" : "0");

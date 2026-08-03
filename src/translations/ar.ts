@@ -36,6 +36,12 @@ export const ar = {
     tip: "نصيحة",
     tipText: "يتم تطبيق ألوان القالب ديناميكيًا. لإجراء تغييرات دائمة، قم بتحرير متغيرات CSS في",
   },
+  THEME_CUSTOMIZER: {
+    subtitle: "خصص تجربة لوحة التحكم الخاصة بك",
+    font: "نوع الخط",
+    borderRadius: "انحناء الحواف",
+    density: "كثافة المسافات",
+  },
   LOGIN: {
     secureAuth: "مصادقة آمنة",
     secureAuthDesc: "أمان على مستوى المؤسسات",
