@@ -69,9 +69,12 @@ function SortablePinnedItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} className="relative">
+    <div ref={setNodeRef} style={style} {...attributes} className="relative group">
       {!disabled && (
-        <div className="-left-5 absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing z-10" {...listeners}>
+        <div
+          className="-left-4 absolute top-1/2 -translate-y-1/2 rounded-full bg-card/90 p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-all cursor-grab active:cursor-grabbing z-10"
+          {...listeners}
+        >
           <GripVertical className="size-3.5 text-foreground-30" />
         </div>
       )}
@@ -396,7 +399,7 @@ export function Drawer() {
       </div>
     );
 
-    if (inPinnedSection && showLabel && !hasChildren) {
+    if (inPinnedSection && !hasChildren) {
       return (
         <SortablePinnedItem key={itemId} id={itemId} disabled={collapsed}>
           {wrapper}
