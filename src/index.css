@@ -1484,3 +1484,241 @@
     }
   }
 }
+
+/* ─── Login Background Animations ─────────────────────────────────────────── */
+
+/* Gradient radial for animated orbs */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+/* Constellation Network Animations */
+@keyframes line-fade {
+  0%, 100% {
+    opacity: 0;
+    stroke-width: 0.5;
+  }
+  50% {
+    opacity: 1;
+    stroke-width: 1.5;
+  }
+}
+
+@keyframes node-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+
+@keyframes constellation-drift {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(20px, -30px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-15px, -50px);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(-30px, 20px);
+    opacity: 0.7;
+  }
+}
+
+/* Mesh Gradient Animation */
+@keyframes mesh-move {
+  0%, 100% {
+    background-position: 0% 50%, 100% 50%, 50% 100%, 0% 0%, 100% 100%, 50% 50%;
+  }
+  25% {
+    background-position: 25% 25%, 75% 75%, 75% 25%, 25% 75%, 50% 50%, 80% 80%;
+  }
+  50% {
+    background-position: 50% 0%, 50% 100%, 100% 50%, 0% 50%, 75% 25%, 25% 75%;
+  }
+  75% {
+    background-position: 75% 75%, 25% 25%, 25% 75%, 75% 25%, 50% 50%, 20% 20%;
+  }
+}
+
+/* Particle Trail Animations */
+@keyframes trail-appear {
+  0% {
+    opacity: 0;
+    stroke-dasharray: 0 100;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+    stroke-dasharray: 100 0;
+  }
+  100% {
+    opacity: 0;
+    stroke-dasharray: 100 0;
+  }
+}
+
+@keyframes particle-trail {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* Floating Glow Particles */
+@keyframes float-glow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translate(40px, -40px) scale(1.3);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-30px, -60px) scale(0.8);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translate(-50px, 30px) scale(1.1);
+    opacity: 0.85;
+  }
+}
+
+/* Floating animations */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+}
+
+@keyframes float-slower {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-25px, 25px) scale(0.9);
+  }
+  66% {
+    transform: translate(35px, -35px) scale(1.15);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--float-x, 100px), var(--float-y, -100px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes dot-flow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 40px;
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float-slower 25s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-float-particle {
+  animation: float-particle 15s ease-in-out infinite;
+}
+
+.animate-dot-flow {
+  animation: dot-flow 20s linear infinite;
+}
+
+/* Dot pattern background */
+.bg-dot-pattern {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in srgb, var(--color-primary) 30%, transparent) 1.5px,
+    transparent 0
+  );
+  background-size: 40px 40px;
+}
+
+.dark .bg-dot-pattern {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in srgb, var(--color-primary) 45%, transparent) 1.5px,
+    transparent 0
+  );
+}
