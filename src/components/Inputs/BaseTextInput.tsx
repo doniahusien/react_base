@@ -1,6 +1,6 @@
 import { useState, useId } from "react";
 import type { ReactNode, ComponentType } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { EyeIcon as Eye, EyeSlashIcon as EyeOff } from "@heroicons/react/24/outline";
 
 interface BaseTextInputProps {
   name: string;
@@ -74,7 +74,7 @@ export function BaseTextInput({
         {PrependIcon && (
           <span className="pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center">
             <PrependIcon
-              size={15}
+              width={15} height={15}
               className={hasError ? "text-destructive" : focused ? "text-primary" : "text-muted-foreground"}
             />
           </span>
@@ -111,7 +111,7 @@ export function BaseTextInput({
 
         {AppendIcon && type !== "password" && (
           <span className="pointer-events-none absolute inset-y-0 inset-e-0 flex w-11 items-center justify-center">
-            <AppendIcon size={15} className={hasError ? "text-destructive" : "text-muted-foreground"} />
+            <AppendIcon width={15} height={15} className={hasError ? "text-destructive" : "text-muted-foreground"} />
           </span>
         )}
 
@@ -122,7 +122,7 @@ export function BaseTextInput({
             className="absolute inset-y-0 inset-e-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Toggle password visibility"
           >
-            {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+            {showPass ? <EyeOff width={15} height={15} /> : <Eye width={15} height={15} />}
           </button>
         )}
       </div>

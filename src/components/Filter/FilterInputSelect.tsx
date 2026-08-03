@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ComponentType } from "react";
-import { ChevronDown, X, Check } from "lucide-react";
+import { ChevronDownIcon as ChevronDown, XMarkIcon as X, CheckIcon as Check } from "@heroicons/react/24/outline";
 import api from "../../lib/axios";
 
 export interface SelectOption { id: string | number; name: string; }
@@ -64,7 +64,7 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
     <div className="relative" ref={triggerRef}>
       {PrependIcon && (
         <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center z-10">
-          <PrependIcon size={16} className="text-muted-foreground" />
+          <PrependIcon width={16} height={16} className="text-muted-foreground" />
         </span>
       )}
       <button 
@@ -90,11 +90,11 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
             onClick={(e) => { e.stopPropagation(); pick(null); }} 
             className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-muted transition-colors"
           >
-            <X size={12} className="text-muted-foreground" />
+            <X width={12} height={12} className="text-muted-foreground" />
           </span>
         )}
         <ChevronDown 
-          size={16} 
+          width={16} height={16} 
           className="shrink-0 text-muted-foreground transition-transform duration-200"
           style={{ transform: isOpen ? "rotate(180deg)" : "none" }}
         />
@@ -131,7 +131,7 @@ export function FilterInputSelect({ item }: { item: FilterSelectItem }) {
                 >
                   <span className="flex-1 truncate">{opt.name}</span>
                   {selected?.id === opt.id && (
-                    <Check size={14} className="shrink-0 text-primary" />
+                    <Check width={14} height={14} className="shrink-0 text-primary" />
                   )}
                 </button>
               ))

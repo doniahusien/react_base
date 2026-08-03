@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AtSign, Lock, Moon, Sun } from "lucide-react";
+import { AtSymbolIcon as AtSign, LockClosedIcon as Lock, MoonIcon as Moon, SunIcon as Sun } from "@heroicons/react/24/outline";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { Form } from "../../components/Inputs/Form";
+import { ThemePresetSelectorCompact } from "../../components/ThemePresetSelector";
 import { useAuthStore } from "../../stores/auth";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
@@ -37,6 +38,10 @@ export default function Login() {
   };
 
   const isDark = theme === "dark";
+  
+  // Get computed CSS variable colors for dynamic theming
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+  const secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim();
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background p-4 transition-colors duration-300">
@@ -49,12 +54,12 @@ export default function Login() {
             opacity: isDark ? 0.3 : 0.5,
             background: isDark 
               ? `
-                radial-gradient(at 20% 30%, rgba(139, 125, 216, 0.15) 0px, transparent 50%),
-                radial-gradient(at 80% 70%, rgba(106, 90, 205, 0.12) 0px, transparent 50%)
+                radial-gradient(at 20% 30%, color-mix(in srgb, var(--color-primary) 15%, transparent) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, color-mix(in srgb, var(--color-secondary) 12%, transparent) 0px, transparent 50%)
               `
               : `
-                radial-gradient(at 20% 30%, rgba(139, 125, 216, 0.25) 0px, transparent 50%),
-                radial-gradient(at 80% 70%, rgba(106, 90, 205, 0.2) 0px, transparent 50%)
+                radial-gradient(at 20% 30%, color-mix(in srgb, var(--color-primary) 25%, transparent) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, color-mix(in srgb, var(--color-secondary) 20%, transparent) 0px, transparent 50%)
               `,
           }}
         />
@@ -69,32 +74,6 @@ export default function Login() {
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
-            {/* Light mode gradients - more saturated */}
-            <radialGradient id="node-gradient-1-light">
-              <stop offset="0%" stopColor="rgba(106, 90, 205, 1)" />
-              <stop offset="100%" stopColor="rgba(106, 90, 205, 0.5)" />
-            </radialGradient>
-            <radialGradient id="node-gradient-2-light">
-              <stop offset="0%" stopColor="rgba(124, 58, 237, 1)" />
-              <stop offset="100%" stopColor="rgba(124, 58, 237, 0.5)" />
-            </radialGradient>
-            <radialGradient id="node-gradient-3-light">
-              <stop offset="0%" stopColor="rgba(59, 130, 246, 1)" />
-              <stop offset="100%" stopColor="rgba(59, 130, 246, 0.5)" />
-            </radialGradient>
-            {/* Dark mode gradients */}
-            <radialGradient id="node-gradient-1-dark">
-              <stop offset="0%" stopColor="rgba(139, 125, 216, 1)" />
-              <stop offset="100%" stopColor="rgba(139, 125, 216, 0.3)" />
-            </radialGradient>
-            <radialGradient id="node-gradient-2-dark">
-              <stop offset="0%" stopColor="rgba(124, 58, 237, 1)" />
-              <stop offset="100%" stopColor="rgba(124, 58, 237, 0.3)" />
-            </radialGradient>
-            <radialGradient id="node-gradient-3-dark">
-              <stop offset="0%" stopColor="rgba(59, 130, 246, 1)" />
-              <stop offset="100%" stopColor="rgba(59, 130, 246, 0.3)" />
-            </radialGradient>
           </defs>
           
           {/* Generate constellation nodes and connecting lines */}
@@ -141,13 +120,13 @@ export default function Login() {
                       y1={`${conn.from.y}%`}
                       x2={`${conn.to.x}%`}
                       y2={`${conn.to.y}%`}
-                      stroke={isDark ? "rgba(139, 125, 216, 0.5)" : "rgba(106, 90, 205, 0.7)"}
+                      stroke={primaryColor}
                       strokeWidth={isDark ? "1" : "1.5"}
                       opacity="0"
                       filter="url(#glow-constellation)"
                       style={{
                         animation: `line-fade ${duration}s ease-in-out ${delay}s infinite`,
-                        opacity: opacity * baseOpacity,
+                        opacity: opacity * baseOpacity * (isDark ? 0.5 : 0.7),
                       }}
                     />
                   );
@@ -155,9 +134,8 @@ export default function Login() {
                 
                 {/* Render nodes */}
                 {nodes.map((node) => {
-                  const gradientId = isDark 
-                    ? `node-gradient-${node.gradientNum}-dark`
-                    : `node-gradient-${node.gradientNum}-light`;
+                  const nodeColor = node.gradientNum === 1 ? primaryColor : 
+                                   node.gradientNum === 2 ? secondaryColor : primaryColor;
                     
                   return (
                     <g key={`node-${node.id}`}>
@@ -167,7 +145,7 @@ export default function Login() {
                         cy={`${node.y}%`}
                         r={node.radius + 2}
                         fill="none"
-                        stroke={`url(#${gradientId})`}
+                        stroke={nodeColor}
                         strokeWidth={isDark ? "0.5" : "1"}
                         opacity="0"
                         style={{
@@ -179,7 +157,7 @@ export default function Login() {
                         cx={`${node.x}%`}
                         cy={`${node.y}%`}
                         r={isDark ? node.radius : node.radius * 1.2}
-                        fill={`url(#${gradientId})`}
+                        fill={nodeColor}
                         filter="url(#glow-constellation)"
                         style={{
                           animation: `node-pulse ${node.animationDuration}s ease-in-out ${node.animationDelay}s infinite`,
@@ -194,30 +172,37 @@ export default function Login() {
         </svg>
         
         {/* Floating ambient particles - more visible in light mode */}
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: `${Math.random() * 3 + 1.5}px`,
-              height: `${Math.random() * 3 + 1.5}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              background: isDark 
-                ? `rgba(139, 125, 216, ${0.3 + Math.random() * 0.4})`
-                : `rgba(106, 90, 205, ${0.5 + Math.random() * 0.4})`,
-              boxShadow: isDark
-                ? `0 0 ${Math.random() * 8 + 4}px rgba(139, 125, 216, 0.5)`
-                : `0 0 ${Math.random() * 10 + 6}px rgba(106, 90, 205, 0.6)`,
-              animation: `constellation-drift ${15 + Math.random() * 10}s ease-in-out ${Math.random() * 5}s infinite`,
-              filter: isDark ? 'blur(0.5px)' : 'blur(0.8px)',
-            }}
-          />
-        ))}
+        {[...Array(20)].map((_, i) => {
+          const useSecondary = i % 3 === 0;
+          const particleColor = useSecondary ? secondaryColor : primaryColor;
+          
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                width: `${Math.random() * 3 + 1.5}px`,
+                height: `${Math.random() * 3 + 1.5}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                backgroundColor: particleColor,
+                opacity: isDark ? (0.3 + Math.random() * 0.4) : (0.5 + Math.random() * 0.4),
+                boxShadow: `0 0 ${Math.random() * (isDark ? 8 : 10) + (isDark ? 4 : 6)}px ${particleColor}`,
+                animation: `constellation-drift ${15 + Math.random() * 10}s ease-in-out ${Math.random() * 5}s infinite`,
+                filter: isDark ? 'blur(0.5px)' : 'blur(0.8px)',
+              }}
+            />
+          );
+        })}
       </div>
 
       <div className="relative mx-auto grid h-screen max-w-375 gap-4 md:grid-cols-2 p-[clamp(6rem,3vw,4rem)]">
-        <div className="relative flex flex-col overflow-hidden rounded-[2.5rem] p-8 gap-10 bg-[linear-gradient(145deg,rgba(139,125,216,0.95),rgba(106,90,205,0.85))] shadow-[0_20px_60px_rgba(71,85,105,0.15),inset_0_1px_2px_rgba(255,255,255,0.1)]">
+        <div 
+          className="relative flex flex-col overflow-hidden rounded-[2.5rem] p-8 gap-10 shadow-[0_20px_60px_rgba(71,85,105,0.15),inset_0_1px_2px_rgba(255,255,255,0.1)]"
+          style={{
+            background: 'linear-gradient(145deg, var(--color-primary), var(--color-secondary))'
+          }}
+        >
           <div className="flex justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl text-white bg-[rgba(255,255,255,0.15)] backdrop-blur-md">
@@ -229,6 +214,9 @@ export default function Login() {
               <span className="text-2xl font-bold tracking-tight text-white">Dashboard</span>
             </div>
             <div className="flex items-center justify-end gap-3">
+              {/* Theme Preset Selector */}
+              <ThemePresetSelectorCompact />
+              
               <div className="flex items-center gap-1.5 rounded-xl border border-border/50 bg-card/80 p-1 backdrop-blur-md">
                 {(["en", "ar"] as Locale[]).map((l) => (
                   <button
@@ -246,7 +234,7 @@ export default function Login() {
                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-card/80 text-muted-foreground backdrop-blur-md transition-all duration-200 hover:bg-primary/10 hover:text-primary"
                 aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
               >
-                {isDark ? <Sun size={18} strokeWidth={2} /> : <Moon size={18} strokeWidth={2} />}
+                {isDark ? <Sun width={18} height={18} strokeWidth={2} /> : <Moon width={18} height={18} strokeWidth={2} />}
               </button>
             </div>
 

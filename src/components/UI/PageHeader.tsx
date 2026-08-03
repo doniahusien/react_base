@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { PlusIcon as Plus } from "@heroicons/react/24/outline";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BannerBreadcrumb } from "./BannerBreadcrumb";
@@ -30,7 +30,7 @@ export function PageHeader({
       {/* Watermark icon */}
       {Icon && (
         <div className="pointer-events-none absolute end-4 sm:end-8 top-1/2 -translate-y-1/2 opacity-[0.06]">
-          <Icon size={160} className="page-header-watermark" />
+          <Icon width={160} height={160} className="page-header-watermark" />
         </div>
       )}
 
@@ -82,7 +82,7 @@ export function PageHeader({
                   href={addHref}
                   className="group inline-flex w-fit items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-5 py-2.5 text-sm font-semibold transition-all page-header-btn hover:bg-primary/20 hover:border-primary/60 active:scale-95"
                 >
-                  <Plus size={15} className="transition-transform duration-200 group-hover:rotate-90" />
+                  <Plus width={15} height={15} className="transition-transform duration-200 group-hover:rotate-90" />
                   {t("TITLES.add", { count: t(`TITLES.${addLabel ?? title}`) as any })}
                 </a>
               )}

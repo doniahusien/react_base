@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Phone, ChevronDown, Search, X } from "lucide-react";
+import { PhoneIcon as Phone, ChevronDownIcon as ChevronDown, MagnifyingGlassIcon as Search, XMarkIcon as X } from "@heroicons/react/24/outline";
 import api from "../../lib/axios";
 import { useTranslation } from "react-i18next";
 
@@ -50,8 +50,8 @@ export function BasePhoneInput({ phoneCode = "", phone = "", onPhoneCode, onPhon
       <div className="relative" ref={dropdownRef}>
         <div className={`relative flex items-stretch rounded-xl border bg-card transition-all duration-200 overflow-hidden ${borderCls} ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
           <button type="button" onClick={() => setOpen((v) => !v)} className="flex h-11 shrink-0 items-center gap-1.5 border-e border-border px-3 text-sm transition-colors hover:bg-muted">
-            {selected ? (<><img src={selected.flag} alt={selected.name} className="h-4 w-6 rounded-sm object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /><span className="font-semibold text-foreground text-sm leading-none"><bdo dir="ltr">+{selected.phone_code}</bdo></span></>) : (<><Phone size={14} className="text-muted-foreground shrink-0" /><span className="text-muted-foreground text-sm">+{phoneCode || "—"}</span></>)}
-            <ChevronDown size={13} className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+            {selected ? (<><img src={selected.flag} alt={selected.name} className="h-4 w-6 rounded-sm object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /><span className="font-semibold text-foreground text-sm leading-none"><bdo dir="ltr">+{selected.phone_code}</bdo></span></>) : (<><Phone width={14} height={14} className="text-muted-foreground shrink-0" /><span className="text-muted-foreground text-sm">+{phoneCode || "—"}</span></>)}
+            <ChevronDown width={13} height={13} className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
           </button>
           <div className="relative flex-1">
             <input type="tel" value={phone} onChange={(e) => onPhone(e.target.value)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} placeholder="e.g. 501234567" disabled={disabled} className="block h-11 w-full bg-transparent py-0 px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground" />
@@ -60,9 +60,9 @@ export function BasePhoneInput({ phoneCode = "", phone = "", onPhoneCode, onPhon
         {open && (
           <div className="absolute inset-s-0 top-full z-[200] mt-1.5 w-64 overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
             <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
-              <Search size={13} className="shrink-0 text-muted-foreground" />
+              <Search width={13} height={13} className="shrink-0 text-muted-foreground" />
               <input ref={searchRef} type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("LABELS.phoneCode")} className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
-              {search && <button type="button" onClick={() => setSearch("")}><X size={12} className="text-muted-foreground hover:text-foreground" /></button>}
+              {search && <button type="button" onClick={() => setSearch("")}><X width={12} height={12} className="text-muted-foreground hover:text-foreground" /></button>}
             </div>
             <div className="max-h-52 overflow-y-auto py-1">
               {loadingCountries ? <p className="px-4 py-3 text-sm text-muted-foreground">{t("TITLES.loading")}</p>

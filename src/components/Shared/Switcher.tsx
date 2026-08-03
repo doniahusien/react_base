@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, X } from "lucide-react";
+import { CheckIcon as Check, XMarkIcon as X } from "@heroicons/react/24/outline";
 import { Button } from "../UI/Button";
 import api from "../../lib/axios";
 import { toast } from "../../stores/toast";
@@ -45,8 +45,8 @@ export function Switcher({ value, url, body, method = "PUT", onReload }: Switche
             <h3 className="text-base font-semibold text-foreground mb-2">{t("TITLES.changeStatus")}</h3>
             <p className="text-sm text-muted-foreground mb-6">{t("MESSAGES.changeStatus", { status: enabled ? t("TITLES.inactive") : t("TITLES.active") })}</p>
             <div className="flex items-center gap-3">
-              <Button className="flex-1 max-w-full" loading={busy} onClick={changeStatus}>{t("BUTTONS.yes")} <Check size={16} /></Button>
-              <Button reverse className="flex-1 max-w-full" onClick={() => setShowDialog(false)}>{t("BUTTONS.no")} <X size={16} /></Button>
+              <Button className="flex-1 max-w-full" loading={busy} onClick={changeStatus}>{t("BUTTONS.yes")} <Check width={16} height={16} /></Button>
+              <Button reverse className="flex-1 max-w-full" onClick={() => setShowDialog(false)}>{t("BUTTONS.no")} <X width={16} height={16} /></Button>
             </div>
           </div>
         </div>

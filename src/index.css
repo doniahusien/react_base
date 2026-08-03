@@ -66,27 +66,27 @@
 @layer theme {
   .dark {
     color-scheme: dark;
-    --color-background: #0f1419;
-    --color-foreground: #d1d5db;
-    --color-card: #1a1f2e;
-    --color-card-foreground: #d1d5db;
-    --color-popover: #1a1f2e;
-    --color-popover-foreground: #d1d5db;
+    --color-background: #0a0a0b;
+    --color-foreground: #e4e4e7;
+    --color-card: #18181b;
+    --color-card-foreground: #e4e4e7;
+    --color-popover: #18181b;
+    --color-popover-foreground: #e4e4e7;
     --color-primary: #8b7dd8;
     --color-primary-foreground: #ffffff;
     --color-secondary: #6a5acd;
     --color-secondary-foreground: #ffffff;
-    --color-muted: #c9caca;
-    --color-muted-foreground: #9ca3af;
-    --color-accent: #232938;
-    --color-accent-foreground: #d1d5db;
+    --color-muted: #d4d4d8;
+    --color-muted-foreground: #a1a1aa;
+    --color-accent: #27272a;
+    --color-accent-foreground: #e4e4e7;
     --color-destructive: #ef4444;
     --color-destructive-foreground: #ffffff;
     --color-success: #22c55e;
     --color-success-soft: color-mix(in srgb, #22c55e 15%, transparent);
     --color-success-foreground: #4ade80;
-    --color-border: #2d3548;
-    --color-input: #2d3548;
+    --color-border: #27272a;
+    --color-input: #27272a;
     --color-ring: #8b7dd8;
   }
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import type { ComponentType } from "react";
 
@@ -16,13 +16,13 @@ export interface FilterItem {
   type?: "checkbox" | "radio" | "select" | "text";
   options?: FilterCheckboxOption[];
   placeholder?: string;
-  prependInputIcon?: ComponentType<{ size?: number; className?: string }>;
+  prependInputIcon?: ComponentType<{ size?: number | string; width?: number | string; height?: number | string; className?: string; [key: string]: any }>;
 }
 
 export interface FilterSection {
   key: string;
   label: string;
-  icon?: ComponentType<{ size?: number; className?: string }>;
+  icon?: ComponentType<{ size?: number | string; width?: number | string; height?: number | string; className?: string; [key: string]: any }>;
   type: "checkbox" | "radio" | "select" | "text";
   options?: FilterCheckboxOption[];
   defaultOpen?: boolean;
@@ -92,7 +92,7 @@ function FilterSectionComponent({
         <div className="flex items-center gap-2.5">
           {Icon && (
             <div className="relative">
-              <Icon size={18} className="text-primary transition-transform group-hover:scale-110" />
+              <Icon width={18} height={18} className="text-primary transition-transform group-hover:scale-110" />
               {/* Indicator dot if section has value */}
               {tempValues[section.key] && (
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
@@ -110,9 +110,9 @@ function FilterSectionComponent({
             </span>
           )}
           {isOpen ? (
-            <ChevronUp size={16} className="text-muted-foreground transition-transform group-hover:text-primary" />
+            <ChevronUpIcon className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-primary" />
           ) : (
-            <ChevronDown size={16} className="text-muted-foreground transition-transform group-hover:text-primary" />
+            <ChevronDownIcon className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-primary" />
           )}
         </div>
       </button>
@@ -171,17 +171,7 @@ function FilterSectionComponent({
                       onChange={(e) => handleCheckboxChange(option.id, e.target.checked)}
                       className="peer h-5 w-5 rounded border-2 border-border bg-card appearance-none cursor-pointer transition-all checked:bg-primary checked:border-primary checked:shadow-[0_0_10px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] focus:ring-2 focus:ring-primary/20"
                     />
-                    <svg
-                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-foreground pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="2 6 5 9 10 3" />
-                    </svg>
+                    <CheckIcon className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-3 w-3 text-foreground pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0" />
                   </div>
                   <span className="text-sm text-foreground group-hover:text-primary transition-colors font-medium">
                     {option.label}
@@ -397,7 +387,7 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
               onClick={() => setIsOpen(false)}
               className="flex items-center justify-center w-8 h-8 rounded-full hover: hover:rotate-90 transition-all duration-300 text-muted-foreground hover:text-foreground"
             >
-              <X size={18} />
+              <XMarkIcon className="h-[18px] w-[18px]" />
             </button>
           </div>
 

@@ -4,12 +4,29 @@ import i18n from "./i18n";
 import { emitLanguageChange } from "./lib/languageChangeEvent";
 
 export type SidebarMode = "vertical" | "horizontal" | "two-column";
+export type ThemeIntent = "light" | "dark" | "system";
+export type ResolvedTheme = "light" | "dark";
 
 function getInitialLocale(): Locale {
   try { return (localStorage.getItem("locale") as Locale) || "en"; } catch { return "en"; }
 }
 function getInitialTheme(): "light" | "dark" {
   try { return (localStorage.getItem("theme") as "light" | "dark") || "light"; } catch { return "light"; }
+}
+function getInitialThemeIntent(): ThemeIntent {
+  try { 
+    const stored = localStorage.getItem("theme-intent");
+    if (stored === "light" || stored === "dark" || stored === "system") {
+      return stored as ThemeIntent;
+    }
+    return "system";
+  } catch { 
+    return "system"; 
+  }
+}
+function getSystemPreference(): ResolvedTheme {
+  if (typeof window === 'undefined') return 'light';
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 function getInitialCollapsed(): boolean {
   try { return localStorage.getItem("sidebarCollapsed") === "1"; } catch { return false; }
@@ -43,6 +60,9 @@ function applyTheme(value: "light" | "dark") {
 function applyDirection(value: Locale) {
   document.documentElement.dir = value === "ar" ? "rtl" : "ltr";
 }
+function resolveThemeIntent(intent: ThemeIntent, systemPref: ResolvedTheme): ResolvedTheme {
+  return intent === "system" ? systemPref : intent;
+}
 
 interface PinnedItem {
   id: string;
@@ -56,6 +76,8 @@ export type { PinnedItem };
 interface AppStore {
   lang: Locale;
   theme: "light" | "dark";
+  themeIntent: ThemeIntent;
+  systemPreference: ResolvedTheme;
   sidebarCollapsed: boolean;
   sidebarMode: SidebarMode;
   sidebarOpen: boolean;
@@ -65,6 +87,8 @@ interface AppStore {
   pinnedItemsV2: PinnedItem[];
   setLang: (v: Locale) => void;
   setTheme: (v: "light" | "dark") => void;
+  setThemeIntent: (v: ThemeIntent) => void;
+  setSystemPreference: (v: ResolvedTheme) => void;
   setSidebarCollapsed: (v: boolean) => void;
   setSidebarMode: (v: SidebarMode) => void;
   setSidebarOpen: (v: boolean) => void;

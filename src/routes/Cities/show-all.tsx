@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Earth, Search, MoreHorizontal, LayoutDashboard } from "lucide-react";
+import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
@@ -53,7 +53,7 @@ export default function CitiesShowAll() {
             ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
             onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
             className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-accent hover:text-primary transition-all"
-          ><MoreHorizontal size={16} /></button>
+          ><MoreHorizontal width={16} height={16} /></button>
           {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} editUrl={`/cities/form/${item.id}`} deleteUrl={`/cities/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );

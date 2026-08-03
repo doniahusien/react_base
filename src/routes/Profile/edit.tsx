@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, AtSign, Shield, Lock, Contact, X, Image as ImageIcon, LayoutDashboard, UserCircle, KeyRound } from "lucide-react";
+import { UserIcon as User, AtSymbolIcon as AtSign, ShieldCheckIcon as Shield, LockClosedIcon as Lock, UserCircleIcon as Contact, XMarkIcon as X, PhotoIcon as ImageIcon, Squares2X2Icon as LayoutDashboard, UserCircleIcon as UserCircle, KeyIcon as KeyRound } from "@heroicons/react/24/outline";
 import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
 import { useAuthStore } from "../../stores/auth";
 import Cookies from "js-cookie";
@@ -29,8 +29,8 @@ function ChangePasswordDialog({ onClose, successMsg, failedMsg }: { onClose: () 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} /><div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-background border border-border shadow-2xl">
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
-        <div className="flex items-center gap-2"><div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"><KeyRound size={14} /></div><h3 className="text-sm font-bold text-foreground">{t("PROFILE.changePassword")}</h3></div>
-        <button type="button" onClick={onClose} className="flex size-8 items-center justify-center rounded-xl   text-muted-foreground hover:bg-muted border border-border transition-all"><X size={14} /></button>
+        <div className="flex items-center gap-2"><div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"><KeyRound width={14} height={14} /></div><h3 className="text-sm font-bold text-foreground">{t("PROFILE.changePassword")}</h3></div>
+        <button type="button" onClick={onClose} className="flex size-8 items-center justify-center rounded-xl   text-muted-foreground hover:bg-muted border border-border transition-all"><X width={14} height={14} /></button>
       </div>
       <Form schema={schemas.profilePassword} values={values} onSubmit={handleSubmit}>{({ errors, field, touch }) => (
         <div className="space-y-4 px-6 py-5">
@@ -38,8 +38,8 @@ function ChangePasswordDialog({ onClose, successMsg, failedMsg }: { onClose: () 
           <BaseTextInput name="password" label={t("PROFILE.newPassword")} type="password" value={values.password} onInput={v => { set("password")(v); touch("password"); }} prependInputIcon={Lock} {...field("password", errors)} />
           <BaseTextInput name="password_confirmation" label={t("PROFILE.confirmPassword")} type="password" value={values.password_confirmation} onInput={v => { set("password_confirmation")(v); touch("password_confirmation"); }} prependInputIcon={Lock} {...field("password_confirmation", errors)} />
           <div className="flex items-center justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"><X size={14} /> {t("BUTTONS.cancel")}</button>
-            <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={14} />}{t("BUTTONS.saveChanges")}</button>
+            <button type="button" onClick={onClose} className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"><X width={14} height={14} /> {t("BUTTONS.cancel")}</button>
+            <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield width={14} height={14} />}{t("BUTTONS.saveChanges")}</button>
           </div>
         </div>
       )}</Form>
@@ -92,7 +92,7 @@ export default function ProfileEdit() {
             <SectionCard icon={ImageIcon} title={t("PROFILE.profilePhoto")} subtitle="" color="sky" step={1}>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
                 <div className="w-full sm:max-w-xs"><BaseFilesInput name="image" accept="image/*" attachment model="users" value={imageValue} onChange={v => setImageFile(Array.isArray(v) ? v[0] : v)} onLoadingChange={setImgLoad} /></div>
-                <button type="button" onClick={() => setPwOpen(true)} className="inline-flex items-center gap-2 self-start rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><KeyRound size={14} />{t("PROFILE.changePassword")}</button>
+                <button type="button" onClick={() => setPwOpen(true)} className="inline-flex items-center gap-2 self-start rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><KeyRound width={14} height={14} />{t("PROFILE.changePassword")}</button>
               </div>
             </SectionCard>
             <SectionCard icon={User} title={t("PROFILE.basicInfo")} subtitle="" color="emerald" step={2}>
@@ -108,8 +108,8 @@ export default function ProfileEdit() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/profile")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loading || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}{t("BUTTONS.saveChanges")}</button>
+              <button type="button" onClick={() => navigate("/profile")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"><X width={15} height={15} />{t("BUTTONS.cancel")}</button>
+              <button type="submit" disabled={loading || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 transition-all">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield width={15} height={15} />}{t("BUTTONS.saveChanges")}</button>
             </div>
           </div>
         )}

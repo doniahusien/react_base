@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Users, Search, Mail, Phone, MoreHorizontal, LayoutDashboard } from "lucide-react";
+import { UsersIcon as Users, MagnifyingGlassIcon as Search, EnvelopeIcon as Mail, PhoneIcon as Phone, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
@@ -55,8 +55,8 @@ export default function UsersShowAll() {
           <p className="text-sm font-medium text-foreground">{item.full_name}</p>
         </div>
       );
-      case "email": return <div className="flex items-center gap-1.5"><Mail size={14} className="shrink-0 text-muted-foreground" /><a href={`mailto:${item.email}`} className="text-sm text-primary hover:opacity-80 transition-colors">{item.email}</a></div>;
-      case "phone": return item.phone ? <a href={`tel:${item.phone_code}${item.phone}`} className="flex items-center gap-1.5"><Phone size={14} className="shrink-0 text-muted-foreground" /><bdo dir="ltr" className="text-sm text-foreground">+{item.phone_code} {item.phone}</bdo></a> : <span className="text-sm text-muted-foreground">—</span>;
+      case "email": return <div className="flex items-center gap-1.5"><Mail width={14} height={14} className="shrink-0 text-muted-foreground" /><a href={`mailto:${item.email}`} className="text-sm text-primary hover:opacity-80 transition-colors">{item.email}</a></div>;
+      case "phone": return item.phone ? <a href={`tel:${item.phone_code}${item.phone}`} className="flex items-center gap-1.5"><Phone width={14} height={14} className="shrink-0 text-muted-foreground" /><bdo dir="ltr" className="text-sm text-foreground">+{item.phone_code} {item.phone}</bdo></a> : <span className="text-sm text-muted-foreground">—</span>;
       case "actions": return (
         <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>
           <button
@@ -64,7 +64,7 @@ export default function UsersShowAll() {
             ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
             onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
-          ><MoreHorizontal size={16} /></button>
+          ><MoreHorizontal width={16} height={16} /></button>
           {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} showUrl={`/users/${item.id}`} editUrl={`/users/form/${item.id}`} deleteUrl={`/users/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((u) => u.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );

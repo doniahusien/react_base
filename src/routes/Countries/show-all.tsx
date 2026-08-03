@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Earth, Search, Phone, MoreHorizontal, LayoutDashboard } from "lucide-react";
+import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, PhoneIcon as Phone, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Filter, type FilterSection } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
@@ -96,9 +96,9 @@ export default function CountriesShowAll() {
 
   const renderCell = (field: string, item: Country, index: number) => {
     switch (field) {
-      case "flag": return item.flag ? <ImagePreviewTrigger src={item.flag} alt={item.name} className="h-8 w-12 rounded-lg border border-border object-cover" wrapperClassName="rounded-lg" /> : <div className="flex h-8 w-12 items-center justify-center rounded-lg border border-border  "><Earth size={16} className="text-muted" /></div>;
+      case "flag": return item.flag ? <ImagePreviewTrigger src={item.flag} alt={item.name} className="h-8 w-12 rounded-lg border border-border object-cover" wrapperClassName="rounded-lg" /> : <div className="flex h-8 w-12 items-center justify-center rounded-lg border border-border  "><Earth width={16} height={16} className="text-muted" /></div>;
       case "name": return <span className="text-sm font-medium text-text">{item.name}</span>;
-      case "phone_code": return <div className="flex items-center gap-1.5"><Phone size={13} className="text-muted" /><span className="text-sm text-text">+{item.phone_code}</span></div>;
+      case "phone_code": return <div className="flex items-center gap-1.5"><Phone width={13} height={13} className="text-muted" /><span className="text-sm text-text">+{item.phone_code}</span></div>;
       case "phone_length": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-text">{item.phone_length} {t("TITLES.digits")}</span>;
       case "currency": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-text">{item.currency ?? "—"}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/countries/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
@@ -109,7 +109,7 @@ export default function CountriesShowAll() {
             ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
             onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
             className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
-          ><MoreHorizontal size={16} /></button>
+          ><MoreHorizontal width={16} height={16} /></button>
           {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} editUrl={`/countries/form/${item.id}`} deleteUrl={`/countries/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
@@ -120,7 +120,7 @@ export default function CountriesShowAll() {
   const renderQuickView = (item: Country) => (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        {item.flag ? <ImagePreviewTrigger src={item.flag} alt="flag" className="h-14 w-20 rounded-2xl border border-border object-cover" wrapperClassName="rounded-2xl" /> : <div className="flex h-14 w-20 items-center justify-center rounded-2xl border border-border  "><Earth size={28} className="text-muted-foreground" /></div>}
+        {item.flag ? <ImagePreviewTrigger src={item.flag} alt="flag" className="h-14 w-20 rounded-2xl border border-border object-cover" wrapperClassName="rounded-2xl" /> : <div className="flex h-14 w-20 items-center justify-center rounded-2xl border border-border  "><Earth width={28} height={28} className="text-muted-foreground" /></div>}
         <div><h2 className="text-lg font-bold text-foreground">{item.en?.name ?? item.name}</h2>{item.ar?.name && <p className="text-sm text-muted-foreground" dir="rtl">{item.ar.name}</p>}</div>
       </div>
       <div className="grid grid-cols-2 gap-3 rounded-2xl border border-border p-4">

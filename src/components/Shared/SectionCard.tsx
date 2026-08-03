@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 interface SectionCardProps {
-  icon: (props: { size?: number; className?: string }) => ReactNode;
+  icon: (props: { size?: number | string; width?: number | string; height?: number | string; className?: string }) => ReactNode;
   title: string;
   subtitle?: string;
   color?: "primary" | "emerald" | "blue" | "orange" | "rose" | "sky";
@@ -82,7 +82,7 @@ export function SectionCard({
         <div
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 bg-card ${c.ring}`}
         >
-          <Icon size={16} className={c.icon} />
+          <Icon width={16} height={16} className={c.icon} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold leading-tight text-foreground">{title}</p>

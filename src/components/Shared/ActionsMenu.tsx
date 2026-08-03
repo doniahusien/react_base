@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
-import { Eye, Pencil } from "lucide-react";
+import { EyeIcon as Eye, PencilIcon as Pencil } from "@heroicons/react/24/outline";
 import { Deleter } from "./Deleter";
 import { useTranslation } from "react-i18next";
 
@@ -57,7 +57,7 @@ export function ActionsMenu({
             >
               <span className="absolute inset-0 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-200 bg-primary/8 rounded-xl" />
               <span className="relative flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Eye size={12} />
+                <Eye width={12} height={12} />
               </span>
               <span className="relative">{t("ACTIONS.show")}</span>
             </a>
@@ -69,7 +69,7 @@ export function ActionsMenu({
             >
               <span className="absolute inset-0 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-200 bg-primary/8 rounded-xl" />
               <span className="relative flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Pencil size={12} />
+                <Pencil width={12} height={12} />
               </span>
               <span className="relative">{t("ACTIONS.edit")}</span>
             </a>

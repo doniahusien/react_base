@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Library, Search, MoreHorizontal, LayoutDashboard, Filter as FilterIcon, CheckSquare, SlidersHorizontal } from "lucide-react";
+import { BuildingLibraryIcon as Library, MagnifyingGlassIcon as Search, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard, FunnelIcon as FilterIcon, CheckIcon as CheckSquare, AdjustmentsHorizontalIcon as SlidersHorizontal } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Filter, type FilterSection } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
@@ -66,7 +66,7 @@ export default function CategoriesShowAll() {
 
   const renderCell = (field: string, item: Category, index: number) => {
     switch (field) {
-      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border  "><Library size={16} className="text-muted" /></div>;
+      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border  "><Library width={16} height={16} className="text-muted" /></div>;
       case "name": return <span className="text-sm font-medium text-text">{item.name ?? item.en?.name ?? item.ar?.name ?? "—"}</span>;
       case "created_at": return <span className="text-sm text-muted">{formatDate(item.created_at)}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/categories/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
@@ -77,7 +77,7 @@ export default function CategoriesShowAll() {
             ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
             onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
             className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
-          ><MoreHorizontal size={16} /></button>
+          ><MoreHorizontal width={16} height={16} /></button>
           {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} showUrl={`/categories/${item.id}`} editUrl={`/categories/form/${item.id}`} deleteUrl={`/categories/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
@@ -108,7 +108,7 @@ export default function CategoriesShowAll() {
                 type="button"
                 className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-foreground text-sm font-semibold hover:bg-secondary transition-all shadow-sm"
               >
-                <SlidersHorizontal size={18} />
+                <SlidersHorizontal width={18} height={18} />
                 <span>{t("TITLES.filters")}</span>
               </button>
             }

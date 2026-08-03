@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { DollarSign, ShoppingBag, Users, BarChart3 } from "lucide-react";
+import { CurrencyDollarIcon as DollarSign, ShoppingBagIcon as ShoppingBag, UsersIcon as Users, ChartBarIcon as BarChart3 } from "@heroicons/react/24/outline";
 import { ApexChart } from "../components/UI/ApexChart";
 import { useAppStore } from "../store";
 import api from "../lib/axios";
@@ -34,11 +34,11 @@ function StatCard({ icon: Icon, label, value, accent }: StatCardProps) {
   return (
     <div className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border/80 bg-card p-5 shadow-sm ring-1 ${c.ring} transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}>
       <div className={`absolute top-0 inset-x-0 h-0.5 ${c.bar} opacity-80`} />
-      <div className="pointer-events-none absolute -bottom-4 -inset-e-4 opacity-[0.06] dark:opacity-[0.08]"><Icon size={110} strokeWidth={1} /></div>
+      <div className="pointer-events-none absolute -bottom-4 -inset-e-4 opacity-[0.06] dark:opacity-[0.08]"><Icon width={110} height={110} strokeWidth={1} /></div>
       <div className={`pointer-events-none absolute -top-8 -inset-e-8 h-28 w-28 rounded-full ${c.glow} blur-3xl`} />
       <div className="relative flex items-start justify-between">
         <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
-        <div className={`flex size-9 items-center justify-center rounded-xl ring-1 ${c.ring} ${c.icon}`}><Icon size={16} strokeWidth={2.5} /></div>
+        <div className={`flex size-9 items-center justify-center rounded-xl ring-1 ${c.ring} ${c.icon}`}><Icon width={16} height={16} strokeWidth={2.5} /></div>
       </div>
       <div className="relative mt-5">
         <p className="text-3xl font-black tracking-tight text-foreground">{value}</p>

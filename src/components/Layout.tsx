@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Moon, Sun, Settings2 } from "lucide-react";
+import { Bars3Icon as Menu, MoonIcon as Moon, SunIcon as Sun, Cog6ToothIcon as Settings2 } from "@heroicons/react/24/outline";
 import { Drawer } from "./Drawer";
 import { ThemeCustomizer } from "./ThemeCustomizer";
+import { ThemePresetSelectorCompact } from "./ThemePresetSelector";
 import { LanguageRefreshManager } from "./LanguageRefreshManager";
 import { useAppStore } from "../store";
 import { useAuthStore } from "../stores/auth";
@@ -60,7 +61,7 @@ export function Layout({ children }: LayoutProps) {
                   className="header-icon-btn shrink-0"
                   aria-label="Toggle sidebar"
                 >
-                  <Menu size={17} />
+                  <Menu width={17} height={17} />
                 </button>
               )}
               {(mode === "two-column" || mode === "horizontal") && (
@@ -72,11 +73,14 @@ export function Layout({ children }: LayoutProps) {
                   className="header-icon-btn shrink-0 lg:hidden"
                   aria-label="Open menu"
                 >
-                  <Menu size={17} />
+                  <Menu width={17} height={17} />
                 </button>
               )}
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
+              {/* Theme Preset Selector */}
+              <ThemePresetSelectorCompact />
+              
               <div className="header-pill">
                 <button
                   type="button"
@@ -85,7 +89,7 @@ export function Layout({ children }: LayoutProps) {
                   aria-label="Open theme customizer"
                   title="Theme Customizer"
                 >
-                  <Settings2 size={15} />
+                  <Settings2 width={15} height={15} />
                 </button>
                 <div className="h-4 w-px bg-border/70" />
                 <button
@@ -94,7 +98,7 @@ export function Layout({ children }: LayoutProps) {
                   className="header-icon-btn"
                   aria-label="Toggle theme"
                 >
-                  {theme === "dark" ? <Moon size={15} /> : <Sun size={15} />}
+                  {theme === "dark" ? <Moon width={15} height={15} /> : <Sun width={15} height={15} />}
                 </button>
               </div>
               <div className="header-pill px-1">

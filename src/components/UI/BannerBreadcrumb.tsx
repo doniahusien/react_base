@@ -1,11 +1,12 @@
-import type { ComponentType, ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
-import type { LucideProps } from "lucide-react";
+import type { ComponentType, ReactNode, SVGProps } from "react";
+import { ChevronRightIcon as ChevronRight } from "@heroicons/react/24/outline";
+
+export type HeroIconProps = SVGProps<SVGSVGElement> & { size?: number | string };
 
 export interface BreadcrumbSegment {
   label: ReactNode;
   href?: string;
-  icon?: ComponentType<LucideProps>;
+  icon?: ComponentType<HeroIconProps>;
 }
 
 interface BannerBreadcrumbProps { items: BreadcrumbSegment[]; }
@@ -18,15 +19,15 @@ export function BannerBreadcrumb({ items }: BannerBreadcrumbProps) {
         const isLast = i === items.length - 1;
         return (
           <span key={i} className="inline-flex items-center gap-1.5">
-            {i > 0 && <ChevronRight size={11} className="text-primary/40 rtl:rotate-180 shrink-0" />}
+            {i > 0 && <ChevronRight width={11} height={11} className="text-primary/40 rtl:rotate-180 shrink-0" />}
             {isLast ? (
               <span className="inline-flex items-center gap-1 text-primary max-w-[180px] truncate">
-                {Icon && <Icon size={12} className="shrink-0 opacity-70" />}
+                {Icon && <Icon width={12} height={12} className="shrink-0 opacity-70" />}
                 <span className="truncate">{seg.label}</span>
               </span>
             ) : (
               <a href={seg.href ?? "#"} className="inline-flex items-center gap-1 text-primary/50 hover:text-primary transition-colors max-w-[140px] truncate">
-                {Icon && <Icon size={12} className="shrink-0" />}
+                {Icon && <Icon width={12} height={12} className="shrink-0" />}
                 <span className="truncate uppercase">{seg.label}</span>
               </a>
             )}

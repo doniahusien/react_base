@@ -10,7 +10,7 @@
  */
 
 import { useState } from 'react';
-import { Palette, Check } from 'lucide-react';
+import { PaintBrushIcon as Palette, CheckIcon as Check } from '@heroicons/react/24/outline';
 import { applyBrandTheme, brandPresets, getCurrentBrandTheme } from '../theme-presets';
 
 export function ThemeSwitcherExample() {
@@ -25,7 +25,7 @@ export function ThemeSwitcherExample() {
     <div className="rounded-2xl border border-border bg-card p-6">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Palette size={20} />
+          <Palette width={20} height={20} />
         </div>
         <div>
           <h3 className="text-base font-bold text-foreground">Brand Theme</h3>
@@ -50,7 +50,7 @@ export function ThemeSwitcherExample() {
             >
               {isActive && (
                 <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-foreground shadow-sm">
-                  <Check size={12} strokeWidth={3} />
+                  <Check width={12} height={12} strokeWidth={3} />
                 </div>
               )}
               
@@ -109,7 +109,7 @@ export function ThemeSwitcherCompact() {
         className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-all"
         aria-label="Change theme"
       >
-        <Palette size={16} />
+        <Palette width={16} height={16} />
         <span className="hidden sm:inline">Theme</span>
       </button>
 
@@ -152,7 +152,7 @@ export function ThemeSwitcherCompact() {
                     <div className="flex-1">
                       <p className="text-sm font-medium">{theme.name}</p>
                     </div>
-                    {isActive && <Check size={14} strokeWidth={3} />}
+                    {isActive && <Check width={14} height={14} strokeWidth={3} />}
                   </button>
                 );
               })}

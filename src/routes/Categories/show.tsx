@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Library, Edit, CalendarDays, Folder, LayoutDashboard } from "lucide-react";
+import { BuildingLibraryIcon as Library, PencilIcon as Edit, CalendarDaysIcon as CalendarDays, FolderIcon as Folder, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
 import { Skeleton } from "../../components/UI/Skeleton";
@@ -12,7 +12,7 @@ import type { Category } from "../../types/category";
 
 function formatDate(iso: string | null | undefined): string { if (!iso) return "—"; return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
 function InfoCard({ label, children }: { label: string; children: any }) { return <div className="rounded-xl border border-border bg-background p-4"><p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p><div className="text-sm font-semibold text-foreground">{children}</div></div>; }
-function SectionHeading({ icon: Icon, title }: { icon: any; title: string }) { return <div className="mb-4 flex items-center gap-2"><div className="flex size-7 items-center justify-center rounded-lg bg-primary/10"><Icon size={15} className="text-primary" /></div><h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{title}</h3></div>; }
+function SectionHeading({ icon: Icon, title }: { icon: any; title: string }) { return <div className="mb-4 flex items-center gap-2"><div className="flex size-7 items-center justify-center rounded-lg bg-primary/10"><Icon width={15} height={15} className="text-primary" /></div><h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{title}</h3></div>; }
 
 export default function CategoryShow() {
   const { t } = useTranslation();
@@ -40,17 +40,17 @@ export default function CategoryShow() {
         <div className="absolute top-3 start-6"><BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.categories"), href: "/categories", icon: Library }, { label: displayName, icon: Folder }]} /></div>
         <div className="relative flex flex-col md:flex-row items-start md:items-center gap-6">
           <div className="relative shrink-0">
-            {category.image ? <ImagePreviewTrigger src={category.image} alt={displayName} className="size-24 md:size-32 rounded-xl border-4 border-card/50 object-cover shadow-lg" wrapperClassName="rounded-xl" /> : <div className="flex size-24 md:size-32 items-center justify-center rounded-xl border-4 border-card/50 bg-primary/10 shadow-lg"><Folder size={40} className="text-primary" /></div>}
+            {category.image ? <ImagePreviewTrigger src={category.image} alt={displayName} className="size-24 md:size-32 rounded-xl border-4 border-card/50 object-cover shadow-lg" wrapperClassName="rounded-xl" /> : <div className="flex size-24 md:size-32 items-center justify-center rounded-xl border-4 border-card/50 bg-primary/10 shadow-lg"><Folder width={40} height={40} className="text-primary" /></div>}
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-black tracking-tight text-foreground mb-1">{displayName}</h1>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5"><CalendarDays size={13} />{formatDate(category.created_at)}</span>
+              <span className="flex items-center gap-1.5"><CalendarDays width={13} height={13} />{formatDate(category.created_at)}</span>
               <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${category.is_active ? "bg-success-soft text-success-foreground" : "  text-muted-foreground"}`}>{category.is_active ? t("TITLES.active") : t("TITLES.inactive")}</span>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button type="button" onClick={() => navigate(`/categories/form/${category.id}`)} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><Edit size={14} />{t("TITLES.edit", { count: "" as any })}</button>
+            <button type="button" onClick={() => navigate(`/categories/form/${category.id}`)} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><Edit width={14} height={14} />{t("TITLES.edit", { count: "" as any })}</button>
             <Deleter url={`/categories/${category.id}`} onReload={() => navigate("/categories")} />
           </div>
         </div>

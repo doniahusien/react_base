@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Trash } from "lucide-react";
+import { TrashIcon as Trash } from "@heroicons/react/24/outline";
 import { Button } from "../UI/Button";
 import api from "../../lib/axios";
 import { toast } from "../../stores/toast";
@@ -56,7 +56,7 @@ export function Deleter({
       >
         <span className="absolute inset-0 scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-200 bg-linear-to-r from-destructive/10 to-transparent rounded-xl" />
         <span className="relative flex size-6 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-destructive/20 to-destructive/10 text-destructive shadow-sm shadow-destructive/10 group-hover:shadow-destructive/30 group-hover:from-destructive/30 transition-all">
-          <Trash size={12} />
+          <Trash width={12} height={12} />
         </span>
         {text !== undefined ? (
           <span className="relative">{text}</span>

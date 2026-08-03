@@ -1,10 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import {
-  Trash2, LayoutGrid, Grid3X3, Eye,
-  ChevronUp, ChevronDown, ChevronsUpDown,
-  X, ArrowLeft, ArrowRight,
-} from "lucide-react";
+  TrashIcon as Trash2,
+  Squares2X2Icon as LayoutGrid,
+  Square3Stack3DIcon as Grid3X3,
+  EyeIcon as Eye,
+  ChevronUpIcon as ChevronUp,
+  ChevronDownIcon as ChevronDown,
+  ArrowsUpDownIcon as ChevronsUpDown,
+  XMarkIcon as X,
+  ArrowLeftIcon as ArrowLeft,
+  ArrowRightIcon as ArrowRight,
+} from "@heroicons/react/24/outline";
 import {
   useReactTable,
   getCoreRowModel,
@@ -109,7 +116,7 @@ function Pagination({
       </p>
       <div className="flex items-center gap-1 overflow-x-auto">
         <button onClick={() => onPage(page - 1)} disabled={page <= 1} className={navBtn}>
-          <ArrowLeft size={14} />
+          <ArrowLeft width={14} height={14} />
         </button>
         {pages.map((p, i) =>
           p === "…" ? (
@@ -131,7 +138,7 @@ function Pagination({
           )
         )}
         <button onClick={() => onPage(page + 1)} disabled={page >= meta.last_page} className={navBtn}>
-          <ArrowRight size={14} />
+          <ArrowRight width={14} height={14} />
         </button>
       </div>
     </div>
@@ -304,10 +311,10 @@ export function UITable<T extends { id?: any }>({
 
   const SortIcon = ({ column }: { column: any }) => {
     const sorted = column.getIsSorted();
-    if (!sorted) return <ChevronsUpDown size={11} className="opacity-20" />;
+    if (!sorted) return <ChevronsUpDown width={11} height={11} className="opacity-20" />;
     return sorted === "asc"
-      ? <ChevronUp size={11} className="text-primary" />
-      : <ChevronDown size={11} className="text-primary" />;
+      ? <ChevronUp width={11} height={11} className="text-primary" />
+      : <ChevronDown width={11} height={11} className="text-primary" />;
   };
 
   /* ── shared cell surface ── */
@@ -336,7 +343,7 @@ export function UITable<T extends { id?: any }>({
                 type="button"
                 className="flex items-center gap-1 text-xs font-semibold text-destructive hover:text-destructive transition-colors"
               >
-                <Trash2 size={11} />
+                <Trash2 width={11} height={11} />
                 {t("ACTIONS.delete")}
               </button>
             </div>
@@ -376,7 +383,7 @@ export function UITable<T extends { id?: any }>({
                 }`}
                 aria-label={`${v} view`}
               >
-                {v === "table" ? <LayoutGrid size={14} /> : <Grid3X3 size={14} />}
+                {v === "table" ? <LayoutGrid width={14} height={14} /> : <Grid3X3 width={14} height={14} />}
               </button>
             ))}
           </div>
@@ -489,7 +496,7 @@ export function UITable<T extends { id?: any }>({
                                 className="flex size-7 items-center justify-center rounded-xl   text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all"
                                 aria-label="Quick view"
                               >
-                                <Eye size={13} />
+                                <Eye width={13} height={13} />
                               </button>
                             ) : (
                               flexRender(cell.column.columnDef.cell, cell.getContext())
@@ -562,7 +569,7 @@ export function UITable<T extends { id?: any }>({
                             onClick={() => setQuickItem(item)}
                             className="flex items-center gap-1.5 rounded-xl   px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-primary/10 hover:text-primary border border-border transition-all"
                           >
-                            <Eye size={12} />
+                            <Eye width={12} height={12} />
                             View
                           </button>
                         )}
@@ -615,7 +622,7 @@ export function UITable<T extends { id?: any }>({
                 className="flex h-8 w-8 items-center justify-center rounded-2xl   text-muted-foreground hover:bg-muted border border-border transition-all"
                 aria-label="Close"
               >
-                <X size={14} />
+                <X width={14} height={14} />
               </button>
             </div>
             <div className="h-px bg-border mx-6" />

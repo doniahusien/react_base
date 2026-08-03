@@ -29,6 +29,13 @@ export const en = {
     Dark: "Dark",
     Close: "Close",
   },
+  THEME_PRESET: {
+    title: "Theme Presets",
+    subtitle: "Choose your brand color scheme",
+    theme: "Theme",
+    tip: "Tip",
+    tipText: "Theme colors are applied dynamically. To make permanent changes, edit the CSS variables in",
+  },
   LOGIN: {
     secureAuth: "Secure Authentication",
     secureAuthDesc: "Enterprise-grade security",

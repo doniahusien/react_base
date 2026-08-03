@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useId, useCallback } from "react";
 import type { ComponentType } from "react";
-import { ChevronDown, X, Check } from "lucide-react";
+import { ChevronDownIcon as ChevronDown, XMarkIcon as X, CheckIcon as Check } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import api from "../../lib/axios";
 
@@ -80,11 +80,11 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
       <div className="relative" ref={ref}>
         {label && <label htmlFor={id} className={["block mb-1.5 text-sm font-medium select-none", hasError ? "text-destructive" : "text-foreground"].join(" ")}>{label}</label>}
         <div className={wrapperCls}>
-          {PrependIcon && <span className="pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center z-10"><PrependIcon size={15} className={hasError ? "text-destructive" : isOpen ? "text-primary" : "text-muted-foreground"} /></span>}
+          {PrependIcon && <span className="pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center z-10"><PrependIcon width={15} height={15} className={hasError ? "text-destructive" : isOpen ? "text-primary" : "text-muted-foreground"} /></span>}
           <button id={id} type="button" disabled={disabled} onClick={handleOpen} className={["flex w-full items-center gap-2 h-11 outline-none transition-all duration-200 py-0 px-4", PrependIcon ? "ps-11" : "", disabled ? "cursor-not-allowed" : "cursor-pointer"].filter(Boolean).join(" ")}>
             <span className="flex-1 truncate text-start text-sm">{display ? <span className="text-foreground">{display}</span> : <span className="text-transparent select-none">·</span>}</span>
-            {display && !disabled && <span role="button" tabIndex={0} onClick={handleClear} className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-muted transition-colors"><X size={11} className="text-muted-foreground" /></span>}
-            <ChevronDown size={15} className={`shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${hasError ? "text-destructive" : "text-muted-foreground"}`} />
+            {display && !disabled && <span role="button" tabIndex={0} onClick={handleClear} className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-muted transition-colors"><X width={11} height={11} className="text-muted-foreground" /></span>}
+            <ChevronDown width={15} height={15} className={`shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${hasError ? "text-destructive" : "text-muted-foreground"}`} />
           </button>
         </div>
         {isOpen && (
@@ -94,7 +94,7 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
                 : options.length === 0 ? <p className="px-4 py-2.5 text-sm text-muted-foreground">No options</p>
                 : options.map((opt) => (
                   <button key={opt.id} type="button" onClick={() => handleSelect(opt)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isSelected(opt) ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"}`}>
-                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-primary border-primary" : "border-border"}`}>{isSelected(opt) && <Check size={10} className="text-foreground" />}</span>
+                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-primary border-primary" : "border-border"}`}>{isSelected(opt) && <Check width={10} height={10} className="text-foreground" />}</span>
                     <span className="flex-1 truncate">{opt.name}</span>
                   </button>
                 ))}

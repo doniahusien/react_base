@@ -1,4 +1,4 @@
-import { Check, Columns2, Moon, PanelLeft, Rows3, Sun, X } from "lucide-react";
+import { CheckIcon as Check, ViewColumnsIcon as Columns2, MoonIcon as Moon, ListBulletIcon as PanelLeft, QueueListIcon as Rows3, SunIcon as Sun, XMarkIcon as X } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { useAppStore, type SidebarMode } from "../store";
 
@@ -115,7 +115,7 @@ export function ThemeCustomizer() {
             className="header-icon-btn"
             aria-label={t("THEME.Close")}
           >
-            <X size={16} />
+            <X width={16} height={16} />
           </button>
         </div>
 
@@ -139,7 +139,7 @@ export function ThemeCustomizer() {
                     <div className="mt-2 flex items-start justify-between gap-2 px-0.5">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <Icon size={13} className={active ? "text-primary" : "text-muted-foreground"} />
+                          <Icon width={13} height={13} className={active ? "text-primary" : "text-muted-foreground"} />
                           <span className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>
                             {layout.label}
                           </span>
@@ -148,7 +148,7 @@ export function ThemeCustomizer() {
                       </div>
                       {active && (
                         <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                          <Check size={12} strokeWidth={3} />
+                          <Check width={12} height={12} strokeWidth={3} />
                         </span>
                       )}
                     </div>
@@ -173,13 +173,13 @@ export function ThemeCustomizer() {
                 }`}
               >
                 <div className="mb-2 flex h-12 items-center justify-center rounded-lg border border-border bg-background">
-                  <Sun size={18} className="text-amber" />
+                  <Sun width={18} height={18} className="text-amber" />
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-foreground">{t("THEME.Light")}</span>
                   {theme === "light" && (
                     <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      <Check size={12} strokeWidth={3} />
+                      <Check width={12} height={12} strokeWidth={3} />
                     </span>
                   )}
                 </div>
@@ -194,13 +194,13 @@ export function ThemeCustomizer() {
                 }`}
               >
                 <div className="mb-2 flex h-12 items-center justify-center rounded-lg border border-border bg-muted">
-                  <Moon size={18} className="text-foreground" />
+                  <Moon width={18} height={18} className="text-foreground" />
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-foreground">{t("THEME.Dark")}</span>
                   {theme === "dark" && (
                     <span className="flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      <Check size={12} strokeWidth={3} />
+                      <Check width={12} height={12} strokeWidth={3} />
                     </span>
                   )}
                 </div>

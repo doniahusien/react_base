@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Check, X } from "lucide-react";
+import { PlusIcon as Plus, CheckIcon as Check, XMarkIcon as X } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 
 interface InlineAddRowProps {
@@ -84,7 +84,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
         className="group flex items-center gap-3 w-full px-5 py-4 rounded-2xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all duration-300"
       >
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary group-hover:scale-110 group-hover:rotate-90 transition-all duration-300">
-          <Plus size={20} />
+          <Plus width={20} height={20} />
         </div>
         <div className="text-left">
           <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -104,7 +104,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
       <div className="flex items-center justify-between pb-3 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-foreground">
-            <Plus size={16} />
+            <Plus width={16} height={16} />
           </div>
           <h3 className="text-sm font-bold text-foreground">Quick Add New Row</h3>
         </div>
@@ -114,7 +114,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           disabled={loading}
           className="flex items-center justify-center w-8 h-8 rounded-full hover:  transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
         >
-          <X size={16} />
+          <X width={16} height={16} />
         </button>
       </div>
 
@@ -167,7 +167,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           disabled={loading}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-foreground text-sm font-semibold hover:bg-secondary hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
         >
-          <Check size={16} />
+          <Check width={16} height={16} />
           <span>{loading ? "Saving..." : "Save"}</span>
         </button>
         <button
@@ -176,7 +176,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           disabled={loading}
           className="flex items-center gap-2 px-4 py-2 rounded-lg   text-foreground text-sm font-semibold hover:bg-muted hover:scale-105 active:scale-95 transition-all border border-border disabled:opacity-50 disabled:hover:scale-100"
         >
-          <X size={16} />
+          <X width={16} height={16} />
           <span>Cancel</span>
         </button>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { User, AtSign, Shield, Lock, Contact, X, Image as ImageIcon, LayoutDashboard, Users } from "lucide-react";
+import { UserIcon as User, AtSymbolIcon as AtSign, ShieldCheckIcon as Shield, LockClosedIcon as Lock, UserCircleIcon as Contact, XMarkIcon as X, PhotoIcon as ImageIcon, Squares2X2Icon as LayoutDashboard, UsersIcon as Users } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
 import { Form } from "../../components/Inputs/Form";
@@ -106,9 +106,9 @@ export default function UserForm() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"><X width={15} height={15} />{t("BUTTONS.cancel")}</button>
               <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm shadow-primary/30 hover:bg-secondary active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
-                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}
+                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield width={15} height={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>
             </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Earth, Pen, Shield, X, Image as ImageIcon, HandCoins, PackageCheck, LayoutDashboard, Phone } from "lucide-react";
+import { GlobeAltIcon as Earth, PencilSquareIcon as Pen, ShieldCheckIcon as Shield, XMarkIcon as X, PhotoIcon as ImageIcon, BanknotesIcon as HandCoins, CheckBadgeIcon as PackageCheck, Squares2X2Icon as LayoutDashboard, PhoneIcon as Phone } from "@heroicons/react/24/outline";
 import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
 import { Form } from "../../components/Inputs/Form";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
@@ -92,9 +92,9 @@ export default function CountryForm() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/countries")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"><X size={15} />{t("BUTTONS.cancel")}</button>
+              <button type="button" onClick={() => navigate("/countries")} className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"><X width={15} height={15} />{t("BUTTONS.cancel")}</button>
               <button type="submit" disabled={loadingForm || flagLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
-                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield size={15} />}
+                {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield width={15} height={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
               </button>
             </div>

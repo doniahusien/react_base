@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, Info, AlertTriangle, X } from "lucide-react";
+import { CheckCircleIcon as CheckCircle, XCircleIcon as XCircle, InformationCircleIcon as Info, ExclamationTriangleIcon as AlertTriangle, XMarkIcon as X } from "@heroicons/react/24/outline";
 import { useToastStore } from "../../stores/toast";
 import type { Toast } from "../../types/toast";
 
@@ -14,13 +14,13 @@ function ToastItem({ t }: { t: Toast }) {
   const { icon: Icon, cls, iconCls, titleCls, descCls } = config[t.type] ?? config.info;
   return (
     <div className={`flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-lg shadow-slate-950/10 backdrop-blur-sm ${cls}`} role="alert">
-      <Icon size={18} className={`mt-0.5 shrink-0 ${iconCls}`} />
+      <Icon width={18} height={18} className={`mt-0.5 shrink-0 ${iconCls}`} />
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-semibold ${titleCls}`}>{t.title}</p>
         {t.description && <p className={`text-xs mt-0.5 ${descCls}`}>{t.description}</p>}
       </div>
       <button onClick={() => removeToast(t.id)} className="shrink-0 opacity-50 hover:opacity-100 transition-opacity rounded p-0.5 hover:bg-foreground/10" aria-label="Dismiss">
-        <X size={13} />
+        <X width={13} height={13} />
       </button>
     </div>
   );

@@ -41,7 +41,7 @@ export function FilterInputText({ item }: { item: FilterTextItem }) {
     <div className="relative">
       {PrependIcon && (
         <span className="pointer-events-none absolute inset-y-0 start-0 flex w-10 items-center justify-center">
-          <PrependIcon size={16} className="text-muted-foreground" />
+          <PrependIcon width={16} height={16} className="text-muted-foreground" />
         </span>
       )}
       <input 
@@ -59,7 +59,7 @@ export function FilterInputText({ item }: { item: FilterTextItem }) {
       />
       {AppendIcon && (
         <span className="pointer-events-none absolute inset-y-0 end-0 flex w-10 items-center justify-center">
-          <AppendIcon size={16} className="text-muted-foreground" />
+          <AppendIcon width={16} height={16} className="text-muted-foreground" />
         </span>
       )}
     </div>
