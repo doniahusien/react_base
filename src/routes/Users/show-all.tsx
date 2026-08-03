@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Users, Search, Mail, Phone, MoreHorizontal, LayoutDashboard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
@@ -24,6 +24,7 @@ export default function UsersShowAll() {
   const [data, setData] = useState<UserData>({ data: [] });
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const anchorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const columns: TableColumn[] = [
     { index: 0, field: "name", header: t("TITLES.user") },
@@ -57,9 +58,14 @@ export default function UsersShowAll() {
       case "email": return <div className="flex items-center gap-1.5"><Mail size={14} className="shrink-0 text-muted-foreground" /><a href={`mailto:${item.email}`} className="text-sm text-primary hover:opacity-80 transition-colors">{item.email}</a></div>;
       case "phone": return item.phone ? <a href={`tel:${item.phone_code}${item.phone}`} className="flex items-center gap-1.5"><Phone size={14} className="shrink-0 text-muted-foreground" /><bdo dir="ltr" className="text-sm text-foreground">+{item.phone_code} {item.phone}</bdo></a> : <span className="text-sm text-muted-foreground">—</span>;
       case "actions": return (
-        <div className="relative w-9" onClick={(e) => e.stopPropagation()}>
-          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"><MoreHorizontal size={16} /></button>
-          {activeMenu === item.id && <ActionsMenu data={item} showUrl={`/users/${item.id}`} editUrl={`/users/form/${item.id}`} deleteUrl={`/users/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((u) => u.id !== item.id) })); setActiveMenu(null); }} />}
+        <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
+            onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
+          ><MoreHorizontal size={16} /></button>
+          {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} showUrl={`/users/${item.id}`} editUrl={`/users/form/${item.id}`} deleteUrl={`/users/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((u) => u.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
       default: return null;

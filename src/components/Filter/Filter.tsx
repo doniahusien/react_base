@@ -10,6 +10,15 @@ export interface FilterCheckboxOption {
   checked?: boolean;
 }
 
+export interface FilterItem {
+  key: string;
+  label?: string;
+  type?: "checkbox" | "radio" | "select" | "text";
+  options?: FilterCheckboxOption[];
+  placeholder?: string;
+  prependInputIcon?: ComponentType<{ size?: number; className?: string }>;
+}
+
 export interface FilterSection {
   key: string;
   label: string;
@@ -23,7 +32,8 @@ export interface FilterSection {
 }
 
 interface FilterProps {
-  sections: FilterSection[];
+  sections?: FilterSection[];
+  items?: FilterItem[];
   onApply?: () => void;
   onClear?: () => void;
   triggerButton?: React.ReactNode;
@@ -215,10 +225,18 @@ function FilterSectionComponent({
   );
 }
 
-export function Filter({ sections, onApply, onClear, triggerButton }: FilterProps) {
+export function Filter({ sections, items, onApply, onClear, triggerButton }: FilterProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [tempValues, setTempValues] = useState<Record<string, string>>({});
+  const normalizedSections: FilterSection[] = (sections ?? items?.map((item: FilterItem) => ({
+    key: item.key,
+    label: item.label ?? item.key,
+    type: item.type ?? "text",
+    placeholder: item.placeholder,
+    options: item.options,
+    icon: item.prependInputIcon,
+  })) ?? []);
   const [position, setPosition] = useState({ top: 0, right: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -239,18 +257,18 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
 
   // Initialize temp values from URL on mount
   useEffect(() => {
-    if (!sections || sections.length === 0) return;
+    if (normalizedSections.length === 0) return;
     
     const params = new URLSearchParams(window.location.search);
     const values: Record<string, string> = {};
-    sections.forEach((section) => {
+    normalizedSections.forEach((section) => {
       const value = params.get(section.key);
       if (value) {
         values[section.key] = value;
       }
     });
     setTempValues(values);
-  }, [sections]);
+  }, [normalizedSections]);
 
   const handleTempChange = (key: string, value: string) => {
     setTempValues((prev) => ({
@@ -264,9 +282,9 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
     setTempValues({});
     
     // Clear URL params
-    if (sections && sections.length > 0) {
+    if (normalizedSections.length > 0) {
       const p = new URLSearchParams(window.location.search);
-      sections.forEach((section) => {
+      normalizedSections.forEach((section) => {
         p.delete(section.key);
       });
       window.history.pushState({}, "", `${window.location.pathname}?${p.toString()}`);
@@ -277,7 +295,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
   };
 
   const handleApply = () => {
-    if (!sections || sections.length === 0) {
+    if (normalizedSections.length === 0) {
       onApply?.();
       setIsOpen(false);
       return;
@@ -286,7 +304,7 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
     // Apply temp values to URL
     const p = new URLSearchParams(window.location.search);
     
-    sections.forEach((section) => {
+    normalizedSections.forEach((section: FilterSection) => {
       const value = tempValues[section.key];
       if (value) {
         p.set(section.key, value);
@@ -385,8 +403,8 @@ export function Filter({ sections, onApply, onClear, triggerButton }: FilterProp
 
           {/* Scrollable Filter Sections */}
           <div className="flex-1 overflow-y-auto">
-            {sections && sections.length > 0 ? (
-              sections.map((section) => (
+            {normalizedSections.length > 0 ? (
+              normalizedSections.map((section: FilterSection) => (
                 <FilterSectionComponent 
                   key={section.key} 
                   section={section} 

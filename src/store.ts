@@ -120,7 +120,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const itemId = `item-${href}`;
     const exists = current.find(p => p.id === itemId);
 
-    const newPinned = exists
+    const newPinned: PinnedItem[] = exists
       ? current.filter(p => p.id !== itemId)
       : [...current, { id: itemId, type: "item", href }];
 
@@ -132,7 +132,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const groupItemHrefs = groupItems.map(item => item.href);
     const hasAnyPinned = current.some(p => p.type === "item" && p.href && groupItemHrefs.includes(p.href));
 
-    let newPinned;
+    let newPinned: PinnedItem[];
     if (hasAnyPinned) {
       newPinned = current.filter(p => !(p.type === "item" && p.href && groupItemHrefs.includes(p.href)));
     } else {

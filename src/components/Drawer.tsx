@@ -38,6 +38,11 @@ import type { NavGroup, NavItem } from "../types/sidebar";
 import type { PinnedItem } from "../store";
 import { Tooltip } from "./Tooltip";
 
+function getTextValue(value: React.ReactNode | string | undefined): string {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  return "";
+}
+
 function isItemActive(href: string, pathname: string) {
   return href === "/" ? pathname === "/" : pathname.endsWith(href);
 }
@@ -67,7 +72,7 @@ function SortablePinnedItem({
     <div ref={setNodeRef} style={style} {...attributes} className="relative">
       {!disabled && (
         <div className="-left-5 absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing z-10" {...listeners}>
-          <GripVertical className="w-3.5 h-3.5 text-foreground-30" />
+          <GripVertical className="size-3.5 text-foreground-30" />
         </div>
       )}
       {children}
@@ -195,7 +200,7 @@ export function Drawer() {
 
   // flattened list for search/modal (include children)
   const allItemsFlat: NavItem[] = groups.flatMap(g => g.items.flatMap(item => [item, ...(item.children ?? [])]));
-  const searchResults: NavItem[] = searchQuery.trim() === "" ? [] : allItemsFlat.filter(i => ((i.labelStr || i.label || "").toLowerCase().includes(searchQuery.toLowerCase())));
+  const searchResults: NavItem[] = searchQuery.trim() === "" ? [] : allItemsFlat.filter(i => getTextValue(i.labelStr || i.label).toLowerCase().includes(searchQuery.toLowerCase()));
 
   // default command sections when search is empty
   const goToItems = groups.flatMap(g => g.items);
@@ -214,19 +219,20 @@ export function Drawer() {
   const systemWithIdx = systemCommands.map((s, i) => ({ ...s, idx: goToWithIdx.length + i }));
   const prefsWithIdx = preferences.map((p, i) => ({ ...p, idx: goToWithIdx.length + systemWithIdx.length + i }));
 
-  const makeKeyHint = (label?: string) => {
-    if (!label) return "";
-    const words = label.split(/\s+/).filter(Boolean);
+  const makeKeyHint = (label?: React.ReactNode) => {
+    const text = getTextValue(label);
+    if (!text) return "";
+    const words = text.split(/\s+/).filter(Boolean);
     if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
-    return label.slice(0,2).toUpperCase();
+    return text.slice(0,2).toUpperCase();
   };
 
   // build displayed items list for keyboard navigation
   const displayedItems = searchQuery.trim() === "" ? [
-    ...goToItems.map(it => ({ type: 'page', label: it.label, subtitle: it.labelStr, icon: it.icon, href: it.href, keyHint: makeKeyHint(it.labelStr || it.label) })),
-    ...systemCommands.map(s => ({ type: 'system', label: s.label, subtitle: s.subtitle, icon: s.icon, action: s.action, keyHint: s.shortcut })),
-    ...preferences.map(p => ({ type: 'pref', label: p.label, subtitle: p.subtitle, icon: p.icon, action: p.action, keyHint: p.shortcut })),
-  ] : searchResults.map(it => ({ type: 'page', label: it.label, subtitle: it.labelStr, icon: it.icon, href: it.href, keyHint: makeKeyHint(it.labelStr || it.label) }));
+    ...goToItems.map(it => ({ type: 'page', label: it.label, subtitle: it.labelStr, icon: it.icon, href: it.href, action: undefined, keyHint: makeKeyHint(it.labelStr || it.label) })),
+    ...systemCommands.map(s => ({ type: 'system', label: s.label, subtitle: s.subtitle, icon: s.icon, href: undefined, action: s.action, keyHint: s.shortcut })),
+    ...preferences.map(p => ({ type: 'pref', label: p.label, subtitle: p.subtitle, icon: p.icon, href: undefined, action: p.action, keyHint: p.shortcut })),
+  ] : searchResults.map(it => ({ type: 'page', label: it.label, subtitle: it.labelStr, icon: it.icon, href: it.href, action: undefined, keyHint: makeKeyHint(it.labelStr || it.label) }));
 
   useEffect(() => {
     if (!searchModalOpen) return;
@@ -757,7 +763,9 @@ export function Drawer() {
                             key={`goto-${item.href}-${idx}`}
                             to={item.href}
                             onClick={() => { setSearchModalOpen(false); if (mobileOpen) setSidebarOpen(false); }}
-                            ref={(el) => (itemRefs.current[idx] = el)}
+                            ref={(el) => {
+                              itemRefs.current[idx] = el;
+                            }}
                             className={cls}
                           >
                             <item.icon className="w-4 h-4 text-foreground-70" />
@@ -780,7 +788,7 @@ export function Drawer() {
                         const selected = selectedIndex === idx;
                         const cls = `w-full flex items-center justify-between gap-3 px-3 py-3 ${selected ? 'bg-primary-soft' : 'hover:bg-primary-soft'}`;
                         return (
-                          <button key={cmd.id} onClick={() => { cmd.action(); setSearchModalOpen(false); }} ref={(el) => (itemRefs.current[idx] = el)} className={cls}>
+                          <button key={cmd.id} onClick={() => { cmd.action(); setSearchModalOpen(false); }} ref={(el) => { itemRefs.current[idx] = el; }} className={cls}>
                             <div className="flex items-center gap-3">
                               <cmd.icon className="w-4 h-4 text-foreground-70" />
                               <div className="truncate text-left">
@@ -803,7 +811,7 @@ export function Drawer() {
                         const selected = selectedIndex === idx;
                         const cls = `w-full flex items-center gap-3 px-3 py-3 ${selected ? 'bg-primary-soft' : 'hover:bg-primary-soft'}`;
                         return (
-                          <button key={pref.id} onClick={() => { pref.action(); setSearchModalOpen(false); }} ref={(el) => (itemRefs.current[idx] = el)} className={cls}>
+                          <button key={pref.id} onClick={() => { pref.action(); setSearchModalOpen(false); }} ref={(el) => { itemRefs.current[idx] = el; }} className={cls}>
                             <pref.icon className="w-4 h-4 text-foreground-70" />
                             <div className="truncate text-left">
                               <div className="text-sm font-medium text-foreground truncate">{pref.label}</div>
@@ -825,7 +833,9 @@ export function Drawer() {
                         key={`${item.href}-${idx}`}
                         to={item.href}
                         onClick={() => { setSearchModalOpen(false); setSearchQuery(""); if (mobileOpen) setSidebarOpen(false); }}
-                        ref={(el) => (itemRefs.current[idx] = el)}
+                        ref={(el) => {
+                          itemRefs.current[idx] = el;
+                        }}
                         className={cls}
                       >
                         <span className="text-foreground-70"><item.icon className="w-4 h-4" /></span>

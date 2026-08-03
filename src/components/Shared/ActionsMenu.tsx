@@ -1,9 +1,12 @@
+import { useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { Eye, Pencil } from "lucide-react";
 import { Deleter } from "./Deleter";
 import { useTranslation } from "react-i18next";
 
 interface ActionsMenuProps {
+  anchorEl?: HTMLElement | null;
   data: any;
   showUrl?: string;
   editUrl?: string;
@@ -14,13 +17,37 @@ interface ActionsMenuProps {
 }
 
 export function ActionsMenu({
-  data, showUrl, editUrl, deleteUrl, onReload, onRemove, children,
+  anchorEl, data, showUrl, editUrl, deleteUrl, onReload, onRemove, children,
 }: ActionsMenuProps) {
   const { t } = useTranslation();
-  return (
-    <div data-id={data?.id} onClick={(e) => e.stopPropagation()} className="absolute inset-e-0 top-[calc(100%+8px)] z-50 w-40">
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-black/10">
-        {/* single-color accent line using the primary token */}
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!anchorEl || !menuRef.current) {
+      setPosition(null);
+      return;
+    }
+
+    const rect = anchorEl.getBoundingClientRect();
+    const top = rect.bottom + 2;
+    const left = rect.right - 180; // width 400px approximate
+    setPosition({ top, left });
+  }, [anchorEl]);
+
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
+    <div
+      ref={menuRef}
+      data-id={data?.id}
+      onClick={(e) => e.stopPropagation()}
+      className="fixed z-[9999] w-40 overflow-visible"
+      style={position ? { top: position.top, left: position.left } : { visibility: "hidden" }}
+    >
+      <div className="relative overflow-visible rounded-b-2xl border border-border bg-card shadow-xl shadow-black/10">
         <div className="h-0.5 w-full bg-primary opacity-60" />
         <div className="p-1.5 space-y-0.5">
           {showUrl && (
@@ -56,7 +83,8 @@ export function ActionsMenu({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

@@ -170,7 +170,7 @@ export function UITable<T extends { id?: any }>({
                 type="checkbox"
                 checked={table.getIsAllRowsSelected()}
                 onChange={table.getToggleAllRowsSelectedHandler()}
-                className="h-3.5 w-3.5 rounded accent-primary cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+                className="size-3.5 rounded accent-primary cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
               />
               <span className="text-[11px] font-semibold text-muted/80">#</span>
             </div>
@@ -313,7 +313,7 @@ export function UITable<T extends { id?: any }>({
   /* ── shared cell surface ── */
   const cellBase =
     "bg-card px-3 py-3.5 text-foreground align-middle transition-all duration-150 shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)]";
-  const cellHover = "group-hover:bg-muted";
+  const cellHover = "group-hover:bg-card/20";
   const cellSelected = "bg-primary/10";
 
   return (
@@ -467,7 +467,7 @@ export function UITable<T extends { id?: any }>({
                               width: cell.column.getSize(),
                               minWidth: cell.column.getSize(),
                               boxSizing: "border-box",
-                              ...(cell.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 10 } : {}),
+                              ...(cell.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 10, overflow: "visible" } : {}),
                             }}
                             className={`${cellBase} ${cellHover} ${selected ? cellSelected : "bg-panel"} ${
                               isFirst ? "rounded-s-2xl" : ""

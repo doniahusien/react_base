@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Earth, Search, Phone, MoreHorizontal, LayoutDashboard } from "lucide-react";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Filter, type FilterSection } from "../../components/Filter/Filter";
@@ -22,6 +22,7 @@ export default function CountriesShowAll() {
   const [data, setData] = useState<CountryData>({ data: [] });
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const anchorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const columns: TableColumn[] = [
     { index: 0, field: "flag", header: t("TITLES.flag") as ReactNode },
@@ -36,10 +37,10 @@ export default function CountriesShowAll() {
   const filterSections: FilterSection[] = [
     { 
       key: "keyword", 
-      label: t("TITLES.search", { count: t("TITLES.country") }),
+      label: t("TITLES.search", { count: 1 }),
       icon: Search,
       type: "text",
-      placeholder: t("TITLES.search", { count: t("TITLES.country") }),
+      placeholder: t("TITLES.search", { count: 1 }),
       defaultOpen: true
     }
   ];
@@ -102,9 +103,14 @@ export default function CountriesShowAll() {
       case "currency": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-text">{item.currency ?? "—"}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/countries/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
-        <div className="relative w-9" onClick={(e) => e.stopPropagation()}>
-          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"><MoreHorizontal size={16} /></button>
-          {activeMenu === item.id && <ActionsMenu data={item} editUrl={`/countries/form/${item.id}`} deleteUrl={`/countries/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
+        <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
+            onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
+            className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
+          ><MoreHorizontal size={16} /></button>
+          {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} editUrl={`/countries/form/${item.id}`} deleteUrl={`/countries/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
       default: return null;

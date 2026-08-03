@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Earth, Search, MoreHorizontal, LayoutDashboard } from "lucide-react";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
@@ -18,6 +18,7 @@ export default function CitiesShowAll() {
   const [data, setData] = useState<CityData>({ data: [] });
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const anchorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const columns: TableColumn[] = [
     { index: 0, field: "name", header: t("TITLES.name"), sortable: true },
@@ -46,9 +47,14 @@ export default function CitiesShowAll() {
       case "created_at": return <span className="text-sm text-muted">{new Date(item.created_at).toLocaleDateString()}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/cities/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
-        <div className="relative w-9" onClick={(e) => e.stopPropagation()}>
-          <button type="button" onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))} className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-accent hover:text-primary transition-all"><MoreHorizontal size={16} /></button>
-          {activeMenu === item.id && <ActionsMenu data={item} editUrl={`/cities/form/${item.id}`} deleteUrl={`/cities/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
+        <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
+            onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
+            className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-accent hover:text-primary transition-all"
+          ><MoreHorizontal size={16} /></button>
+          {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} editUrl={`/cities/form/${item.id}`} deleteUrl={`/cities/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
       default: return null;
