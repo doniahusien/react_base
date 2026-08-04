@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { PhotoIcon as Images, CloudArrowUpIcon as CloudUpload, CheckIcon as Check, SparklesIcon as Sparkles } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { BaseFilesInput, type FileOutputItem } from "./BaseFilesInput";
+import { Button } from "../UI/Button";
 import { AvatarCustomizer } from "./AvatarCustomizer";
 import api from "../../lib/axios";
 import { toast } from "../../stores/toast";
@@ -333,14 +334,13 @@ export function AvatarPicker({
             <p className="text-xs text-muted-foreground mb-4">
               {t("LABELS.customizeAvatarHint") || "Choose style, colors, and accessories"}
             </p>
-            <button
+            <Button
               type="button"
               onClick={handleShowCustomizer}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 transition-all"
             >
               <Sparkles width={15} height={15} />
               {t("BUTTONS.startCustomizing") || "Start Customizing"}
-            </button>
+            </Button>
           </div>
         </div>
       )}

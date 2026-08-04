@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Squares2X2Icon as LayoutDashboard, UsersIcon as Users, PencilIcon as Edit, AtSymbolIcon as AtSign, PhoneIcon as Phone, CubeIcon as Package, HeartIcon as Heart, MapPinIcon as MapPin, CalendarDaysIcon as CalendarDays, ShieldCheckIcon as ShieldCheck, ShieldExclamationIcon as ShieldOff, NoSymbolIcon as Ban, StarIcon as Star, UserCircleIcon as UserCircle } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "../../components/UI/PageHeader";
+import { Button } from "../../components/UI/Button";
 import { Skeleton } from "../../components/UI/Skeleton";
 import { Deleter } from "../../components/Shared/Deleter";
 import { ImagePreviewTrigger } from "../../components/UI/ImagePreview";
@@ -92,9 +93,10 @@ export default function UserShow() {
             {user.phone && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><Phone width={13} height={13} /><bdo dir="ltr">+{user.phone_code} {user.phone}</bdo></span>}
             {user.created_at && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><CalendarDays width={13} height={13} />{formatDate(user.created_at)}</span>}
             <div className="flex items-center gap-2">
-              <button type="button" onClick={() => navigate(`/users/form/${user.id}`)} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all">
-                <Edit width={14} height={14} />{t("TITLES.edit", { count: "" as any })}
-              </button>
+              <Button type="button" variant="soft" onClick={() => navigate(`/users/form/${user.id}`)}>
+                <Edit width={14} height={14} />
+                {t("TITLES.edit", { count: "" as any })}
+              </Button>
               <Deleter url={`/users/${user.id}`} onReload={() => navigate("/users")} />
             </div>
           </>

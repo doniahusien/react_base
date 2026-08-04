@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AtSymbolIcon as AtSign, LockClosedIcon as Lock, MoonIcon as Moon, SunIcon as Sun } from "@heroicons/react/24/outline";
+import { AtSymbolIcon as AtSign, LockClosedIcon as Lock, MoonIcon as Moon, SunIcon as Sun, ArrowRightIcon as ArrowRight } from "@heroicons/react/24/outline";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
+import { Button } from "../../components/UI/Button";
 import { Form } from "../../components/Inputs/Form";
 import { ThemePresetSelectorCompact } from "../../components/ThemePresetSelector";
 import { useAuthStore } from "../../stores/auth";
@@ -392,20 +393,13 @@ export default function Login() {
                     {...field("password", errors)}
                   />
 
-                  <button
+                  <Button
                     type="submit"
-                    disabled={loading}
-                    className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-none bg-primary text-sm font-bold text-primary-foreground shadow-[0_12px_30px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-secondary hover:shadow-[0_18px_36px_color-mix(in_srgb,var(--color-primary)_38%,transparent)] active:translate-y-0 sm:h-14 sm:text-base disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                    loading={loading}
+                    className="mt-4 h-12 w-full rounded-2xl text-sm font-bold shadow-[0_12px_30px_color-mix(in_srgb,var(--color-primary)_30%,transparent)] hover:-translate-y-0.5 hover:bg-secondary hover:shadow-[0_18px_36px_color-mix(in_srgb,var(--color-primary)_38%,transparent)] active:translate-y-0 sm:h-14 sm:text-base"
                   >
-                    {loading ? (
-                      <>
-                        <span className="inline-block h-4 w-4 sm:h-5 sm:w-5 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
-                        <span>{t("LOGIN.authenticating")}</span>
-                      </>
-                    ) : (
-                      t("TITLES.login")
-                    )}
-                  </button>
+                    {t("TITLES.login")}
+                  </Button>
                 </>
               )}
             </Form>

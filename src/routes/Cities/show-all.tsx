@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard, AdjustmentsHorizontalIcon as SlidersHorizontal } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
+import { Button } from "../../components/UI/Button";
 import { Filter, type FilterSection } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { Switcher } from "../../components/Shared/Switcher";
@@ -93,13 +94,10 @@ export default function CitiesShowAll() {
             onApply={fetchData} 
             onClear={fetchData}
             triggerButton={
-              <button
-                type="button"
-                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-foreground text-sm font-semibold hover:bg-secondary transition-all shadow-sm"
-              >
+              <Button type="button" variant="primary">
                 <SlidersHorizontal width={18} height={18} />
                 <span>{t("TITLES.filters")}</span>
-              </button>
+              </Button>
             }
           />
         }

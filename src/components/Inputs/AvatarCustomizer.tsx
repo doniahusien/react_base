@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckIcon as Check, ArrowPathIcon as RefreshCw } from "@heroicons/react/24/outline";
+import { Button } from "../UI/Button";
 
 interface AvatarCustomizerProps {
   onConfirm: (avatarUrl: string) => void;
@@ -292,21 +293,20 @@ export function AvatarCustomizer({ onConfirm, onCancel }: AvatarCustomizerProps)
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 border-t border-border px-6 py-4 shrink-0">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={onCancel}
-            className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"
           >
             {t("BUTTONS.cancel") || "Cancel"}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={handleConfirm}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 transition-all"
           >
             <Check width={15} height={15} />
             {t("BUTTONS.useThisAvatar") || "Use This Avatar"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import { AvatarPicker } from "../../components/Inputs/AvatarPicker";
 import { BasePhoneInput } from "../../components/Inputs/BasePhoneInput";
 import { SectionCard } from "../../components/Shared/SectionCard";
 import { Skeleton } from "../../components/UI/Skeleton";
+import { Button } from "../../components/UI/Button";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
 import type { UserFormValues } from "../../types/user";
@@ -108,11 +109,14 @@ export default function UserForm() {
               </div>
             </SectionCard>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button type="button" onClick={() => navigate("/users")} className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"><X width={15} height={15} />{t("BUTTONS.cancel")}</button>
-              <button type="submit" disabled={loadingForm || imageLoading} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm shadow-primary/30 hover:bg-secondary active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
+              <Button type="button" variant="secondary" onClick={() => navigate("/users")}>
+                <X width={15} height={15} />
+                {t("BUTTONS.cancel")}
+              </Button>
+              <Button type="submit" loading={loadingForm} disabled={imageLoading}>
                 {loadingForm ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" /> : <Shield width={15} height={15} />}
                 {editing ? t("BUTTONS.saveChanges") : t("BUTTONS.add")}
-              </button>
+              </Button>
             </div>
           </div>
         )}

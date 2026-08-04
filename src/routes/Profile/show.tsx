@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { UserIcon as User, AtSymbolIcon as AtSign, PhoneIcon as Phone, ShieldCheckIcon as Shield, PencilIcon as Pencil, Squares2X2Icon as LayoutDashboard, UserCircleIcon as UserCircle, EnvelopeIcon as Mail, CalendarIcon as Calendar } from "@heroicons/react/24/outline";
 import { useAuthStore } from "../../stores/auth";
 import { PageHeader } from "../../components/UI/PageHeader";
+import { Button } from "../../components/UI/Button";
 import { ImagePreviewTrigger } from "../../components/UI/ImagePreview";
 
 function InfoRow({ icon: Icon, label, children }: { icon: any; label: string; children: any }) {
@@ -33,10 +34,10 @@ export default function ProfileShow() {
                 {user.role}
               </span>
             )}
-            <button type="button" onClick={() => navigate("/profile/edit")} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all">
+            <Button type="button" variant="soft" onClick={() => navigate("/profile/edit")}>
               <Pencil width={14} height={14} />
               {t("PROFILE.editTitle")}
-            </button>
+            </Button>
           </>
         }
       />
@@ -50,7 +51,10 @@ export default function ProfileShow() {
               {user.image ? <ImagePreviewTrigger src={user.image} alt={user.name || user.full_name} className="size-20 rounded-full border-4 border-card object-cover shadow-lg" wrapperClassName="rounded-full" /> : <div className="flex size-20 items-center justify-center rounded-full border-4 border-card bg-primary text-2xl font-black text-foreground shadow-lg">{initials || <User width={28} height={28} />}</div>}
               <span className="absolute bottom-1 inset-e-1 size-4 rounded-full border-2 border-card bg-success" />
             </div>
-            <button type="button" onClick={() => navigate("/profile/edit")} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><Pencil width={14} height={14} />{t("PROFILE.editTitle")}</button>
+            <Button type="button" variant="soft" onClick={() => navigate("/profile/edit")}>
+              <Pencil width={14} height={14} />
+              {t("PROFILE.editTitle")}
+            </Button>
           </div>
           <div className="mt-3"><h2 className="text-xl font-black text-foreground">{user.full_name || user.name || "—"}</h2>{user.role && <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-semibold text-success-foreground capitalize">{user.role}</span>}</div>
         </div>

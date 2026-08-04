@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, PhoneIcon as Phone, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard, AdjustmentsHorizontalIcon as SlidersHorizontal } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
+import { Button } from "../../components/UI/Button";
 import { Filter, type FilterSection } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { Switcher } from "../../components/Shared/Switcher";
@@ -118,10 +119,10 @@ export default function CountriesShowAll() {
               onApply={fetchData} 
               onClear={fetchData}
               triggerButton={
-                <button type="button" className="modern-filter-btn">
-                  <SlidersHorizontal className="modern-filter-icon" />
+                <Button type="button" variant="primary">
+                  <SlidersHorizontal width={18} height={18} />
                   <span>{t("TITLES.filters")}</span>
-                </button>
+                </Button>
               }
             />
           }

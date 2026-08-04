@@ -14,6 +14,7 @@ import {
   KeyIcon as KeyRound,
 } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
+import { Button } from "../../components/UI/Button";
 import { useAuthStore } from "../../stores/auth";
 import Cookies from "js-cookie";
 import { Form } from "../../components/Inputs/Form";
@@ -130,25 +131,20 @@ function ChangePasswordDialog({
                 {...field("password_confirmation", errors)}
               />
               <div className="flex items-center justify-end gap-3 pt-2">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={onClose}
-                  className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-all"
                 >
                   <X width={14} height={14} /> {t("BUTTONS.cancel")}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  disabled={loading}
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60 transition-all"
+                  loading={loading}
                 >
-                  {loading ? (
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                  ) : (
-                    <Shield width={14} height={14} />
-                  )}
+                  <Shield width={14} height={14} />
                   {t("BUTTONS.saveChanges")}
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -252,14 +248,15 @@ export default function ProfileEdit() {
                     onLoadingChange={setImgLoad}
                   />
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="soft"
                   onClick={() => setPwOpen(true)}
-                  className="inline-flex items-center gap-2 self-start rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"
+                  className="self-start"
                 >
                   <KeyRound width={14} height={14} />
                   {t("PROFILE.changePassword")}
-                </button>
+                </Button>
               </div>
             </SectionCard>
 
@@ -339,26 +336,22 @@ export default function ProfileEdit() {
               </SectionCard>
             </div>
             <div className="flex items-center justify-end gap-3 pt-2 pb-4">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={() => navigate("/profile")}
-                className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
               >
                 <X width={15} height={15} />
                 {t("BUTTONS.cancel")}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={loading || imageLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-60 transition-all"
+                loading={loading}
+                disabled={imageLoading}
               >
-                {loading ? (
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                ) : (
-                  <Shield width={15} height={15} />
-                )}
+                <Shield width={15} height={15} />
                 {t("BUTTONS.saveChanges")}
-              </button>
+              </Button>
             </div>
           </div>
         )}
