@@ -11,9 +11,6 @@ import {
   QueueListIcon as Rows3, 
   SunIcon as Sun, 
   XMarkIcon as X,
-  Square3Stack3DIcon as Layers,
-  CubeIcon as Cube,
-  Squares2X2Icon as Grid,
   EyeIcon as Eye
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
@@ -21,8 +18,7 @@ import {
   useAppStore, 
   type SidebarMode,
   type FontFamily,
-  type BorderRadius,
-  type Density 
+  type BorderRadius
 } from "../store";
 
 // ============================================================================
@@ -32,12 +28,10 @@ import {
 function LivePreview({ 
   fontFamily, 
   borderRadius, 
-  density,
   theme 
 }: { 
   fontFamily: FontFamily; 
   borderRadius: BorderRadius; 
-  density: Density;
   theme: "light" | "dark";
 }) {
   const fontMap: Record<FontFamily, string> = {
@@ -54,15 +48,8 @@ function LivePreview({
     xl: 'rounded-2xl'
   };
 
-  const densityMap: Record<Density, { padding: string; gap: string; text: string }> = {
-    compact: { padding: 'p-2', gap: 'gap-1', text: 'text-xs' },
-    normal: { padding: 'p-3', gap: 'gap-2', text: 'text-sm' },
-    comfortable: { padding: 'p-4', gap: 'gap-3', text: 'text-base' }
-  };
-
   const font = fontMap[fontFamily];
   const radius = radiusMap[borderRadius];
-  const { padding, gap, text } = densityMap[density];
   const bgClass = theme === 'dark' ? 'bg-[#0a0a0b]' : 'bg-[#f7f8fa]';
   const cardClass = theme === 'dark' ? 'bg-[#18181b]' : 'bg-white';
   const textClass = theme === 'dark' ? 'text-[#e4e4e7]' : 'text-[#475569]';
@@ -78,10 +65,10 @@ function LivePreview({
       
       <div className={`${bgClass} ${font} overflow-hidden rounded-lg border ${borderClass} h-32 relative`}>
         {/* Mini Header */}
-        <div className={`${cardClass} ${borderClass} border-b ${padding} flex items-center justify-between`}>
+        <div className={`${cardClass} ${borderClass} border-b p-3 flex items-center justify-between`}>
           <div className="flex items-center gap-1.5">
             <div className={`${radius} size-2 bg-primary`} />
-            <div className={`${radius} ${text} ${textClass} font-semibold`}>Dashboard</div>
+            <div className={`${radius} text-sm ${textClass} font-semibold`}>Dashboard</div>
           </div>
           <div className="flex items-center gap-1">
             <div className={`${radius} size-1.5 bg-muted`} />
@@ -90,24 +77,24 @@ function LivePreview({
         </div>
 
         {/* Mini Content */}
-        <div className={`${padding} ${gap} flex flex-col`}>
+        <div className="p-3 gap-2 flex flex-col">
           {/* Card 1 */}
-          <div className={`${cardClass} ${borderClass} ${radius} border ${padding} flex items-center ${gap}`}>
+          <div className={`${cardClass} ${borderClass} ${radius} border p-3 flex items-center gap-2`}>
             <div className={`${radius} bg-primary/20 w-6 h-6 flex items-center justify-center`}>
               <div className="size-3 rounded-full bg-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className={`${radius} ${text} ${textClass} font-medium truncate`}>Sample Card</div>
+              <div className={`${radius} text-sm ${textClass} font-medium truncate`}>Sample Card</div>
               <div className={`${radius} text-[10px] ${mutedClass} truncate`}>Preview content</div>
             </div>
-            <div className={`${radius} bg-primary ${text} text-primary-foreground px-2 py-0.5 font-semibold`}>
+            <div className={`${radius} bg-primary text-sm text-primary-foreground px-2 py-0.5 font-semibold`}>
               New
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className={`${cardClass} ${borderClass} ${radius} border ${padding} flex items-center justify-between`}>
-            <div className={`${text} ${textClass} font-medium`}>Settings</div>
+          <div className={`${cardClass} ${borderClass} ${radius} border p-3 flex items-center justify-between`}>
+            <div className={`text-sm ${textClass} font-medium`}>Settings</div>
             <div className={`${radius} size-1.5 bg-primary`} />
           </div>
         </div>
@@ -212,8 +199,6 @@ export function ThemeCustomizerEnhanced() {
     setFontFamily,
     borderRadius,
     setBorderRadius,
-    density,
-    setDensity,
   } = useAppStore();
 
   const LAYOUTS: {
@@ -254,12 +239,6 @@ export function ThemeCustomizerEnhanced() {
     { id: "md", label: "Medium", description: "Balanced (default)" },
     { id: "lg", label: "Large", description: "Rounded look" },
     { id: "xl", label: "Extra Large", description: "Very rounded" },
-  ];
-
-  const DENSITIES: { id: Density; label: string; description: string; icon: typeof Grid }[] = [
-    { id: "compact", label: "Compact", description: "More content, less space", icon: Grid },
-    { id: "normal", label: "Normal", description: "Balanced spacing", icon: Layers },
-    { id: "comfortable", label: "Comfortable", description: "Spacious layout", icon: Cube },
   ];
 
   if (!customizerOpen) return null;
@@ -303,7 +282,6 @@ export function ThemeCustomizerEnhanced() {
           <LivePreview 
             fontFamily={fontFamily}
             borderRadius={borderRadius}
-            density={density}
             theme={theme}
           />
 
@@ -453,44 +431,6 @@ export function ThemeCustomizerEnhanced() {
                       </p>
                       <p className="text-xs text-muted-foreground">{r.description}</p>
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Density Section */}
-          <section>
-            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-              {t("THEME_CUSTOMIZER.density") || "Spacing Density"}
-            </h3>
-            <div className="grid grid-cols-1 gap-2">
-              {DENSITIES.map((d) => {
-                const active = density === d.id;
-                const Icon = d.icon;
-                return (
-                  <button
-                    key={d.id}
-                    type="button"
-                    onClick={() => setDensity(d.id)}
-                    className={`flex items-center gap-3 rounded-lg border p-3 text-start transition-all ${
-                      active
-                        ? "border-primary ring-1 ring-primary bg-primary/5"
-                        : "border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <div className={`flex size-10 items-center justify-center rounded-lg ${active ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                      <Icon width={20} height={20} />
-                    </div>
-                    <div className="flex-1">
-                      <p className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>
-                        {d.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{d.description}</p>
-                    </div>
-                    {active && (
-                      <Check width={16} height={16} className="text-primary shrink-0" strokeWidth={3} />
-                    )}
                   </button>
                 );
               })}

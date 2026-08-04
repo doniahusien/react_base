@@ -104,7 +104,7 @@
   }
 
   body {
-    @apply relative min-h-screen bg-background font-changa text-foreground transition-colors duration-300;
+    @apply relative min-h-screen bg-background font-sans text-foreground transition-colors duration-300;
   }
 
   body::before {

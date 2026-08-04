@@ -8,7 +8,6 @@ export type ThemeIntent = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
 export type FontFamily = "inter" | "system" | "changa";
 export type BorderRadius = "none" | "sm" | "md" | "lg" | "xl";
-export type Density = "compact" | "normal" | "comfortable";
 
 function getInitialLocale(): Locale {
   try { return (localStorage.getItem("locale") as Locale) || "en"; } catch { return "en"; }
@@ -47,15 +46,6 @@ function getInitialBorderRadius(): BorderRadius {
     return "md";
   } catch {
     return "md";
-  }
-}
-function getInitialDensity(): Density {
-  try {
-    const stored = localStorage.getItem("density");
-    if (stored === "compact" || stored === "normal" || stored === "comfortable") return stored;
-    return "normal";
-  } catch {
-    return "normal";
   }
 }
 function getInitialCollapsed(): boolean {
@@ -118,10 +108,6 @@ function applyBorderRadius(value: BorderRadius) {
   document.documentElement.style.setProperty('--radius-xl', radii.xl);
 }
 
-function applyDensity(value: Density) {
-  document.documentElement.setAttribute('data-density', value);
-}
-
 interface PinnedItem {
   id: string;
   type: "item" | "group";
@@ -138,7 +124,6 @@ interface AppStore {
   systemPreference: ResolvedTheme;
   fontFamily: FontFamily;
   borderRadius: BorderRadius;
-  density: Density;
   sidebarCollapsed: boolean;
   sidebarMode: SidebarMode;
   sidebarOpen: boolean;
@@ -152,7 +137,6 @@ interface AppStore {
   setSystemPreference: (v: ResolvedTheme) => void;
   setFontFamily: (v: FontFamily) => void;
   setBorderRadius: (v: BorderRadius) => void;
-  setDensity: (v: Density) => void;
   setSidebarCollapsed: (v: boolean) => void;
   setSidebarMode: (v: SidebarMode) => void;
   setSidebarOpen: (v: boolean) => void;
@@ -167,12 +151,10 @@ const initialLang = getInitialLocale();
 const initialTheme = getInitialTheme();
 const initialFontFamily = getInitialFontFamily();
 const initialBorderRadius = getInitialBorderRadius();
-const initialDensity = getInitialDensity();
 applyTheme(initialTheme);
 applyDirection(initialLang);
 applyFontFamily(initialFontFamily);
 applyBorderRadius(initialBorderRadius);
-applyDensity(initialDensity);
 
 export const useAppStore = create<AppStore>((set, get) => ({
   lang: initialLang,
@@ -181,7 +163,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
   systemPreference: getSystemPreference(),
   fontFamily: initialFontFamily,
   borderRadius: initialBorderRadius,
-  density: initialDensity,
   sidebarCollapsed: getInitialCollapsed(),
   sidebarMode: getInitialMode(),
   sidebarOpen: false,
@@ -219,11 +200,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
     localStorage.setItem("borderRadius", v);
     applyBorderRadius(v);
     set({ borderRadius: v });
-  },
-  setDensity: (v) => {
-    localStorage.setItem("density", v);
-    applyDensity(v);
-    set({ density: v });
   },
   setSidebarCollapsed: (v) => {
     localStorage.setItem("sidebarCollapsed", v ? "1" : "0");
