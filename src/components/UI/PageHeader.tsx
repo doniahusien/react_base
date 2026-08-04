@@ -33,30 +33,47 @@ export function PageHeader({
   const { t } = useTranslation();
   return (
     <div className="mb-6">
-      {/* Breadcrumb */}
-      {path.length > 0 && (
-        <div className="mb-4">
-          <BannerBreadcrumb
-            items={path.map((seg) =>
-              typeof seg === "string"
-                ? { label: t(`TITLES.${seg}`) }
-                : { label: t(`TITLES.${seg.label}`), href: seg.href, icon: seg.icon }
-            )}
-            showHome={showHomeBreadcrumb}
-            separator={breadcrumbSeparator}
-            variant={breadcrumbVariant}
-          />
-        </div>
-      )}
-
       {/* Header Card */}
-      <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card to-card/50 px-6 py-6 lg:px-8 lg:py-7 shadow-sm">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-card via-card/80 to-card/60 p-6 shadow-sm [--ph-grad-start:color-mix(in_srgb,var(--color-primary)_18%,var(--color-card))] [--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_8%,var(--color-card))] [--ph-overlay:var(--color-card)] [--ph-orb:color-mix(in_srgb,var(--color-secondary)_14%,transparent)] dark:[--ph-grad-start:color-mix(in_srgb,var(--color-primary)_10%,var(--color-card))] dark:[--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_4%,var(--color-card))] dark:[--ph-overlay:var(--color-card)] dark:[--ph-orb:color-mix(in_srgb,var(--color-secondary)_10%,transparent)]">
+        {/* Wave Background (filled organic shape) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <svg className="absolute left-0 top-0 w-full h-48 lg:h-56" viewBox="0 0 1600 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            <defs>
+              <linearGradient id="phGrad" x1="0" x2="1">
+                <stop offset="0%" stopColor="var(--ph-grad-start)" stopOpacity="0.95" />
+                <stop offset="60%" stopColor="var(--ph-grad-mid)" stopOpacity="0.95" />
+              </linearGradient>
+            </defs>
+            {/* soft colored fill matching card top */}
+            <path d="M0,120 C160,40 320,30 520,70 C720,110 880,170 1040,150 C1200,130 1360,80 1600,110 L1600 0 L0 0 Z" fill="url(#phGrad)" />
+            {/* subtle pale overlay to emulate paper card shape */}
+            <path d="M0,140 C180,90 340,70 540,100 C740,130 900,180 1080,160 C1260,140 1440,90 1600,120 L1600 300 L0 300 Z" fill="var(--ph-overlay)" opacity="0.96" />
+            {/* accent orb on right */}
+            <circle cx="1300" cy="60" r="64" fill="var(--ph-orb)" opacity="0.14" />
+          </svg>
+        </div>
+
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(var(--color-foreground)_1px,transparent_1px),linear-gradient(90deg,var(--color-foreground)_1px,transparent_1px)] bg-[length:20px_20px]" />
-        
+         
         {/* Gradient Orbs */}
         <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full pointer-events-none opacity-[0.08] bg-[radial-gradient(circle,var(--color-primary),transparent_70%)] blur-[60px]" />
         <div className="absolute -bottom-20 -right-20 w-48 h-48 rounded-full pointer-events-none opacity-[0.08] bg-[radial-gradient(circle,var(--color-secondary),transparent_70%)] blur-[60px]" />
+ 
+        {path.length > 0 && (
+          <div className="mb-8 w-full relative z-20">
+            <BannerBreadcrumb
+              items={path.map((seg) =>
+                typeof seg === "string"
+                  ? { label: t(`TITLES.${seg}`) }
+                  : { label: t(`TITLES.${seg.label}`), href: seg.href, icon: seg.icon }
+              )}
+              showHome={showHomeBreadcrumb}
+              separator={breadcrumbSeparator}
+              variant={breadcrumbVariant}
+            />
+          </div>
+        )}
 
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
           {/* Left: Title Section */}
@@ -64,7 +81,7 @@ export function PageHeader({
             {Icon && (
               <div className="relative shrink-0">
                 <div className="absolute inset-0 rounded-2xl bg-primary/10 animate-pulse" style={{ animationDuration: '3s' }} />
-                <div className="relative w-14 h-14 p-3 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/10 backdrop-blur-sm border border-primary/20 text-primary transition-transform hover:scale-105 hover:rotate-6">
+                <div className="relative w-14 h-14 p-3 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/10 backdrop-blur-sm text-primary transition-transform hover:scale-105 hover:rotate-6">
                   <Icon className="w-full h-full" />
                 </div>
               </div>

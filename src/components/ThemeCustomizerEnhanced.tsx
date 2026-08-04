@@ -13,6 +13,7 @@ import {
   XMarkIcon as X,
   EyeIcon as Eye
 } from "@heroicons/react/24/outline";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { 
   useAppStore, 
@@ -21,6 +22,7 @@ import {
   type FontSize,
   type BorderRadius
 } from "../store";
+import { applyBrandTheme, brandPresets } from "../theme-presets";
 
 // ============================================================================
 // Live Preview Component
@@ -206,6 +208,24 @@ export function ThemeCustomizerEnhanced() {
     setBorderRadius,
   } = useAppStore();
 
+  const [selectedPreset, setSelectedPreset] = useState<string>(() => {
+    try {
+      return localStorage.getItem('selected-brand-theme') || 'purple';
+    } catch {
+      return 'purple';
+    }
+  });
+
+  const handleBrandThemeSelect = (themeKey: string) => {
+    applyBrandTheme(themeKey);
+    setSelectedPreset(themeKey);
+    try {
+      localStorage.setItem('selected-brand-theme', themeKey);
+    } catch {
+      // Fail silently if localStorage isn't available
+    }
+  };
+
   const LAYOUTS: {
     id: SidebarMode;
     label: string;
@@ -260,7 +280,7 @@ export function ThemeCustomizerEnhanced() {
     <div className="fixed inset-0 z-[100] flex justify-end">
       <button
         type="button"
-        className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-background/60"
         aria-label={t("THEME.Close")}
         onClick={() => setCustomizerOpen(false)}
       />
@@ -331,6 +351,52 @@ export function ThemeCustomizerEnhanced() {
                         </span>
                       )}
                     </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Theme Preset Section */}
+          <section>
+            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              {t("THEME_PRESET.title") || "Theme Presets"}
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {Object.entries(brandPresets).map(([key, preset]) => {
+                const active = selectedPreset === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleBrandThemeSelect(key)}
+                    className={`group rounded-3xl border p-3 text-left transition-all ${
+                      active
+                        ? "border-primary ring-1 ring-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <div
+                        className="h-12 w-12 rounded-2xl shadow-sm ring-1 ring-black/5"
+                        style={{ backgroundColor: preset.brand500 }}
+                      />
+                      <div
+                        className="h-12 w-12 rounded-2xl shadow-sm ring-1 ring-black/5"
+                        style={{ backgroundColor: preset.brand600 }}
+                      />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>
+                        {preset.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{preset.description}</p>
+                    </div>
+                    {active && (
+                      <span className="mt-3 inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
+                        {t("BUTTONS.selected") || "Selected"}
+                      </span>
+                    )}
                   </button>
                 );
               })}

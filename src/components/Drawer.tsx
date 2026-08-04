@@ -562,11 +562,11 @@ export function Drawer() {
         </nav>
         <div className="relative z-10 p-3 shrink-0">
           <div className="drawer-divider h-px mb-3" />
-          {showLabel && user && <a href="/profile" onClick={() => { if (isMobileDrawer) setSidebarOpen(false); }} className="drawer-user-card flex items-center gap-2.5 px-2.5 py-2 mb-2 rounded-xl transition-all duration-200">
+         {/*  {showLabel && user && <a href="/profile" onClick={() => { if (isMobileDrawer) setSidebarOpen(false); }} className="drawer-user-card flex items-center gap-2.5 px-2.5 py-2 mb-2 rounded-xl transition-all duration-200">
             {user.image ? <img src={user.image} alt={user.name} className="size-8 rounded-full object-cover ring-2 ring-primary/25 shrink-0" /> : <div className="size-8 rounded-full drawer-avatar shrink-0 flex items-center justify-center text-xs font-bold text-primary">{(user.name ?? user.full_name ?? "?")[0].toUpperCase()}</div>}
             <div className="flex-1 overflow-hidden leading-tight min-w-0"><p className="text-xs font-semibold text-foreground-80 truncate">{user.name ?? user.full_name}</p><p className="text-[10px] text-foreground-50 truncate">{user.email ?? "Admin"}</p></div>
             <ChevronRightIcon className="w-3 h-3 text-foreground-20 shrink-0" />
-          </a>}
+          </a>} */}
           {!isMobileDrawer && collapsed && user && <Tooltip content={user.name ?? user.full_name ?? "Profile"}><a href="/profile" className="flex justify-center mb-2">{user.image ? <img src={user.image} alt={user.name} className="size-8 rounded-full object-cover ring-2 ring-primary/25" /> : <div className="size-8 rounded-full drawer-avatar flex items-center justify-center text-xs font-bold text-primary">{(user.name ?? user.full_name ?? "?")[0].toUpperCase()}</div>}</a></Tooltip>}
           {!showLabel ? (
             <Tooltip content={t("SIDEBAR.Logout")} disabled={isMobileDrawer}>

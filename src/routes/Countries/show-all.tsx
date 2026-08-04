@@ -102,23 +102,30 @@ export default function CountriesShowAll() {
         addHref="/countries/form" 
         addLabel="country" 
         path={[{ label: "home", href: "/", icon: LayoutDashboard }, { label: "countries", icon: Earth }]} 
-        rightActions={
-          <Filter 
-            sections={filterSections} 
-            onApply={fetchData} 
-            onClear={fetchData}
-            triggerButton={
-              <button type="button" className="modern-filter-btn">
-                <SlidersHorizontal className="modern-filter-icon" />
-                <span>{t("TITLES.filters")}</span>
-              </button>
-            }
-          />
-        }
       />
       
       <div className="modern-content-area">
-        <UITable data={data} columns={columns} title="countries" loading={loading} renderCell={renderCell} renderQuickView={renderQuickView} />
+        <UITable 
+          data={data} 
+          columns={columns} 
+          title="countries" 
+          loading={loading} 
+          renderCell={renderCell} 
+          renderQuickView={renderQuickView}
+          filters={
+            <Filter 
+              sections={filterSections} 
+              onApply={fetchData} 
+              onClear={fetchData}
+              triggerButton={
+                <button type="button" className="modern-filter-btn">
+                  <SlidersHorizontal className="modern-filter-icon" />
+                  <span>{t("TITLES.filters")}</span>
+                </button>
+              }
+            />
+          }
+        />
       </div>
     </div>
   );

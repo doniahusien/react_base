@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Bars3Icon as Menu, MoonIcon as Moon, SunIcon as Sun, Cog6ToothIcon as Settings2 } from "@heroicons/react/24/outline";
 import { Drawer } from "./Drawer";
 import { ThemeCustomizerEnhanced } from "./ThemeCustomizerEnhanced";
-import { ThemePresetSelectorCompact } from "./ThemePresetSelector";
 import { LanguageRefreshManager } from "./LanguageRefreshManager";
 import { useAppStore } from "../store";
 import { useAuthStore } from "../stores/auth";
@@ -78,9 +77,6 @@ export function Layout({ children }: LayoutProps) {
               )}
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
-              {/* Theme Preset Selector */}
-              <ThemePresetSelectorCompact />
-              
               <div className="header-pill">
                 <button
                   type="button"
@@ -141,7 +137,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-8 lg:p-10">{children}</main>
+        <main className="flex-1 overflow-auto p-5">{children}</main>
       </div>
     </div>
   );

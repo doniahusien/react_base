@@ -80,7 +80,14 @@ export default function CitiesShowAll() {
         addHref="/cities/form" 
         addLabel="city" 
         path={[{ label: "home", href: "/", icon: LayoutDashboard }, { label: "cities", icon: Earth }]} 
-        rightActions={
+      />
+      <UITable 
+        data={data} 
+        columns={columns} 
+        title="cities" 
+        loading={loading} 
+        renderCell={renderCell} 
+        filters={
           <Filter 
             sections={filterSections} 
             onApply={fetchData} 
@@ -97,7 +104,6 @@ export default function CitiesShowAll() {
           />
         }
       />
-      <UITable data={data} columns={columns} title="cities" loading={loading} renderCell={renderCell} />
     </div>
   );
 }

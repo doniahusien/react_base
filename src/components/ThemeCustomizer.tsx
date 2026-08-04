@@ -93,7 +93,7 @@ export function ThemeCustomizer() {
     <div className="fixed inset-0 z-[100] flex justify-end">
       <button
         type="button"
-        className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-background/60"
         aria-label={t("THEME.Close")}
         onClick={() => setCustomizerOpen(false)}
       />

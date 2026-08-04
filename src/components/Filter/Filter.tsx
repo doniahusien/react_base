@@ -227,34 +227,12 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
     options: item.options,
     icon: item.prependInputIcon,
   })) ?? []);
-  const [position, setPosition] = useState<{ top: number; left?: number; right?: number }>({ top: 0, right: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
   // Count active filters
   const activeFilterCount = Object.values(tempValues).filter(v => v).length;
 
-  // Calculate position based on trigger button
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      const isRTL = document.documentElement.dir === 'rtl';
-      
-      if (isRTL) {
-        // For RTL, position from the left
-        setPosition({
-          top: rect.bottom + window.scrollY + 8,
-          left: rect.left + window.scrollX
-        });
-      } else {
-        // For LTR, position from the right
-        setPosition({
-          top: rect.bottom + window.scrollY + 8,
-          right: window.innerWidth - rect.right - window.scrollX
-        });
-      }
-    }
-  }, [isOpen]);
 
   // Initialize temp values from URL on mount
   useEffect(() => {
@@ -359,27 +337,26 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
   return (
     <>
       {/* Trigger Button with badge */}
-      <div ref={triggerRef} onClick={() => setIsOpen(!isOpen)} className="relative">
-        {triggerButton}
-        {activeFilterCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-5 h-5 px-1.5 bg-primary text-foreground text-xs font-bold rounded-full shadow-lg animate-bounce">
-            {activeFilterCount}
-          </span>
-        )}
-      </div>
+      <div className="relative">
+        <div ref={triggerRef} onClick={() => setIsOpen(!isOpen)} className="inline-flex relative">
+          {triggerButton}
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-5 h-5 px-1.5 bg-primary text-foreground text-xs font-bold rounded-full shadow-lg animate-bounce">
+              {activeFilterCount}
+            </span>
+          )}
+        </div>
 
-      {/* Floating Filter Panel - Positioned relative to trigger button */}
-      {isOpen && (
-        <div
-          ref={panelRef}
-          className="fixed w-[340px] max-h-[calc(100vh-100px)] overflow-hidden bg-card rounded-2xl z-50 flex flex-col border border-border backdrop-blur-sm"
-          style={{ 
-            top: `${position.top}px`,
-            ...(position.left !== undefined ? { left: `${position.left}px` } : { right: `${position.right}px` }),
-            animation: "slideInRight 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-            boxShadow: "0 20px 60px color-mix(in srgb, var(--color-foreground) 15%, transparent), 0 0 0 1px color-mix(in srgb, var(--color-foreground) 5%, transparent), 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent)"
-          }}
-        >
+        {/* Floating Filter Panel - Positioned relative to trigger button */}
+        {isOpen && (
+          <div
+            ref={panelRef}
+            className="absolute top-full mt-3 right-0 w-[340px] max-h-[calc(100vh-120px)] overflow-hidden bg-card rounded-2xl z-50 flex flex-col border border-border backdrop-blur-sm shadow-2xl"
+            style={{
+              animation: "slideInRight 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+              boxShadow: "0 20px 60px color-mix(in srgb, var(--color-foreground) 15%, transparent), 0 0 0 1px color-mix(in srgb, var(--color-foreground) 5%, transparent), 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent)",
+            }}
+          >
           {/* Decorative gradient top */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/70 to-primary animate-gradient" />
           
@@ -440,6 +417,7 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
           </div>
         </div>
       )}
+      </div>
 
       <style>{`
         @keyframes fadeIn {

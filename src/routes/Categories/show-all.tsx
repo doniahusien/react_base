@@ -98,7 +98,14 @@ export default function CategoriesShowAll() {
           { label: "home", href: "/", icon: LayoutDashboard }, 
           { label: "categories", icon: Library }
         ]} 
-        rightActions={
+      />
+      <UITable 
+        data={data} 
+        columns={columns} 
+        title="categories" 
+        loading={loading} 
+        renderCell={renderCell} 
+        filters={
           <Filter 
             sections={filterSections} 
             onApply={fetchData} 
@@ -115,7 +122,6 @@ export default function CategoriesShowAll() {
           />
         }
       />
-      <UITable data={data} columns={columns} title="categories" loading={loading} renderCell={renderCell} />
     </div>
   );
 }

@@ -31,7 +31,7 @@ export function BannerBreadcrumb({
   const renderSeparator = () => {
     if (variant === "arrow") return null; // Arrow variant doesn't use separators
     
-    const baseClass = "text-muted-foreground/30 shrink-0 mx-1";
+    const baseClass = "text-foreground-50 shrink-0 mx-1 dark:text-foreground-30";
     
     switch (separator) {
       case "slash":
@@ -63,21 +63,21 @@ export function BannerBreadcrumb({
             <span key={i} className="inline-flex items-center gap-1 animate-in fade-in slide-in-from-left-2" style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'backwards' }}>
               {i > 0 && renderSeparator()}
               {isLast ? (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 text-primary font-semibold text-sm max-w-[240px] truncate border border-primary/20 shadow-sm">
-                  {Icon && <Icon width={16} height={16} className="shrink-0 animate-pulse" style={{ animationDuration: '2s' }} />}
+              <span className="inline-flex items-center gap-2 text-foreground font-semibold text-sm max-w-[240px] truncate">
+                  {Icon && <Icon width={16} height={16} className="shrink-0" />}
                   <span className="truncate">{seg.label}</span>
                 </span>
               ) : (
                 <a 
                   href={seg.href ?? "#"} 
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card/50 hover:bg-card text-muted-foreground hover:text-foreground transition-all duration-200 text-sm max-w-[200px] truncate group border border-transparent hover:border-border hover:shadow-sm hover:scale-[1.02] active:scale-100"
+                  className="inline-flex items-center gap-2 text-foreground-70 hover:text-foreground transition-colors duration-200 text-sm max-w-[200px] truncate group"
                   aria-current={isLast ? "page" : undefined}
                 >
                   {Icon && (
                     <Icon 
                       width={isHome ? 16 : 16} 
                       height={isHome ? 16 : 16} 
-                      className="shrink-0 opacity-60 group-hover:opacity-100 transition-all group-hover:scale-110" 
+                      className="shrink-0 opacity-70 group-hover:opacity-100 transition-all group-hover:scale-110" 
                     />
                   )}
                   <span className="truncate">{seg.label}</span>
@@ -115,7 +115,7 @@ export function BannerBreadcrumb({
                   {Icon && <Icon width={14} height={14} className="shrink-0 opacity-70 group-hover:opacity-100 transition-opacity" />}
                   <span className="truncate relative">
                     {seg.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
+                    <span className="absolute bottom-0 left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full" />
                   </span>
                 </a>
               )}
