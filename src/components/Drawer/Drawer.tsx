@@ -1,0 +1,448 @@
+import { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  ChartBarIcon,
+  UsersIcon,
+  GlobeAltIcon,
+  BookOpenIcon,
+  PlusCircleIcon,
+  LockClosedIcon,
+  Cog6ToothIcon,
+  BellIcon,
+  BoltIcon,
+  MoonIcon,
+  LanguageIcon,
+} from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
+import { useAppStore } from "../../store";
+import { useAuthStore } from "../../stores/auth";
+import type { NavGroup, NavItem } from "../../types/sidebar";
+import { getTextValue, isItemActive, makeKeyHint, getIsMac, getShortcutLabel } from "./utils";
+import { DrawerHeader } from "./DrawerHeader";
+import { DrawerSearch } from "./DrawerSearch";
+import { DrawerNavContent } from "./DrawerNavContent";
+import { DrawerUserProfile } from "./DrawerUserProfile";
+import { DrawerCommandPalette } from "./DrawerCommandPalette";
+import { DrawerHorizontalLayout } from "./DrawerHorizontalLayout";
+import { DrawerTwoColumnLayout } from "./DrawerTwoColumnLayout";
+
+export function Drawer() {
+  const { t, i18n } = useTranslation();
+  const {
+    lang,
+    sidebarCollapsed,
+    sidebarMode,
+    sidebarOpen,
+    setSidebarOpen,
+    pinnedItemsV2,
+    togglePinItem,
+    togglePinGroup,
+    reorderPinnedItems,
+    activeNavGroupKey,
+    setActiveNavGroupKey,
+  } = useAppStore();
+  const { clearAuth, user } = useAuthStore();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [chordBuffer, setChordBuffer] = useState("");
+  const chordTimer = useRef<number | null>(null);
+
+  const isMac = getIsMac();
+  const shortcutLabel = getShortcutLabel();
+
+  // Keyboard shortcuts for opening search modal
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchModalOpen(true);
+        return;
+      }
+      if (e.key === "Escape") {
+        if (searchModalOpen) {
+          setSearchModalOpen(false);
+        } else {
+          setSearchQuery("");
+        }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [searchModalOpen]);
+
+  const groups: NavGroup[] = [
+    {
+      groupKey: "groupMain",
+      groupLabelStr: "Main",
+      items: [
+        {
+          href: "/",
+          label: t("SIDEBAR.Dashboard"),
+          labelStr: "Dashboard",
+          icon: ChartBarIcon,
+        },
+      ],
+    },
+    {
+      groupKey: "groupManagement",
+      groupLabelStr: "Management",
+      items: [
+        {
+          href: "/users",
+          label: t("SIDEBAR.Users"),
+          labelStr: "Users",
+          icon: UsersIcon,
+          children: [
+            {
+              href: "/users",
+              label: t("TITLES.viewAll"),
+              labelStr: "Users",
+              icon: UsersIcon,
+            },
+            {
+              href: "/users/form",
+              label: t("TITLES.add", { count: t("TITLES.user") as any }),
+              labelStr: "Add User",
+              icon: PlusCircleIcon,
+            },
+          ],
+        },
+        {
+          href: "/categories",
+          label: t("SIDEBAR.Categories"),
+          labelStr: "Categories",
+          icon: BookOpenIcon,
+          children: [
+            {
+              href: "/categories",
+              label: t("TITLES.viewAll"),
+              labelStr: "Category",
+              icon: BookOpenIcon,
+            },
+            {
+              href: "/categories/form",
+              label: t("TITLES.add", { count: t("TITLES.category") as any }),
+              labelStr: "Add Category",
+              icon: PlusCircleIcon,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      groupKey: "groupPlaces",
+      groupLabelStr: "Places",
+      items: [
+        {
+          href: "/countries",
+          label: t("SIDEBAR.Countries"),
+          labelStr: "Countries",
+          icon: GlobeAltIcon,
+        },
+        {
+          href: "/cities",
+          label: t("SIDEBAR.Cities"),
+          labelStr: "Cities",
+          icon: GlobeAltIcon,
+        },
+      ],
+    },
+  ];
+
+  const collapsed = sidebarCollapsed;
+  const mode = sidebarMode;
+  const locale = lang;
+  const isHorizontal = mode === "horizontal";
+  const isTwoColumn = mode === "two-column";
+  const mobileOpen = sidebarOpen;
+
+  const groupIcon = (groupKey: string) => {
+    if (groupKey === "groupManagement") return UsersIcon;
+    if (groupKey === "groupPlaces") return GlobeAltIcon;
+    return ChartBarIcon;
+  };
+
+  const findGroupKeyForPath = (path: string) => {
+    for (const g of groups) {
+      for (const item of g.items) {
+        if (isItemActive(item.href, path)) return g.groupKey;
+        for (const child of item.children ?? []) {
+          if (isItemActive(child.href, path)) return g.groupKey;
+        }
+      }
+    }
+    return groups[0]?.groupKey ?? null;
+  };
+
+  useEffect(() => {
+    if (!isTwoColumn) return;
+    const matched = findGroupKeyForPath(pathname);
+    if (matched && matched !== activeNavGroupKey) {
+      setActiveNavGroupKey(matched);
+    } else if (!activeNavGroupKey && groups[0]) {
+      setActiveNavGroupKey(groups[0].groupKey);
+    }
+  }, [pathname, isTwoColumn]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const activeGroup = groups.find((g) => g.groupKey === activeNavGroupKey) ?? groups[0] ?? null;
+
+  // Flattened list for search/modal (include children)
+  const allItemsFlat: NavItem[] = groups.flatMap((g) =>
+    g.items.flatMap((item) => [item, ...(item.children ?? [])])
+  );
+  const searchResults: NavItem[] =
+    searchQuery.trim() === ""
+      ? []
+      : allItemsFlat.filter((i) =>
+          getTextValue(i.labelStr || i.label).toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+  // Default command sections when search is empty
+  const goToItems = groups.flatMap((g) => g.items);
+  const systemCommands = [
+    {
+      id: "lock",
+      label: t("SIDEBAR.LockTerminal"),
+      subtitle: t("SIDEBAR.LockTerminalDesc"),
+      icon: LockClosedIcon,
+      shortcut: isMac ? "⌘L" : "Ctrl+L",
+      action: () => console.log("Lock"),
+    },
+    {
+      id: "settings",
+      label: t("SIDEBAR.TerminalSettings"),
+      subtitle: t("SIDEBAR.TerminalSettingsDesc"),
+      icon: Cog6ToothIcon,
+      shortcut: isMac ? "⌘," : "Ctrl+,",
+      action: () => console.log("Settings"),
+    },
+    {
+      id: "notifications",
+      label: t("SIDEBAR.Notifications"),
+      subtitle: t("SIDEBAR.NotificationsDesc"),
+      icon: BellIcon,
+      shortcut: "",
+      action: () => console.log("Notifications"),
+    },
+    {
+      id: "sidekick",
+      label: t("SIDEBAR.SidekickAI"),
+      subtitle: t("SIDEBAR.SidekickAIDesc"),
+      icon: BoltIcon,
+      shortcut: isMac ? "⌘." : "Ctrl+.",
+      action: () => console.log("Sidekick"),
+    },
+  ];
+  const preferences = [
+    {
+      id: "dark",
+      label: t("SIDEBAR.ToggleDarkMode"),
+      subtitle: t("SIDEBAR.ToggleDarkModeDesc"),
+      icon: MoonIcon,
+      shortcut: "",
+      action: () => document.documentElement.classList.toggle("dark"),
+    },
+    {
+      id: "lang",
+      label: t("SIDEBAR.ChangeLanguage"),
+      subtitle: t("SIDEBAR.ChangeLanguageDesc"),
+      icon: LanguageIcon,
+      shortcut: "",
+      action: () => i18n.changeLanguage(i18n.language === "en" ? "ar" : "en"),
+    },
+  ];
+
+  // Global Ctrl/Cmd + two-letter chord handler
+  useEffect(() => {
+    const keyMap = new Map<string, any>();
+    const allCandidates = [
+      ...goToItems.map((it) => ({
+        type: "page",
+        href: it.href,
+        action: undefined,
+        key: makeKeyHint(it.labelStr || it.label),
+        label: it.label,
+      })),
+      ...systemCommands.map((s) => ({
+        type: "system",
+        href: undefined,
+        action: s.action,
+        key: makeKeyHint(s.label),
+        label: s.label,
+      })),
+      ...preferences.map((p) => ({
+        type: "pref",
+        href: undefined,
+        action: p.action,
+        key: makeKeyHint(p.label),
+        label: p.label,
+      })),
+    ];
+    for (const c of allCandidates) if (c.key) keyMap.set(c.key.toUpperCase(), c);
+
+    const handler = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      if (e.key.toLowerCase() === "k") return;
+      const ch = e.key.length === 1 && /[a-z]/i.test(e.key) ? e.key.toUpperCase() : null;
+      if (!ch) return;
+      e.preventDefault();
+
+      setChordBuffer((prev) => {
+        const next = (prev + ch).slice(-2).toUpperCase();
+        if (chordTimer.current) window.clearTimeout(chordTimer.current);
+        const match = keyMap.get(next);
+        if (match) {
+          if (match.type === "page" && match.href) {
+            setTimeout(() => navigate(match.href), 0);
+          } else if (match.action) {
+            setTimeout(() => {
+              try {
+                match.action();
+              } catch (err) {
+                console.error(err);
+              }
+            }, 0);
+          }
+          chordTimer.current = null;
+          return "";
+        }
+        chordTimer.current = window.setTimeout(() => setChordBuffer(""), 800);
+        return next;
+      });
+    };
+    window.addEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+      if (chordTimer.current) window.clearTimeout(chordTimer.current);
+    };
+  }, [goToItems, systemCommands, preferences, navigate]);
+
+  const sidebarContent = (isMobileDrawer = false) => {
+    const showLabel = isMobileDrawer || !collapsed;
+
+    return (
+      <>
+        <div className="drawer-orb drawer-orb-top" aria-hidden="true" />
+        <div className="drawer-orb drawer-orb-bottom" aria-hidden="true" />
+        <div className="drawer-noise" aria-hidden="true" />
+
+        <DrawerHeader
+          collapsed={collapsed}
+          isMobileDrawer={isMobileDrawer}
+          shortcutLabel={shortcutLabel}
+          onSearchClick={() => setSearchModalOpen(true)}
+        />
+
+        <div className="mx-3.5 drawer-divider h-px mb-2" />
+
+        {showLabel && (
+          <DrawerSearch
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searchResults={searchResults}
+            shortcutLabel={shortcutLabel}
+            onModalClick={() => setSearchModalOpen(true)}
+          />
+        )}
+
+        <DrawerNavContent
+          groups={groups}
+          pinnedItemsV2={pinnedItemsV2}
+          searchQuery={searchQuery}
+          searchResults={searchResults}
+          collapsed={collapsed}
+          isMobileDrawer={isMobileDrawer}
+          pathname={pathname}
+          openSubMenu={openSubMenu}
+          setOpenSubMenu={setOpenSubMenu}
+          togglePinItem={togglePinItem}
+          togglePinGroup={togglePinGroup}
+          reorderPinnedItems={reorderPinnedItems}
+          onMobileClose={() => setSidebarOpen(false)}
+        />
+
+      </>
+    );
+  };
+
+  return (
+    <div dir={locale === "ar" ? "rtl" : "ltr"} className={locale === "ar" ? "text-right" : "text-left"}>
+      {/* Horizontal Layout */}
+      {isHorizontal && <DrawerHorizontalLayout groups={groups} pathname={pathname} locale={locale} />}
+
+      {/* Two-Column Layout */}
+      {!isHorizontal && isTwoColumn && (
+        <DrawerTwoColumnLayout
+          groups={groups}
+          activeGroup={activeGroup}
+          activeNavGroupKey={activeNavGroupKey}
+          setActiveNavGroupKey={setActiveNavGroupKey}
+          groupIcon={groupIcon}
+          user={user}
+          clearAuth={clearAuth}
+          pathname={pathname}
+          openSubMenu={openSubMenu}
+          setOpenSubMenu={setOpenSubMenu}
+          togglePinItem={togglePinItem}
+          pinnedItemsV2={pinnedItemsV2}
+          locale={locale}
+        />
+      )}
+
+      {/* Standard Sidebar Layout */}
+      {!isHorizontal && !isTwoColumn && (
+        <div
+          className={`drawer-shell fixed inset-y-0 start-0 z-50 hidden flex-col overflow-hidden transition-all duration-300 lg:flex ${
+            collapsed ? "w-[4.5rem]" : "w-64"
+          }`}
+        >
+          {sidebarContent(false)}
+        </div>
+      )}
+
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-background-70 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile Drawer */}
+      <div
+        className={`drawer-shell fixed inset-y-0 start-0 z-50 flex w-72 flex-col transition-transform duration-300 ease-in-out lg:hidden ${
+          mobileOpen
+            ? "translate-x-0"
+            : locale === "ar"
+            ? "translate-x-full"
+            : "-translate-x-full"
+        }`}
+        aria-label="Mobile navigation"
+      >
+        {sidebarContent(true)}
+      </div>
+
+      {/* Command Palette */}
+      <DrawerCommandPalette
+        isOpen={searchModalOpen}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchResults={searchResults}
+        goToItems={goToItems}
+        systemCommands={systemCommands}
+        preferences={preferences}
+        selectedIndex={selectedIndex}
+        setSelectedIndex={setSelectedIndex}
+        onClose={() => setSearchModalOpen(false)}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setSidebarOpen(false)}
+      />
+    </div>
+  );
+}

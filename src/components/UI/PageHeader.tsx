@@ -36,7 +36,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   const { t } = useTranslation();
   return (
-    <div className="mb-6">
+    <div className="mb-5">
       {/* Header Card */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-card via-card/80 to-card/60 p-6 shadow-sm [--ph-grad-start:color-mix(in_srgb,var(--color-primary)_18%,var(--color-card))] [--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_8%,var(--color-card))] [--ph-overlay:var(--color-card)] [--ph-orb:color-mix(in_srgb,var(--color-secondary)_14%,transparent)] dark:[--ph-grad-start:color-mix(in_srgb,var(--color-primary)_10%,var(--color-card))] dark:[--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_4%,var(--color-card))] dark:[--ph-overlay:var(--color-card)] dark:[--ph-orb:color-mix(in_srgb,var(--color-secondary)_10%,transparent)]">
         {/* Wave Background (filled organic shape) */}
