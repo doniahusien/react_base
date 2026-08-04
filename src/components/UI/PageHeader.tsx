@@ -5,7 +5,9 @@ import { BannerBreadcrumb } from "./BannerBreadcrumb";
 
 interface PageHeaderProps {
   title: string;
-  subtitle?: string;
+  translateTitle?: boolean; // Default true
+  subtitle?: string | React.ReactNode;
+  translateSubtitle?: boolean; // Default true for strings
   icon?: React.ComponentType<any>;
   total?: number;
   addHref?: string;
@@ -19,7 +21,9 @@ interface PageHeaderProps {
 
 export function PageHeader({
   title,
+  translateTitle = true,
   subtitle,
+  translateSubtitle = true,
   icon: Icon,
   total,
   addHref,
@@ -89,12 +93,15 @@ export function PageHeader({
             
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground leading-tight mb-1">
-                {t(`TITLES.${title}`)}
+                {translateTitle ? t(`TITLES.${title}`) : title}
               </h1>
               {subtitle && (
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t(`LABELS.${subtitle}`)}
-                </p>
+                <div className="text-sm text-muted-foreground leading-relaxed">
+                  {typeof subtitle === 'string' 
+                    ? (translateSubtitle ? t(`LABELS.${subtitle}`) : subtitle)
+                    : subtitle
+                  }
+                </div>
               )}
             </div>
 

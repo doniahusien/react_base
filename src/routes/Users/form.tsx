@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { UserIcon as User, AtSymbolIcon as AtSign, ShieldCheckIcon as Shield, LockClosedIcon as Lock, UserCircleIcon as Contact, XMarkIcon as X, PhotoIcon as ImageIcon, Squares2X2Icon as LayoutDashboard, UsersIcon as Users } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
+import { PageHeader } from "../../components/UI/PageHeader";
 import { Form } from "../../components/Inputs/Form";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSelectInput, type SelectOption } from "../../components/Inputs/BaseSelectInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
-import { BaseFilesInput, type FileOutputItem } from "../../components/Inputs/BaseFilesInput";
+import { type FileOutputItem } from "../../components/Inputs/BaseFilesInput";
+import { AvatarPicker } from "../../components/Inputs/AvatarPicker";
 import { BasePhoneInput } from "../../components/Inputs/BasePhoneInput";
 import { SectionCard } from "../../components/Shared/SectionCard";
 import { Skeleton } from "../../components/UI/Skeleton";
@@ -66,20 +67,21 @@ export default function UserForm() {
 
   return (
     <div className="space-y-0">
-      <div className="relative -mx-6 overflow-hidden bg-background px-6 py-7 border-b border-border/50 mb-8">
-        <div className="relative">
-          <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.users"), href: "/users", icon: Users }, { label: editing ? t("TITLES.edit", { count: "" as any }) : t("TITLES.add", { count: "" as any }) }]} />
-          <div className="flex items-end gap-4">
-            <div className="w-0.5 self-stretch rounded-full bg-accent" />
-            <h1 className="text-2xl font-black tracking-tight text-foreground">{editing ? t("TITLES.edit", { count: t("TITLES.user") as any }) : t("TITLES.add", { count: t("TITLES.user") as any })}</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title={editing ? "editUser" : "addUser"}
+        subtitle={editing ? "updateUserInfo" : "createNewUser"}
+        icon={editing ? User : Users}
+        path={[
+          { label: "dashboard", href: "/", icon: LayoutDashboard },
+          { label: "users", href: "/users", icon: Users },
+          { label: editing ? "editUser" : "addUser" }
+        ]}
+      />
       <Form schema={editing ? schemas.userEdit : schemas.userCreate} values={values as any} onSubmit={handleSubmit}>
         {({ errors, touched, field, touch }) => (
           <div className="space-y-6">
             <SectionCard icon={ImageIcon} title={t("TITLES.profilePhoto")} subtitle={t("LABELS.profilePhotoDesc")} color="sky" step={1}>
-              <BaseFilesInput name="image" accept="image/*" attachment model="users" value={imageValue} onChange={(v) => setImageFile(Array.isArray(v) ? v[0] : v)} onLoadingChange={setImageLoading} />
+              <AvatarPicker name="image" label={t("TITLES.profilePhoto")} accept="image/*" attachment model="users" value={imageValue} onChange={(v) => setImageFile(v)} onLoadingChange={setImageLoading} />
             </SectionCard>
             <SectionCard icon={User} title={t("TITLES.basicInfo")} subtitle={t("LABELS.basicInfo")} color="emerald" step={2}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

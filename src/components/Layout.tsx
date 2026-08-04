@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Bars3Icon as Menu, MoonIcon as Moon, SunIcon as Sun, Cog6ToothIcon as Settings2 } from "@heroicons/react/24/outline";
 import { Drawer } from "./Drawer";
-import { ThemeCustomizerEnhanced } from "./ThemeCustomizerEnhanced";
+import { ThemeCustomizer } from "./ThemeCustomizer";
 import { LanguageRefreshManager } from "./LanguageRefreshManager";
 import { useAppStore } from "../store";
 import { useAuthStore } from "../stores/auth";
@@ -41,7 +41,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="flex h-screen bg-background">
       <LanguageRefreshManager />
       <Drawer />
-      <ThemeCustomizerEnhanced />
+      <ThemeCustomizer />
       <div className={`flex min-w-0 flex-1 flex-col transition-all duration-300 ${desktopMargin}`}>
         <header
           className={`header-bar sticky top-0 z-40 ${

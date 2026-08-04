@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { CurrencyDollarIcon as DollarSign, ShoppingBagIcon as ShoppingBag, UsersIcon as Users, ChartBarIcon as BarChart3 } from "@heroicons/react/24/outline";
+import { CurrencyDollarIcon as DollarSign, ShoppingBagIcon as ShoppingBag, UsersIcon as Users, ChartBarIcon as BarChart3, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
 import { ApexChart } from "../components/UI/ApexChart";
+import { PageHeader } from "../components/UI/PageHeader";
 import { useAppStore } from "../store";
 import api from "../lib/axios";
 import type { ApexOptions } from "apexcharts";
@@ -74,18 +75,20 @@ export default function Home() {
   const gridColor = cssColor("--color-border");
   const labelColor = cssColor("--color-foreground");
   const primaryColor = cssColor("--color-primary");
+  
+  // Chart colors that adapt to theme - recalculate when theme changes
   const chartColors = useMemo(
     () => [
+      cssColor("--color-primary"),
+      cssColor("--color-secondary"),
       cssColor("--color-violet"),
       cssColor("--color-blue"),
       cssColor("--color-emerald"),
       cssColor("--color-amber"),
-      cssColor("--color-destructive"),
-      cssColor("--color-secondary"),
-      cssColor("--color-primary"),
       cssColor("--color-success"),
+      cssColor("--color-destructive"),
     ],
-    [dark]
+    [primaryColor] // Recalculate when primary color changes (theme preset change)
   );
   const ttTheme = dark ? "dark" : "light" as const;
 
@@ -126,11 +129,20 @@ export default function Home() {
 
   return (
     <div className="space-y-8 pb-10">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">{t("ANALYTICS.title")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t("ANALYTICS.description")}</p>
-        {(stats as any).filter?.reference_date && <p className="mt-0.5 text-xs text-muted-foreground/60">{t("ANALYTICS.lastUpdated")}: {(stats as any).filter.reference_date}</p>}
-      </div>
+      <PageHeader
+        title="dashboard"
+        subtitle={t("ANALYTICS.description")}
+        translateSubtitle={false}
+        icon={LayoutDashboard}
+        path={[{ label: "dashboard", icon: LayoutDashboard }]}
+        rightActions={
+          (stats as any).filter?.reference_date && (
+            <span className="text-xs text-muted-foreground">
+              {t("ANALYTICS.lastUpdated")}: {(stats as any).filter.reference_date}
+            </span>
+          )
+        }
+      />
 
       {loading ? <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}</div>
         : <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">

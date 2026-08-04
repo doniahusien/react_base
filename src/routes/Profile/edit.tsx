@@ -7,7 +7,8 @@ import { useAuthStore } from "../../stores/auth";
 import Cookies from "js-cookie";
 import { Form } from "../../components/Inputs/Form";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
-import { BaseFilesInput, type FileOutputItem } from "../../components/Inputs/BaseFilesInput";
+import { type FileOutputItem } from "../../components/Inputs/BaseFilesInput";
+import { AvatarPicker } from "../../components/Inputs/AvatarPicker";
 import { BasePhoneInput } from "../../components/Inputs/BasePhoneInput";
 import { SectionCard } from "../../components/Shared/SectionCard";
 import { toast } from "../../stores/toast";
@@ -90,8 +91,8 @@ export default function ProfileEdit() {
         {({ errors, field, touch }) => (
           <div className="space-y-6">
             <SectionCard icon={ImageIcon} title={t("PROFILE.profilePhoto")} subtitle="" color="sky" step={1}>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
-                <div className="w-full sm:max-w-xs"><BaseFilesInput name="image" accept="image/*" attachment model="users" value={imageValue} onChange={v => setImageFile(Array.isArray(v) ? v[0] : v)} onLoadingChange={setImgLoad} /></div>
+              <div className="flex flex-col gap-4">
+                <div className="w-full"><AvatarPicker name="image" label={t("PROFILE.profilePhoto")} accept="image/*" attachment model="users" value={imageValue} onChange={v => setImageFile(v)} onLoadingChange={setImgLoad} /></div>
                 <button type="button" onClick={() => setPwOpen(true)} className="inline-flex items-center gap-2 self-start rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><KeyRound width={14} height={14} />{t("PROFILE.changePassword")}</button>
               </div>
             </SectionCard>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { GlobeAltIcon as Earth, PencilSquareIcon as Pen, ShieldCheckIcon as Shield, XMarkIcon as X, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
-import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
+import { PageHeader } from "../../components/UI/PageHeader";
 import { Form } from "../../components/Inputs/Form";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { Skeleton } from "../../components/UI/Skeleton";
@@ -52,15 +52,16 @@ export default function CityForm() {
 
   return (
     <div className="space-y-0">
-      <div className="page-header relative -mx-6 overflow-hidden px-6 py-7 mb-8">
-        <div className="relative">
-          <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.cities"), href: "/cities", icon: Earth }, { label: editing ? t("TITLES.edit", { count: "" as any }) : t("TITLES.add", { count: "" as any }) }]} />
-          <div className="flex items-end gap-4">
-            <div className="w-0.5 self-stretch rounded-full bg-primary opacity-70" />
-            <h1 className="text-2xl font-black tracking-tight text-foreground">{editing ? t("TITLES.edit", { count: t("TITLES.city") as any }) : t("TITLES.add", { count: t("TITLES.city") as any })}</h1>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title={editing ? "editCity" : "addCity"}
+        subtitle={editing ? "updateCityInfo" : "createNewCity"}
+        icon={Earth}
+        path={[
+          { label: "dashboard", href: "/", icon: LayoutDashboard },
+          { label: "cities", href: "/cities", icon: Earth },
+          { label: editing ? "editCity" : "addCity" }
+        ]}
+      />
       <Form schema={schemas.city} values={{ ...values }} onSubmit={handleSubmit}>
         {({ errors, field, touch }) => (
           <div className="space-y-6">

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Squares2X2Icon as LayoutDashboard, UsersIcon as Users, PencilIcon as Edit, AtSymbolIcon as AtSign, PhoneIcon as Phone, CubeIcon as Package, HeartIcon as Heart, MapPinIcon as MapPin, CalendarDaysIcon as CalendarDays, ShieldCheckIcon as ShieldCheck, ShieldExclamationIcon as ShieldOff, NoSymbolIcon as Ban, StarIcon as Star, UserCircleIcon as UserCircle } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
+import { PageHeader } from "../../components/UI/PageHeader";
 import { Skeleton } from "../../components/UI/Skeleton";
 import { Deleter } from "../../components/Shared/Deleter";
 import { ImagePreviewTrigger } from "../../components/UI/ImagePreview";
@@ -68,28 +68,38 @@ export default function UserShow() {
 
   return (
     <div className="space-y-0">
-      <div className="page-header relative -mx-6 overflow-hidden px-6 pt-14 pb-7 mb-6">
-        <div className="absolute top-3 inset-s-6"><BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("TITLES.users"), href: "/users", icon: Users }, { label: user.full_name, icon: UserCircle }]} /></div>
-        <div className="relative flex flex-col md:flex-row items-start md:items-center gap-6">
-          <div className="relative shrink-0"><Avatar src={user.image} name={user.full_name} /><span className={`absolute bottom-1 inset-e-1 size-4 rounded-full border-2 border-card ${user.is_active ? "bg-success" : "bg-border"}`} /></div>
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h1 className="text-2xl font-black tracking-tight text-foreground">{user.full_name}</h1>
-              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${user.is_active ? "bg-success-soft text-success-foreground" : "  text-muted-foreground"}`}>{user.is_active ? <ShieldCheck width={11} height={11} /> : <ShieldOff width={11} height={11} />}{user.is_active ? t("TITLES.active") : t("TITLES.inactive")}</span>
-              {user.is_ban && <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive"><Ban width={11} height={11} />{t("TITLES.banned")}</span>}
-            </div>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              {user.email && <span className="flex items-center gap-1.5"><AtSign width={13} height={13} />{user.email}</span>}
-              {user.phone && <span className="flex items-center gap-1.5"><Phone width={13} height={13} /><bdo dir="ltr">+{user.phone_code} {user.phone}</bdo></span>}
-              {user.created_at && <span className="flex items-center gap-1.5"><CalendarDays width={13} height={13} />{formatDate(user.created_at)}</span>}
-            </div>
+      <PageHeader
+        title={user.full_name}
+        translateTitle={false}
+        subtitle={
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${user.is_active ? "bg-success-soft text-success-foreground" : "bg-border text-muted-foreground"}`}>
+              {user.is_active ? <ShieldCheck width={11} height={11} /> : <ShieldOff width={11} height={11} />}
+              {user.is_active ? t("TITLES.active") : t("TITLES.inactive")}
+            </span>
+            {user.is_ban && <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive"><Ban width={11} height={11} />{t("TITLES.banned")}</span>}
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button type="button" onClick={() => navigate(`/users/form/${user.id}`)} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all"><Edit width={14} height={14} />{t("TITLES.edit", { count: "" as any })}</button>
-            <Deleter url={`/users/${user.id}`} onReload={() => navigate("/users")} />
-          </div>
-        </div>
-      </div>
+        }
+        icon={UserCircle}
+        path={[
+          { label: "dashboard", href: "/", icon: LayoutDashboard },
+          { label: "users", href: "/users", icon: Users },
+          { label: user.full_name, icon: UserCircle }
+        ]}
+        rightActions={
+          <>
+            {user.email && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><AtSign width={13} height={13} />{user.email}</span>}
+            {user.phone && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><Phone width={13} height={13} /><bdo dir="ltr">+{user.phone_code} {user.phone}</bdo></span>}
+            {user.created_at && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><CalendarDays width={13} height={13} />{formatDate(user.created_at)}</span>}
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => navigate(`/users/form/${user.id}`)} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all">
+                <Edit width={14} height={14} />{t("TITLES.edit", { count: "" as any })}
+              </button>
+              <Deleter url={`/users/${user.id}`} onReload={() => navigate("/users")} />
+            </div>
+          </>
+        }
+      />
       <div className="space-y-5 pb-8">
         <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm"><div className="px-6 py-5 border-b border-border"><SectionHeading icon={UserCircle} title={t("TITLES.personalInfo")} /><div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"><InfoCard label={t("TITLES.firstName")}>{user.first_name || "—"}</InfoCard><InfoCard label={t("TITLES.lastName")}>{user.last_name || "—"}</InfoCard><InfoCard label={t("TITLES.gender")}>{user.gender ? t(`TITLES.${user.gender}`) : "—"}</InfoCard><InfoCard label={t("TITLES.birthDate")}>{formatDate(user.birth_date)}</InfoCard><InfoCard label={t("TITLES.email")}><a href={`mailto:${user.email}`} className="text-primary hover:underline break-all">{user.email}</a></InfoCard><InfoCard label={t("TITLES.phone")}><bdo dir="ltr">+{user.phone_code} {user.phone}</bdo></InfoCard></div></div></div>
         <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm"><div className="px-6 py-5 border-b border-border"><SectionHeading icon={ShieldCheck} title={t("TITLES.accountInfo")} /><div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"><InfoCard label={t("TITLES.userType")}><span className="capitalize">{user.user_type || "—"}</span></InfoCard>{user.role && <InfoCard label={t("TITLES.role")}>{user.role.name}</InfoCard>}<InfoCard label={t("TITLES.status")}><span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${user.is_active ? "bg-success-soft text-success-foreground" : "  text-muted-foreground"}`}>{user.is_active ? t("TITLES.active") : t("TITLES.inactive")}</span></InfoCard><InfoCard label={t("TITLES.lastLogin")}>{formatDate(user.last_login_at)}</InfoCard></div></div></div>

@@ -1,6 +1,31 @@
-import { CheckIcon as Check, ViewColumnsIcon as Columns2, MoonIcon as Moon, ListBulletIcon as PanelLeft, QueueListIcon as Rows3, SunIcon as Sun, XMarkIcon as X } from "@heroicons/react/24/outline";
+/**
+ * @file ThemeCustomizer.tsx
+ * @description Unified theme customizer with layout, color scheme, font, border radius, and theme presets
+ */
+
+import { 
+  CheckIcon as Check, 
+  ViewColumnsIcon as Columns2, 
+  MoonIcon as Moon, 
+  ListBulletIcon as PanelLeft, 
+  QueueListIcon as Rows3, 
+  SunIcon as Sun, 
+  XMarkIcon as X
+} from "@heroicons/react/24/outline";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppStore, type SidebarMode } from "../store";
+import { 
+  useAppStore, 
+  type SidebarMode,
+  type FontFamily,
+  type FontSize,
+  type BorderRadius
+} from "../store";
+import { applyBrandTheme, brandPresets } from "../theme-presets";
+
+// ============================================================================
+// Layout Preview Component
+// ============================================================================
 
 function LayoutPreview({ mode, active }: { mode: SidebarMode; active: boolean }) {
   const ring = active ? "ring-2 ring-primary border-primary/40" : "border-border hover:border-primary/30";
@@ -50,6 +75,33 @@ function LayoutPreview({ mode, active }: { mode: SidebarMode; active: boolean })
   );
 }
 
+// ============================================================================
+// Border Radius Preview Component
+// ============================================================================
+
+function BorderRadiusPreview({ radius, active }: { radius: BorderRadius; active: boolean }) {
+  const sizes = {
+    none: { outer: 'rounded-none', inner: 'rounded-none' },
+    sm: { outer: 'rounded-sm', inner: 'rounded-[2px]' },
+    md: { outer: 'rounded-lg', inner: 'rounded-md' },
+    lg: { outer: 'rounded-xl', inner: 'rounded-lg' },
+    xl: { outer: 'rounded-2xl', inner: 'rounded-xl' }
+  };
+
+  const { outer, inner } = sizes[radius];
+  const ring = active ? "ring-2 ring-primary border-primary/40" : "border-border hover:border-primary/30";
+
+  return (
+    <div className={`${outer} border bg-muted/40 p-3 transition-all ${ring}`}>
+      <div className={`${inner} bg-primary/70 h-6 w-full`} />
+    </div>
+  );
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
 export function ThemeCustomizer() {
   const { t } = useTranslation();
   const {
@@ -59,7 +111,31 @@ export function ThemeCustomizer() {
     setSidebarMode,
     theme,
     setTheme,
+    fontFamily,
+    setFontFamily,
+    fontSize,
+    setFontSize,
+    borderRadius,
+    setBorderRadius,
   } = useAppStore();
+
+  const [selectedPreset, setSelectedPreset] = useState<string>(() => {
+    try {
+      return localStorage.getItem('selected-brand-theme') || 'purple';
+    } catch {
+      return 'purple';
+    }
+  });
+
+  const handleBrandThemeSelect = (themeKey: string) => {
+    applyBrandTheme(themeKey);
+    setSelectedPreset(themeKey);
+    try {
+      localStorage.setItem('selected-brand-theme', themeKey);
+    } catch {
+      // Fail silently if localStorage isn't available
+    }
+  };
 
   const LAYOUTS: {
     id: SidebarMode;
@@ -87,6 +163,28 @@ export function ThemeCustomizer() {
     },
   ];
 
+  const FONTS: { id: FontFamily; label: string; description: string }[] = [
+    { id: "cairo", label: "Cairo", description: t("THEME_CUSTOMIZER.fontCairo") || "Arabic optimized" },
+    { id: "tajawal", label: "Tajawal", description: t("THEME_CUSTOMIZER.fontTajawal") || "Elegant Arabic" },
+    { id: "inter", label: "Inter", description: t("THEME_CUSTOMIZER.fontInter") || "Modern & clean" },
+    { id: "changa", label: "Changa", description: t("THEME_CUSTOMIZER.fontChanga") || "Bold & friendly" },
+    { id: "system", label: "System", description: t("THEME_CUSTOMIZER.fontSystem") || "System default" },
+  ];
+
+  const FONT_SIZES: { id: FontSize; label: string; description: string }[] = [
+    { id: "small", label: "Small", description: t("THEME_CUSTOMIZER.fontSmall") || "Compact view" },
+    { id: "medium", label: "Medium", description: t("THEME_CUSTOMIZER.fontMedium") || "Comfortable (default)" },
+    { id: "large", label: "Large", description: t("THEME_CUSTOMIZER.fontLarge") || "Easy to read" },
+  ];
+
+  const RADII: { id: BorderRadius; label: string; description: string }[] = [
+    { id: "none", label: "None", description: "Sharp corners" },
+    { id: "sm", label: "Small", description: "Subtle rounding" },
+    { id: "md", label: "Medium", description: "Balanced (default)" },
+    { id: "lg", label: "Large", description: "Rounded look" },
+    { id: "xl", label: "Extra Large", description: "Very rounded" },
+  ];
+
   if (!customizerOpen) return null;
 
   return (
@@ -98,7 +196,7 @@ export function ThemeCustomizer() {
         onClick={() => setCustomizerOpen(false)}
       />
       <aside
-        className="relative z-10 flex h-full w-full max-w-sm flex-col border-s border-border bg-card shadow-2xl shadow-foreground/10"
+        className="relative z-10 flex h-full w-full max-w-md flex-col border-s border-border bg-card shadow-2xl shadow-foreground/10"
         role="dialog"
         aria-labelledby="theme-customizer-title"
       >
@@ -107,7 +205,9 @@ export function ThemeCustomizer() {
             <h2 id="theme-customizer-title" className="text-base font-bold text-foreground">
               {t("THEME.ThemeCustomizer")}
             </h2>
-            <p className="text-xs text-muted-foreground">{t("THEME.LayoutAndColorScheme")}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("THEME_CUSTOMIZER.subtitle") || "Customize your dashboard experience"}
+            </p>
           </div>
           <button
             type="button"
@@ -119,7 +219,8 @@ export function ThemeCustomizer() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-8">
+        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+          {/* Layout Section */}
           <section>
             <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               {t("THEME.Layout")}
@@ -152,6 +253,52 @@ export function ThemeCustomizer() {
                         </span>
                       )}
                     </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Theme Preset Section */}
+          <section>
+            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              {t("THEME_PRESET.title") || "Theme Presets"}
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {Object.entries(brandPresets).map(([key, preset]) => {
+                const active = selectedPreset === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleBrandThemeSelect(key)}
+                    className={`group rounded-3xl border p-3 text-left transition-all ${
+                      active
+                        ? "border-primary ring-1 ring-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <div
+                        className="h-12 w-12 rounded-2xl shadow-sm ring-1 ring-black/5"
+                        style={{ backgroundColor: preset.brand500 }}
+                      />
+                      <div
+                        className="h-12 w-12 rounded-2xl shadow-sm ring-1 ring-black/5"
+                        style={{ backgroundColor: preset.brand600 }}
+                      />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>
+                        {preset.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{preset.description}</p>
+                    </div>
+                    {active && (
+                      <span className="mt-3 inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
+                        {t("BUTTONS.selected") || "Selected"}
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -207,8 +354,110 @@ export function ThemeCustomizer() {
               </button>
             </div>
           </section>
+
+          {/* Font Family Section */}
+          <section>
+            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              {t("THEME_CUSTOMIZER.font") || "Font Family"}
+            </h3>
+            <div className="grid grid-cols-1 gap-2">
+              {FONTS.map((font) => {
+                const active = fontFamily === font.id;
+                return (
+                  <button
+                    key={font.id}
+                    type="button"
+                    onClick={() => setFontFamily(font.id)}
+                    className={`flex items-center justify-between rounded-lg border p-3 text-start transition-all ${
+                      active
+                        ? "border-primary ring-1 ring-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <div>
+                      <p className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>
+                        {font.label}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{font.description}</p>
+                    </div>
+                    {active && (
+                      <Check width={16} height={16} className="text-primary shrink-0" strokeWidth={3} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Font Size Section */}
+          <section>
+            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              {t("THEME_CUSTOMIZER.fontSize") || "Font Size"}
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {FONT_SIZES.map((size) => {
+                const active = fontSize === size.id;
+                return (
+                  <button
+                    key={size.id}
+                    type="button"
+                    onClick={() => setFontSize(size.id)}
+                    className={`rounded-lg border p-3 text-center transition-all ${
+                      active
+                        ? "border-primary ring-1 ring-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <div className={`text-lg font-bold mb-1 ${active ? "text-primary" : "text-foreground"}`}>
+                      {size.id === "small" ? "A" : size.id === "medium" ? "A" : "A"}
+                      <span className="text-xs ml-0.5">{size.id === "small" ? "₁" : size.id === "medium" ? "₂" : "₃"}</span>
+                    </div>
+                    <p className={`text-xs font-semibold ${active ? "text-primary" : "text-foreground"}`}>
+                      {size.label}
+                    </p>
+                    {active && (
+                      <Check width={14} height={14} className="text-primary mx-auto mt-1" strokeWidth={3} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 px-1">
+              {FONT_SIZES.find(s => s.id === fontSize)?.description}
+            </p>
+          </section>
+
+          {/* Border Radius Section */}
+          <section>
+            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              {t("THEME_CUSTOMIZER.borderRadius") || "Border Radius"}
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {RADII.map((r) => {
+                const active = borderRadius === r.id;
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setBorderRadius(r.id)}
+                    className="text-start"
+                  >
+                    <BorderRadiusPreview radius={r.id} active={active} />
+                    <div className="mt-2 px-0.5">
+                      <p className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>
+                        {r.label}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{r.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </div>
       </aside>
     </div>
   );
 }
+
+export default ThemeCustomizer;
