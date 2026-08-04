@@ -366,6 +366,13 @@ export function Drawer() {
           onMobileClose={() => setSidebarOpen(false)}
         />
 
+        <DrawerUserProfile
+          user={user}
+          collapsed={collapsed}
+          isMobileDrawer={isMobileDrawer}
+          clearAuth={clearAuth}
+          onMobileClose={() => setSidebarOpen(false)}
+        />
       </>
     );
   };
