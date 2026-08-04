@@ -42,6 +42,7 @@ interface UITableProps<T = any> {
   loading?: boolean;
   renderCell?: (field: string, item: T, index: number) => ReactNode;
   renderQuickView?: (item: T) => ReactNode;
+  filters?: ReactNode;
 }
 
 function dig(obj: any, path: string): any {
@@ -99,38 +100,38 @@ function Pagination({
   }
 
   const navBtn =
-    "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary disabled:opacity-25 disabled:cursor-not-allowed";
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-background border border-border text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:border-border disabled:hover:text-muted-foreground";
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <p className="text-xs text-muted-foreground">
-        <span className="font-semibold text-foreground">
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-card border border-border px-5 py-4 shadow-sm">
+      <p className="text-sm text-muted-foreground">
+        <span className="font-bold text-foreground">
           {meta.from ?? (page - 1) * meta.per_page + 1}
         </span>
-        <span className="mx-1">–</span>
-        <span className="font-semibold text-foreground">
+        <span className="mx-1.5">–</span>
+        <span className="font-bold text-foreground">
           {meta.to ?? Math.min(page * meta.per_page, meta.total)}
         </span>
-        <span className="mx-1 opacity-50">of</span>
-        <span className="font-semibold text-foreground">{meta.total}</span>
+        <span className="mx-1.5 opacity-60">of</span>
+        <span className="font-bold text-foreground">{meta.total}</span>
       </p>
-      <div className="flex items-center gap-1 overflow-x-auto">
+      <div className="flex items-center gap-1.5 overflow-x-auto">
         <button onClick={() => onPage(page - 1)} disabled={page <= 1} className={navBtn}>
-          <ArrowLeft width={14} height={14} />
+          <ArrowLeft width={16} height={16} />
         </button>
         {pages.map((p, i) =>
           p === "…" ? (
-            <span key={`d${i}`} className="flex h-8 w-8 shrink-0 items-center justify-center text-xs text-muted-foreground">
+            <span key={`d${i}`} className="flex h-9 w-9 shrink-0 items-center justify-center text-sm text-muted-foreground">
               ···
             </span>
           ) : (
             <button
               key={p}
               onClick={() => onPage(p as number)}
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-semibold transition-all ${
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold tabular-nums transition-all ${
                 page === p
-                  ? "bg-primary text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                  ? "bg-primary text-primary-foreground shadow-md scale-105"
+                  : "bg-background border border-border text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30"
               }`}
             >
               {p}
@@ -138,7 +139,7 @@ function Pagination({
           )
         )}
         <button onClick={() => onPage(page + 1)} disabled={page >= meta.last_page} className={navBtn}>
-          <ArrowRight width={14} height={14} />
+          <ArrowRight width={16} height={16} />
         </button>
       </div>
     </div>
@@ -146,7 +147,7 @@ function Pagination({
 }
 
 export function UITable<T extends { id?: any }>({
-  data, columns, title = "", loading = false, renderCell, renderQuickView,
+  data, columns, title = "", loading = false, renderCell, renderQuickView, filters,
 }: UITableProps<T>) {
   const { t } = useTranslation();
   const [view, setView] = useState<"table" | "grid">("table");
@@ -311,10 +312,10 @@ export function UITable<T extends { id?: any }>({
 
   const SortIcon = ({ column }: { column: any }) => {
     const sorted = column.getIsSorted();
-    if (!sorted) return <ChevronsUpDown width={11} height={11} className="opacity-20" />;
+    if (!sorted) return <ChevronsUpDown width={11} height={11} className="opacity-40" />;
     return sorted === "asc"
-      ? <ChevronUp width={11} height={11} className="text-primary" />
-      : <ChevronDown width={11} height={11} className="text-primary" />;
+      ? <ChevronUp width={11} height={11} className="text-primary-foreground" />
+      : <ChevronDown width={11} height={11} className="text-primary-foreground" />;
   };
 
   /* ── shared cell surface ── */
@@ -326,43 +327,43 @@ export function UITable<T extends { id?: any }>({
   return (
     <div className="space-y-3">
       {/* ── Toolbar ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-card border border-border px-5 py-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3">
           {title && (
-            <span className="text-sm font-bold text-foreground tracking-tight">
+            <h2 className="text-base font-bold text-foreground tracking-tight">
               {t(`TITLES.${title}`)}
-            </span>
+            </h2>
           )}
-          <span className="rounded-lg bg-primary/10 px-2 py-0.5 text-[11px] font-bold tabular-nums text-primary">
+          <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
             {data.meta?.total ?? rows.length}
           </span>
           {selectedCount > 0 && (
-            <div className="flex items-center gap-2 rounded-xl bg-destructive/10 px-3 py-1.5">
-              <span className="text-xs font-semibold text-destructive">{selectedCount}</span>
+            <div className="flex items-center gap-2.5 rounded-full bg-destructive/10 border border-destructive/20 px-4 py-1.5">
+              <span className="text-sm font-bold text-destructive tabular-nums">{selectedCount}</span>
               <button
                 type="button"
-                className="flex items-center gap-1 text-xs font-semibold text-destructive hover:text-destructive transition-colors"
+                className="flex items-center gap-1.5 text-sm font-semibold text-destructive hover:text-destructive/80 transition-colors"
               >
-                <Trash2 width={11} height={11} />
+                <Trash2 width={13} height={13} />
                 {t("ACTIONS.delete")}
               </button>
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2 ms-auto">
+        <div className="flex items-center gap-2.5 ms-auto">
+          {filters}
           <ModifyColumns columns={columns} selected={selectedCols} onChange={handleColumnSelectionChange} />
           {view === "grid" && (
-            <div className="flex items-center gap-1 rounded-xl border border-border   px-2 py-1">
-           
+            <div className="flex items-center gap-1 rounded-xl border border-border bg-background px-1.5 py-1.5">
               {[1, 2, 3, 4].map((cols) => (
                 <button
                   key={cols}
                   type="button"
                   onClick={() => setGridCols(cols as 1 | 2 | 3 | 4)}
-                  className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition-all ${
                     gridCols === cols
-                      ? "bg-card text-primary shadow-sm border border-border"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                   aria-label={`${cols} columns`}
                 >
@@ -371,19 +372,19 @@ export function UITable<T extends { id?: any }>({
               ))}
             </div>
           )}
-          <div className="flex items-center gap-0.5 rounded-xl   p-1 border border-border">
+          <div className="flex items-center gap-1 rounded-xl border border-border bg-background px-1.5 py-1.5">
             {(["table", "grid"] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className={`rounded-lg p-1.5 transition-all duration-200 ${
+                className={`rounded-lg p-2 transition-all duration-200 ${
                   view === v
-                    ? "bg-card text-primary shadow-sm border border-border"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
                 aria-label={`${v} view`}
               >
-                {v === "table" ? <LayoutGrid width={14} height={14} /> : <Grid3X3 width={14} height={14} />}
+                {v === "table" ? <LayoutGrid width={16} height={16} /> : <Grid3X3 width={16} height={16} />}
               </button>
             ))}
           </div>
@@ -399,6 +400,8 @@ export function UITable<T extends { id?: any }>({
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     const isSelect = header.id === "select";
+                    const isFirst = header.index === 0;
+                    const isLast = header.index === headerGroup.headers.length - 1;
                     return (
                       <th
                         key={header.id}
@@ -409,12 +412,14 @@ export function UITable<T extends { id?: any }>({
                           boxSizing: "border-box",
                           ...(header.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 20 } : {}),
                         }}
-                        className={`relative px-3 pb-2 text-start text-[10px] font-extrabold uppercase tracking-widest text-muted whitespace-nowrap ${
+                        className={`relative bg-primary/80 text-primary-foreground px-3 py-3.5 text-start text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)] ${
                           isSelect ? "w-[84px]" : ""
                         } ${
-                          header.column.getCanSort() ? "cursor-pointer select-none hover:text-primary transition-colors" : ""
+                          isFirst ? "rounded-s-2xl" : ""
                         } ${
-                          header.column.id === "actions" ? "bg-panel" : ""
+                          isLast ? "rounded-e-2xl" : ""
+                        } ${
+                          header.column.getCanSort() ? "cursor-pointer select-none hover:bg-primary/90 transition-colors" : ""
                         }`}
                       >
                         {header.isPlaceholder ? null : (
@@ -431,7 +436,7 @@ export function UITable<T extends { id?: any }>({
                             onMouseDown={header.getResizeHandler()}
                             onTouchStart={header.getResizeHandler()}
                             onClick={(event) => event.stopPropagation()}
-                            className={`absolute end-0 top-0 h-full w-3 touch-none ${header.column.getIsResizing() ? "bg-primary/20" : "cursor-col-resize hover:bg-primary/10"}`}
+                            className={`absolute end-0 top-0 h-full w-3 touch-none ${header.column.getIsResizing() ? "bg-primary-foreground/20" : "cursor-col-resize hover:bg-primary-foreground/10"}`}
                           />
                         )}
                       </th>
