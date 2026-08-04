@@ -41,6 +41,15 @@ export const en = {
     font: "Font Family",
     borderRadius: "Border Radius",
     density: "Spacing Density",
+    fontSize: "Font Size",
+    fontInter: "Inter - Modern & Clean",
+    fontCairo: "Cairo - Arabic Optimized",
+    fontTajawal: "Tajawal - Elegant Arabic",
+    fontChanga: "Changa - Bold & Friendly",
+    fontSystem: "System Default",
+    fontSmall: "Small (Compact)",
+    fontMedium: "Medium (Comfortable)",
+    fontLarge: "Large (Accessible)",
   },
   LOGIN: {
     secureAuth: "Secure Authentication",
@@ -128,6 +137,8 @@ export const en = {
     basicInfoCountryDesc: "Country name in both languages and phone details",
     otherInfoDesc: "Currency and estimated shipping days",
     countryDesc: "Manage countries, phone codes and flags",
+    inlineAddDesc: "Add a new row directly in the table",
+    inlineAddTitle: "Quick Add New Row",
   },
   FIELDS: {
     currency_ar: "Currency (Arabic)", currency_en: "Currency (English)",
@@ -165,6 +176,7 @@ export const en = {
     cancel: "Cancel", delete: "Delete", yes: "Yes", no: "No",
     saveChanges: "Save Changes", add: "Add", upload: "Upload",
     change: "Change", remove: "Remove", photo: "Photo",
+    save: "Save", saving: "Saving...",
   },
   ROLES: {
     superAdmin: "Super Admin", admin: "Admin", superUser: "Super User",

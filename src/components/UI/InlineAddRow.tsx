@@ -49,7 +49,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
     const newErrors: Record<string, string> = {};
     fields.forEach(field => {
       if (field.required && !formData[field.key]) {
-        newErrors[field.key] = `${field.label} is required`;
+        newErrors[field.key] = t("VALIDATIONS.required", { field: field.label });
       }
     });
     setErrors(newErrors);
@@ -88,10 +88,10 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
         </div>
         <div className="text-left">
           <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-            {t("BUTTONS.add")} Quick Add
+            {t("BUTTONS.add")}
           </p>
           <p className="text-xs text-muted-foreground">
-            Add a new row directly in the table
+            {t("LABELS.inlineAddDesc")}
           </p>
         </div>
       </button>
@@ -106,7 +106,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-foreground">
             <Plus width={16} height={16} />
           </div>
-          <h3 className="text-sm font-bold text-foreground">Quick Add New Row</h3>
+          <h3 className="text-sm font-bold text-foreground">{t("LABELS.inlineAddTitle")}</h3>
         </div>
         <button
           type="button"
@@ -168,7 +168,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-foreground text-sm font-semibold hover:bg-secondary hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
         >
           <Check width={16} height={16} />
-          <span>{loading ? "Saving..." : "Save"}</span>
+          <span>{loading ? t("BUTTONS.saving") : t("BUTTONS.save")}</span>
         </button>
         <button
           type="button"
@@ -177,7 +177,7 @@ export function InlineAddRow({ fields, onSave, onCancel }: InlineAddRowProps) {
           className="flex items-center gap-2 px-4 py-2 rounded-lg   text-foreground text-sm font-semibold hover:bg-muted hover:scale-105 active:scale-95 transition-all border border-border disabled:opacity-50 disabled:hover:scale-100"
         >
           <X width={16} height={16} />
-          <span>Cancel</span>
+          <span>{t("BUTTONS.cancel")}</span>
         </button>
       </div>
     </div>

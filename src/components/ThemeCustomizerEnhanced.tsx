@@ -18,6 +18,7 @@ import {
   useAppStore, 
   type SidebarMode,
   type FontFamily,
+  type FontSize,
   type BorderRadius
 } from "../store";
 
@@ -37,7 +38,9 @@ function LivePreview({
   const fontMap: Record<FontFamily, string> = {
     inter: 'font-sans',
     system: 'font-sans',
-    changa: 'font-changa'
+    changa: 'font-changa',
+    cairo: 'font-sans',
+    tajawal: 'font-sans'
   };
 
   const radiusMap: Record<BorderRadius, string> = {
@@ -197,6 +200,8 @@ export function ThemeCustomizerEnhanced() {
     setTheme,
     fontFamily,
     setFontFamily,
+    fontSize,
+    setFontSize,
     borderRadius,
     setBorderRadius,
   } = useAppStore();
@@ -228,9 +233,17 @@ export function ThemeCustomizerEnhanced() {
   ];
 
   const FONTS: { id: FontFamily; label: string; description: string }[] = [
-    { id: "changa", label: "Changa", description: "Arabic optimized (default)" },
-    { id: "inter", label: "Inter", description: "Modern, clean" },
-    { id: "system", label: "System", description: "Native system font" },
+    { id: "cairo", label: "Cairo", description: t("THEME_CUSTOMIZER.fontCairo") || "Arabic optimized" },
+    { id: "tajawal", label: "Tajawal", description: t("THEME_CUSTOMIZER.fontTajawal") || "Elegant Arabic" },
+    { id: "inter", label: "Inter", description: t("THEME_CUSTOMIZER.fontInter") || "Modern & clean" },
+    { id: "changa", label: "Changa", description: t("THEME_CUSTOMIZER.fontChanga") || "Bold & friendly" },
+    { id: "system", label: "System", description: t("THEME_CUSTOMIZER.fontSystem") || "System default" },
+  ];
+
+  const FONT_SIZES: { id: FontSize; label: string; description: string }[] = [
+    { id: "small", label: "Small", description: t("THEME_CUSTOMIZER.fontSmall") || "Compact view" },
+    { id: "medium", label: "Medium", description: t("THEME_CUSTOMIZER.fontMedium") || "Comfortable (default)" },
+    { id: "large", label: "Large", description: t("THEME_CUSTOMIZER.fontLarge") || "Easy to read" },
   ];
 
   const RADII: { id: BorderRadius; label: string; description: string }[] = [
@@ -407,6 +420,44 @@ export function ThemeCustomizerEnhanced() {
                 );
               })}
             </div>
+          </section>
+
+          {/* Font Size Section */}
+          <section>
+            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              {t("THEME_CUSTOMIZER.fontSize") || "Font Size"}
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {FONT_SIZES.map((size) => {
+                const active = fontSize === size.id;
+                return (
+                  <button
+                    key={size.id}
+                    type="button"
+                    onClick={() => setFontSize(size.id)}
+                    className={`rounded-lg border p-3 text-center transition-all ${
+                      active
+                        ? "border-primary ring-1 ring-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <div className={`text-lg font-bold mb-1 ${active ? "text-primary" : "text-foreground"}`}>
+                      {size.id === "small" ? "A" : size.id === "medium" ? "A" : "A"}
+                      <span className="text-xs ml-0.5">{size.id === "small" ? "₁" : size.id === "medium" ? "₂" : "₃"}</span>
+                    </div>
+                    <p className={`text-xs font-semibold ${active ? "text-primary" : "text-foreground"}`}>
+                      {size.label}
+                    </p>
+                    {active && (
+                      <Check width={14} height={14} className="text-primary mx-auto mt-1" strokeWidth={3} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 px-1">
+              {FONT_SIZES.find(s => s.id === fontSize)?.description}
+            </p>
           </section>
 
           {/* Border Radius Section */}

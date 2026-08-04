@@ -41,6 +41,15 @@ export const ar = {
     font: "نوع الخط",
     borderRadius: "انحناء الحواف",
     density: "كثافة المسافات",
+    fontSize: "حجم الخط",
+    fontInter: "إنتر - حديث ونظيف",
+    fontCairo: "القاهرة - محسّن للعربية",
+    fontTajawal: "تجوال - عربي أنيق",
+    fontChanga: "تشانغا - جريء وودود",
+    fontSystem: "الافتراضي للنظام",
+    fontSmall: "صغير (مضغوط)",
+    fontMedium: "متوسط (مريح)",
+    fontLarge: "كبير (سهل الوصول)",
   },
   LOGIN: {
     secureAuth: "مصادقة آمنة",
@@ -129,6 +138,8 @@ export const ar = {
     flagImageDesc: "ارفع علم الدولة (PNG أو JPG حتى 2 ميغابايت)",
     basicInfoCountryDesc: "اسم الدولة بالعربية والإنجليزية وتفاصيل الهاتف",
     otherInfoDesc: "العملة وأيام الشحن المقدرة",
+    inlineAddDesc: "إضافة صف جديد مباشرة في الجدول",
+    inlineAddTitle: "إضافة سريعة لصف جديد",
   },
   FIELDS: {
     flag: "العلم", name_ar: "الاسم (بالعربية)", name_en: "الاسم (بالإنجليزية)",
@@ -166,6 +177,7 @@ export const ar = {
     saveChanges: "حفظ التغييرات", add: "إضافة", upload: "رفع",
     change: "تغيير", remove: "إزالة", photo: "صورة",
     uploadFile: "اسحب الملفات هنا أو انقر للرفع",
+    save: "حفظ", saving: "جارٍ الحفظ...",
   },
   ROLES: {
     superAdmin: "سوبر مسؤول", admin: "مسؤول", superUser: "سوبر مستخدم",

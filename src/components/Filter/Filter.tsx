@@ -227,7 +227,7 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
     options: item.options,
     icon: item.prependInputIcon,
   })) ?? []);
-  const [position, setPosition] = useState({ top: 0, right: 0 });
+  const [position, setPosition] = useState<{ top: number; left?: number; right?: number }>({ top: 0, right: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
@@ -238,10 +238,21 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
   useEffect(() => {
     if (isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + window.scrollY + 8,
-        right: window.innerWidth - rect.right - window.scrollX
-      });
+      const isRTL = document.documentElement.dir === 'rtl';
+      
+      if (isRTL) {
+        // For RTL, position from the left
+        setPosition({
+          top: rect.bottom + window.scrollY + 8,
+          left: rect.left + window.scrollX
+        });
+      } else {
+        // For LTR, position from the right
+        setPosition({
+          top: rect.bottom + window.scrollY + 8,
+          right: window.innerWidth - rect.right - window.scrollX
+        });
+      }
     }
   }, [isOpen]);
 
@@ -364,7 +375,7 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
           className="fixed w-[340px] max-h-[calc(100vh-100px)] overflow-hidden bg-card rounded-2xl z-50 flex flex-col border border-border backdrop-blur-sm"
           style={{ 
             top: `${position.top}px`,
-            right: `${position.right}px`,
+            ...(position.left !== undefined ? { left: `${position.left}px` } : { right: `${position.right}px` }),
             animation: "slideInRight 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
             boxShadow: "0 20px 60px color-mix(in srgb, var(--color-foreground) 15%, transparent), 0 0 0 1px color-mix(in srgb, var(--color-foreground) 5%, transparent), 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent)"
           }}

@@ -6,7 +6,8 @@ import { emitLanguageChange } from "./lib/languageChangeEvent";
 export type SidebarMode = "vertical" | "horizontal" | "two-column";
 export type ThemeIntent = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
-export type FontFamily = "inter" | "system" | "changa";
+export type FontFamily = "inter" | "system" | "changa" | "cairo" | "tajawal";
+export type FontSize = "small" | "medium" | "large";
 export type BorderRadius = "none" | "sm" | "md" | "lg" | "xl";
 
 function getInitialLocale(): Locale {
@@ -33,10 +34,19 @@ function getSystemPreference(): ResolvedTheme {
 function getInitialFontFamily(): FontFamily {
   try {
     const stored = localStorage.getItem("fontFamily");
-    if (stored === "inter" || stored === "system" || stored === "changa") return stored;
-    return "changa";
+    if (stored === "inter" || stored === "system" || stored === "changa" || stored === "cairo" || stored === "tajawal") return stored;
+    return "cairo"; // Better default for Arabic support
   } catch {
-    return "changa";
+    return "cairo";
+  }
+}
+function getInitialFontSize(): FontSize {
+  try {
+    const stored = localStorage.getItem("fontSize");
+    if (stored === "small" || stored === "medium" || stored === "large") return stored;
+    return "medium";
+  } catch {
+    return "medium";
   }
 }
 function getInitialBorderRadius(): BorderRadius {
@@ -88,9 +98,23 @@ function applyFontFamily(value: FontFamily) {
   const fontMap: Record<FontFamily, string> = {
     inter: '"Inter", ui-sans-serif, system-ui, sans-serif',
     system: 'ui-sans-serif, system-ui, sans-serif',
-    changa: '"Changa", Arial, sans-serif'
+    changa: '"Changa", Arial, sans-serif',
+    cairo: '"Cairo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    tajawal: '"Tajawal", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
   };
   document.documentElement.style.setProperty('--font-sans', fontMap[value]);
+}
+
+function applyFontSize(value: FontSize) {
+  const sizeMap: Record<FontSize, { base: string; scale: string }> = {
+    small: { base: '14px', scale: '0.875' },
+    medium: { base: '16px', scale: '1' },
+    large: { base: '18px', scale: '1.125' }
+  };
+  const sizes = sizeMap[value];
+  document.documentElement.style.setProperty('--font-size-base', sizes.base);
+  document.documentElement.style.setProperty('--font-scale', sizes.scale);
+  document.documentElement.style.fontSize = sizes.base;
 }
 
 function applyBorderRadius(value: BorderRadius) {
@@ -123,6 +147,7 @@ interface AppStore {
   themeIntent: ThemeIntent;
   systemPreference: ResolvedTheme;
   fontFamily: FontFamily;
+  fontSize: FontSize;
   borderRadius: BorderRadius;
   sidebarCollapsed: boolean;
   sidebarMode: SidebarMode;
@@ -136,6 +161,7 @@ interface AppStore {
   setThemeIntent: (v: ThemeIntent) => void;
   setSystemPreference: (v: ResolvedTheme) => void;
   setFontFamily: (v: FontFamily) => void;
+  setFontSize: (v: FontSize) => void;
   setBorderRadius: (v: BorderRadius) => void;
   setSidebarCollapsed: (v: boolean) => void;
   setSidebarMode: (v: SidebarMode) => void;
@@ -150,10 +176,12 @@ interface AppStore {
 const initialLang = getInitialLocale();
 const initialTheme = getInitialTheme();
 const initialFontFamily = getInitialFontFamily();
+const initialFontSize = getInitialFontSize();
 const initialBorderRadius = getInitialBorderRadius();
 applyTheme(initialTheme);
 applyDirection(initialLang);
 applyFontFamily(initialFontFamily);
+applyFontSize(initialFontSize);
 applyBorderRadius(initialBorderRadius);
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -162,6 +190,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   themeIntent: getInitialThemeIntent(),
   systemPreference: getSystemPreference(),
   fontFamily: initialFontFamily,
+  fontSize: initialFontSize,
   borderRadius: initialBorderRadius,
   sidebarCollapsed: getInitialCollapsed(),
   sidebarMode: getInitialMode(),
@@ -195,6 +224,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
     localStorage.setItem("fontFamily", v);
     applyFontFamily(v);
     set({ fontFamily: v });
+  },
+  setFontSize: (v) => {
+    localStorage.setItem("fontSize", v);
+    applyFontSize(v);
+    set({ fontSize: v });
   },
   setBorderRadius: (v) => {
     localStorage.setItem("borderRadius", v);

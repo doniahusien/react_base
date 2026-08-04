@@ -141,7 +141,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-8 lg:p-10">{children}</main>
       </div>
     </div>
   );

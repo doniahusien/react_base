@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
+import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard, AdjustmentsHorizontalIcon as SlidersHorizontal } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
-import { Filter, type FilterItem } from "../../components/Filter/Filter";
+import { Filter, type FilterSection } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { Switcher } from "../../components/Shared/Switcher";
 import { ActionsMenu } from "../../components/Shared/ActionsMenu";
@@ -27,7 +27,16 @@ export default function CitiesShowAll() {
     { index: 3, field: "actions", header: t("TITLES.actions") },
   ];
 
-  const filterItems: FilterItem[] = [{ type: "text", key: "keyword", placeholder: "city", prependInputIcon: Search as any }];
+  const filterSections: FilterSection[] = [
+    { 
+      key: "keyword", 
+      label: t("TITLES.search", { count: 1 }),
+      icon: Search,
+      type: "text",
+      placeholder: t("TITLES.search", { count: 1 }),
+      defaultOpen: true
+    }
+  ];
 
   const fetchData = async () => {
     try {
@@ -63,8 +72,31 @@ export default function CitiesShowAll() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="cities" subtitle="cityDesc" icon={Earth} total={data.meta?.total ?? data.data.length} addHref="/cities/form" addLabel="city" path={[{ label: "home", href: "/", icon: LayoutDashboard }, { label: "cities", icon: Earth }]} />
-      <Filter items={filterItems} />
+      <PageHeader 
+        title="cities" 
+        subtitle="cityDesc" 
+        icon={Earth} 
+        total={data.meta?.total ?? data.data.length} 
+        addHref="/cities/form" 
+        addLabel="city" 
+        path={[{ label: "home", href: "/", icon: LayoutDashboard }, { label: "cities", icon: Earth }]} 
+        rightActions={
+          <Filter 
+            sections={filterSections} 
+            onApply={fetchData} 
+            onClear={fetchData}
+            triggerButton={
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-foreground text-sm font-semibold hover:bg-secondary transition-all shadow-sm"
+              >
+                <SlidersHorizontal width={18} height={18} />
+                <span>{t("TITLES.filters")}</span>
+              </button>
+            }
+          />
+        }
+      />
       <UITable data={data} columns={columns} title="cities" loading={loading} renderCell={renderCell} />
     </div>
   );

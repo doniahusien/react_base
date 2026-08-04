@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, PhoneIcon as Phone, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
+import { GlobeAltIcon as Earth, MagnifyingGlassIcon as Search, PhoneIcon as Phone, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard, AdjustmentsHorizontalIcon as SlidersHorizontal } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Filter, type FilterSection } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { Switcher } from "../../components/Shared/Switcher";
 import { ActionsMenu } from "../../components/Shared/ActionsMenu";
-import { InlineAddRow } from "../../components/UI/InlineAddRow";
 import api from "../../lib/axios";
 import { normalizeResponse } from "../../lib/normalizeResponse";
 import type { Country, CountryData } from "../../types/country";
@@ -13,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { ImagePreviewTrigger } from "../../components/UI/ImagePreview";
 import type { TableColumn } from "../../components/UI/ModifyColumns";
-import { showToast } from "../../stores/toast";
 
 function getQueryParams() { const p = new URLSearchParams(window.location.search); return { page: p.get("page") ?? "1", keyword: p.get("keyword") ?? "" }; }
 
@@ -44,43 +42,6 @@ export default function CountriesShowAll() {
       defaultOpen: true
     }
   ];
-
-  const inlineAddFields = [
-    { key: "name_en", label: t("FIELDS.name_en"), type: "text" as const, placeholder: "Enter English name", required: true },
-    { key: "name_ar", label: t("FIELDS.name_ar"), type: "text" as const, placeholder: "Enter Arabic name", required: true },
-    { key: "phone_code", label: t("FIELDS.phone_code"), type: "number" as const, placeholder: "e.g. 966", required: true },
-    { key: "phone_length", label: t("FIELDS.phone_length"), type: "number" as const, placeholder: "e.g. 9", required: true },
-    { key: "currency_en", label: t("FIELDS.currency_en"), type: "text" as const, placeholder: "e.g. SAR" },
-    { key: "currency_ar", label: t("FIELDS.currency_ar"), type: "text" as const, placeholder: "e.g. ريال" },
-    { key: "estimated_arrival_days", label: t("FIELDS.estimated_arrival_days"), type: "number" as const, placeholder: "e.g. 7" },
-    { key: "flag", label: t("FIELDS.flag"), type: "file" as const },
-  ];
-
-  const handleInlineAdd = async (formData: Record<string, any>) => {
-    const payload = new FormData();
-    
-    // Add text fields
-    payload.append("name[en]", formData.name_en || "");
-    payload.append("name[ar]", formData.name_ar || "");
-    payload.append("phone_code", formData.phone_code || "");
-    payload.append("phone_length", formData.phone_length || "");
-    
-    if (formData.currency_en) payload.append("currency[en]", formData.currency_en);
-    if (formData.currency_ar) payload.append("currency[ar]", formData.currency_ar);
-    if (formData.estimated_arrival_days) payload.append("estimated_arrival_days", formData.estimated_arrival_days);
-    if (formData.flag) payload.append("flag", formData.flag);
-    
-    try {
-      await api.post("countries", payload, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      showToast({ type: "success", message: t("MESSAGES.createdSuccess") });
-      fetchData();
-    } catch (error) {
-      showToast({ type: "error", message: t("MESSAGES.createFailed") });
-      throw error;
-    }
-  };
 
   const fetchData = async () => {
     try {
@@ -132,13 +93,33 @@ export default function CountriesShowAll() {
   );
 
   return (
-    <div className="space-y-5">
-      <PageHeader title="countries" subtitle="countryDesc" icon={Earth} total={data.meta?.total ?? data.data.length} addHref="/countries/form" addLabel="country" path={[{ label: "home", href: "/", icon: LayoutDashboard }, { label: "countries", icon: Earth }]} />
+    <div>
+      <PageHeader 
+        title="countries" 
+        subtitle="countryDesc" 
+        icon={Earth} 
+        total={data.meta?.total ?? data.data.length} 
+        addHref="/countries/form" 
+        addLabel="country" 
+        path={[{ label: "home", href: "/", icon: LayoutDashboard }, { label: "countries", icon: Earth }]} 
+        rightActions={
+          <Filter 
+            sections={filterSections} 
+            onApply={fetchData} 
+            onClear={fetchData}
+            triggerButton={
+              <button type="button" className="modern-filter-btn">
+                <SlidersHorizontal className="modern-filter-icon" />
+                <span>{t("TITLES.filters")}</span>
+              </button>
+            }
+          />
+        }
+      />
       
-      {/* Inline Add Row */}
-      <InlineAddRow fields={inlineAddFields} onSave={handleInlineAdd} />
-      
-      <UITable data={data} columns={columns} title="countries" loading={loading} renderCell={renderCell} renderQuickView={renderQuickView} />
+      <div className="modern-content-area">
+        <UITable data={data} columns={columns} title="countries" loading={loading} renderCell={renderCell} renderQuickView={renderQuickView} />
+      </div>
     </div>
   );
 }
