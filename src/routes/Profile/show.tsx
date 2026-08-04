@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { UserIcon as User, AtSymbolIcon as AtSign, PhoneIcon as Phone, ShieldCheckIcon as Shield, PencilIcon as Pencil, Squares2X2Icon as LayoutDashboard, UserCircleIcon as UserCircle, EnvelopeIcon as Mail, CalendarIcon as Calendar } from "@heroicons/react/24/outline";
 import { useAuthStore } from "../../stores/auth";
-import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
+import { PageHeader } from "../../components/UI/PageHeader";
 import { ImagePreviewTrigger } from "../../components/UI/ImagePreview";
 
 function InfoRow({ icon: Icon, label, children }: { icon: any; label: string; children: any }) {
@@ -17,7 +17,29 @@ export default function ProfileShow() {
 
   return (
     <div className="space-y-5">
-      <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("PROFILE.title"), icon: UserCircle }]} />
+      <PageHeader
+        title={user.full_name || user.name || "profile"}
+        translateTitle={!(user.full_name || user.name)}
+        icon={UserCircle}
+        path={[
+          { label: "dashboard", href: "/", icon: LayoutDashboard },
+          { label: "profile", icon: UserCircle }
+        ]}
+        rightActions={
+          <>
+            {user.role && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-semibold text-success-foreground capitalize">
+                <Shield width={11} height={11} />
+                {user.role}
+              </span>
+            )}
+            <button type="button" onClick={() => navigate("/profile/edit")} className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/20 transition-all">
+              <Pencil width={14} height={14} />
+              {t("PROFILE.editTitle")}
+            </button>
+          </>
+        }
+      />
       <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="h-28 bg-primary relative overflow-hidden opacity-90">
           <div className="pointer-events-none absolute inset-0 bg-foreground/20" />

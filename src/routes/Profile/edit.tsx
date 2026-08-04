@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { UserIcon as User, AtSymbolIcon as AtSign, ShieldCheckIcon as Shield, LockClosedIcon as Lock, UserCircleIcon as Contact, XMarkIcon as X, PhotoIcon as ImageIcon, Squares2X2Icon as LayoutDashboard, UserCircleIcon as UserCircle, KeyIcon as KeyRound } from "@heroicons/react/24/outline";
-import { BannerBreadcrumb } from "../../components/UI/BannerBreadcrumb";
+import { PageHeader } from "../../components/UI/PageHeader";
 import { useAuthStore } from "../../stores/auth";
 import Cookies from "js-cookie";
 import { Form } from "../../components/Inputs/Form";
@@ -81,12 +81,17 @@ export default function ProfileEdit() {
 
   return (
     <div className="space-y-0">
-      <div className="page-header relative -mx-6 overflow-hidden px-6 py-7 mb-8">
-        <div className="relative">
-          <BannerBreadcrumb items={[{ label: t("TITLES.dashboard"), href: "/", icon: LayoutDashboard }, { label: t("PROFILE.title"), href: "/profile", icon: UserCircle }, { label: t("PROFILE.editTitle"), icon: User }]} />
-          <div className="relative flex items-end gap-4"><div className="w-0.5 self-stretch rounded-full bg-primary opacity-70" /><h1 className="text-2xl font-black tracking-tight text-foreground">{t("PROFILE.editTitle")}</h1></div>
-        </div>
-      </div>
+      <PageHeader
+        title="editProfile"
+        subtitle={t("LABELS.profileEditDesc")}
+        translateSubtitle={false}
+        icon={User}
+        path={[
+          { label: "dashboard", href: "/", icon: LayoutDashboard },
+          { label: "profile", href: "/profile", icon: UserCircle },
+          { label: "editProfile" }
+        ]}
+      />
       <Form schema={schemas.profileEdit} values={values} onSubmit={handleSubmit}>
         {({ errors, field, touch }) => (
           <div className="space-y-6">
