@@ -19,7 +19,7 @@ export default function CitiesShowAll() {
   const [data, setData] = useState<CityData>({ data: [] });
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
-  const anchorRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const buttonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
 
   const columns: TableColumn[] = [
     { index: 0, field: "name", header: t("TITLES.name"), sortable: true },
@@ -60,11 +60,11 @@ export default function CitiesShowAll() {
         <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
-            ref={(el) => { anchorRefs.current[String(item.id)] = el; }}
+            ref={(el) => { buttonRefs.current[item.id] = el; }}
             onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
             className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-accent hover:text-primary transition-all"
           ><MoreHorizontal width={16} height={16} /></button>
-          {activeMenu === item.id && <ActionsMenu anchorEl={anchorRefs.current[String(item.id)]} data={item} editUrl={`/cities/form/${item.id}`} deleteUrl={`/cities/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
+          {activeMenu === item.id && <ActionsMenu anchorEl={buttonRefs.current[item.id]} data={item} editUrl={`/cities/form/${item.id}`} deleteUrl={`/cities/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
       default: return null;
