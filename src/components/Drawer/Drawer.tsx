@@ -327,9 +327,7 @@ export function Drawer() {
 
     return (
       <>
-        <div className="drawer-orb drawer-orb-top" aria-hidden="true" />
-        <div className="drawer-orb drawer-orb-bottom" aria-hidden="true" />
-        <div className="drawer-noise" aria-hidden="true" />
+
 
         <DrawerHeader
           collapsed={collapsed}
@@ -404,8 +402,8 @@ export function Drawer() {
       {/* Standard Sidebar Layout */}
       {!isHorizontal && !isTwoColumn && (
         <div
-          className={`drawer-shell fixed inset-y-0 start-0 z-50 hidden flex-col overflow-hidden transition-all duration-500 ease-in-out lg:flex ${
-            collapsed ? "w-[4.5rem]" : "w-64"
+          className={`drawer-shell fixed inset-y-0 inset-s-0 z-99999 hidden flex-col overflow-hidden transition-all duration-500 ease-in-out lg:flex ${
+            collapsed ? "w-18" : "w-64"
           }`}
         >
           {sidebarContent(false)}
@@ -423,7 +421,7 @@ export function Drawer() {
 
       {/* Mobile Drawer */}
       <div
-        className={`drawer-shell fixed inset-y-0 start-0 z-50 flex w-72 flex-col transition-all duration-500 ease-in-out lg:hidden ${
+        className={`drawer-shell fixed inset-y-0 inset-s-0 z-50 flex w-72 flex-col transition-all duration-500 ease-in-out lg:hidden ${
           mobileOpen
             ? "translate-x-0 opacity-100"
             : locale === "ar"

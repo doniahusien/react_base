@@ -32,7 +32,7 @@ export interface UITableProps<T = any> {
   filters?: ReactNode;
 }
 
-export type ViewMode = "table" | "grid";
+export type ViewMode = "table" | "grid" | "compact";
 export type GridColumns = 1 | 2 | 3 | 4;
 
 export interface TableToolbarProps<T = any> {
@@ -74,6 +74,15 @@ export interface GridViewProps<T = any> {
   loading: boolean;
   rows: T[];
   gridCols: GridColumns;
+  renderCell?: (field: string, item: T, index: number) => ReactNode;
+  onQuickView: (item: T) => void;
+}
+
+export interface CompactViewProps<T = any> {
+  table: Table<T>;
+  selectedColumns: TableColumn[];
+  loading: boolean;
+  rows: T[];
   renderCell?: (field: string, item: T, index: number) => ReactNode;
   onQuickView: (item: T) => void;
 }

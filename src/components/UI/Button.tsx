@@ -13,7 +13,7 @@ interface ButtonProps
 }
 
 const baseClasses =
-  "inline-flex items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
@@ -33,9 +33,9 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "px-4 py-2 text-sm",
-  md: "px-5 py-2.5 text-sm",
-  lg: "h-12 min-w-[100px] max-w-[200px] px-4 text-sm",
+  sm: "px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm",
+  md: "px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm",
+  lg: "h-10 sm:h-12 min-w-[80px] sm:min-w-[100px] max-w-[160px] sm:max-w-[200px] px-3 sm:px-4 text-xs sm:text-sm",
 };
 
 export function Button({

@@ -84,7 +84,7 @@ export function ActionsMenu({
       ref={menuRef}
       data-id={data?.id}
       onClick={(e) => e.stopPropagation()}
-      className="fixed z-[9999] flex w-[125px] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
+      className="fixed z-9999 flex w-31.25 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
       style={{
         top: position ? `${position.top}px` : '0px',
         left: position ? `${position.left}px` : '0px',

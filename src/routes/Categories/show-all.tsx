@@ -72,13 +72,13 @@ export default function CategoriesShowAll() {
       case "created_at": return <span className="text-sm text-muted">{formatDate(item.created_at)}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/categories/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
-        <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>
+        <div className="relative w-7 sm:w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
             ref={(el) => { buttonRefs.current[item.id] = el; }}
             onClick={() => setActiveMenu((cur) => (cur === item.id ? null : item.id))}
-            className="flex size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
-          ><MoreHorizontal width={16} height={16} /></button>
+            className="flex size-7 sm:size-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
+          ><MoreHorizontal width={14} height={14} className="sm:w-4 sm:h-4" /></button>
           {activeMenu === item.id && <ActionsMenu anchorEl={buttonRefs.current[item.id]} data={item} showUrl={`/categories/${item.id}`} editUrl={`/categories/form/${item.id}`} deleteUrl={`/categories/${item.id}`} onReload={() => { setData((d) => ({ ...d, data: d.data.filter((c) => c.id !== item.id) })); setActiveMenu(null); }} />}
         </div>
       );
@@ -87,7 +87,7 @@ export default function CategoriesShowAll() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3 sm:space-y-5">
       <PageHeader 
         title="categories" 
         subtitle="categoryDesc" 
@@ -113,8 +113,8 @@ export default function CategoriesShowAll() {
             onClear={fetchData}
             triggerButton={
               <Button type="button" variant="primary">
-                <SlidersHorizontal width={18} height={18} />
-                <span>{t("TITLES.filters")}</span>
+                <SlidersHorizontal width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="hidden sm:inline">{t("TITLES.filters")}</span>
               </Button>
             }
           />

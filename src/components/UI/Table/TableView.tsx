@@ -5,7 +5,6 @@ import {
   ArrowsUpDownIcon as ChevronsUpDown,
 } from "@heroicons/react/24/outline";
 import { flexRender } from "@tanstack/react-table";
-import { useTranslation } from "react-i18next";
 import { EmptyState } from "../EmptyState";
 import { SkeletonRow } from "./SkeletonRow";
 import type { TableViewProps } from "./types";
@@ -17,8 +16,6 @@ export function TableView<T extends { id?: any }>({
   rows,
   onQuickView,
 }: TableViewProps<T>) {
-  const { t } = useTranslation();
-
   const SortIcon = ({ column }: { column: any }) => {
     const sorted = column.getIsSorted();
     if (!sorted) return <ChevronsUpDown width={11} height={11} className="opacity-40" />;
@@ -28,12 +25,12 @@ export function TableView<T extends { id?: any }>({
   };
 
   const cellBase =
-    "bg-card px-3 py-3.5 text-foreground align-middle transition-all duration-150 shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)]";
+    "bg-card px-2 sm:px-3 py-2.5 sm:py-3.5 text-foreground align-middle transition-all duration-150 shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)]";
   const cellHover = "group-hover:bg-card/20";
   const cellSelected = "bg-primary/10";
 
   return (
-    <div className="w-full overflow-x-auto rounded-2xl">
+    <div className="w-full overflow-x-auto rounded-xl sm:rounded-2xl -mx-1 px-1">
       <table className="w-full min-w-140 border-separate border-spacing-y-1 text-sm" style={{ width: "100%", tableLayout: "fixed" }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -52,12 +49,12 @@ export function TableView<T extends { id?: any }>({
                       boxSizing: "border-box",
                       ...(header.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 20 } : {}),
                     }}
-                    className={`relative bg-primary/80 text-primary-foreground px-3 py-3.5 text-start text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)] ${
-                      isSelect ? "w-[84px]" : ""
+                    className={`relative bg-primary/80 text-primary-foreground px-2 sm:px-3 py-2.5 sm:py-3.5 text-start text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)] ${
+                      isSelect ? "w-[60px] px-3 sm:px-4" : ""
                     } ${
-                      isFirst ? "rounded-s-2xl" : ""
+                      isFirst ? "rounded-s-xl sm:rounded-s-2xl" : ""
                     } ${
-                      isLast ? "rounded-e-2xl" : ""
+                      isLast ? "rounded-e-xl sm:rounded-e-2xl" : ""
                     } ${
                       header.column.getCanSort() ? "cursor-pointer select-none hover:bg-primary/90 transition-colors" : ""
                     }`}
@@ -65,7 +62,7 @@ export function TableView<T extends { id?: any }>({
                     {header.isPlaceholder ? null : (
                       <div className="flex items-center justify-between gap-2">
                         <span className="inline-flex items-center gap-1">
-                          {isSelect ? t("ACTIONS.select") : flexRender(header.column.columnDef.header, header.getContext())}
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                           {header.column.getCanSort() && !isSelect && <SortIcon column={header.column} />}
                         </span>
                       </div>
@@ -120,8 +117,8 @@ export function TableView<T extends { id?: any }>({
                           ...(cell.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 10, overflow: "visible" } : {}),
                         }}
                         className={`${cellBase} ${cellHover} ${selected ? cellSelected : "bg-panel"} ${
-                          isFirst ? "rounded-s-2xl" : ""
-                        } ${isLast ? "rounded-e-2xl" : ""} ${
+                          isFirst ? "rounded-s-xl sm:rounded-s-2xl" : ""
+                        } ${isLast ? "rounded-e-xl sm:rounded-e-2xl" : ""} ${
                           cell.column.id === "actions" ? "bg-panel" : ""
                         }`}
                       >

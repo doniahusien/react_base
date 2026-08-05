@@ -72,15 +72,7 @@ export default function UserShow() {
       <PageHeader
         title={user.full_name}
         translateTitle={false}
-        subtitle={
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${user.is_active ? "bg-success-soft text-success-foreground" : "bg-border text-muted-foreground"}`}>
-              {user.is_active ? <ShieldCheck width={11} height={11} /> : <ShieldOff width={11} height={11} />}
-              {user.is_active ? t("TITLES.active") : t("TITLES.inactive")}
-            </span>
-            {user.is_ban && <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive"><Ban width={11} height={11} />{t("TITLES.banned")}</span>}
-          </div>
-        }
+    
         icon={UserCircle}
         path={[
           { label: "dashboard", href: "/", icon: LayoutDashboard },
@@ -89,15 +81,11 @@ export default function UserShow() {
         ]}
         rightActions={
           <>
-            {user.email && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><AtSign width={13} height={13} />{user.email}</span>}
-            {user.phone && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><Phone width={13} height={13} /><bdo dir="ltr">+{user.phone_code} {user.phone}</bdo></span>}
-            {user.created_at && <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><CalendarDays width={13} height={13} />{formatDate(user.created_at)}</span>}
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
               <Button type="button" variant="soft" onClick={() => navigate(`/users/form/${user.id}`)}>
                 <Edit width={14} height={14} />
                 {t("TITLES.edit", { count: "" as any })}
               </Button>
-              <Deleter url={`/users/${user.id}`} onReload={() => navigate("/users")} />
             </div>
           </>
         }

@@ -42,8 +42,8 @@ export function DrawerTwoColumnLayout({
       dir={locale === "ar" ? "rtl" : "ltr"}
       className={locale === "ar" ? "text-right" : "text-left"}
     >
-      <div className="drawer-shell fixed inset-y-0 start-0 z-50 hidden w-[18.5rem] overflow-hidden lg:flex">
-        <div className="flex w-[4.5rem] shrink-0 flex-col border-e border-border/60">
+      <div className="drawer-shell fixed inset-y-0 inset-s-0 z-50 hidden w-74 overflow-hidden lg:flex">
+        <div className="flex w-18 shrink-0 flex-col border-e border-border/60">
           <div className="flex justify-center px-2 py-4">
             <div className="drawer-logo-badge">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">

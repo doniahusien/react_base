@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,6 +15,7 @@ import {
 import { TableToolbar } from "./TableToolbar";
 import { TableView } from "./TableView";
 import { GridView } from "./GridView";
+import { CompactView } from "./CompactView";
 import { Pagination } from "./Pagination";
 import { QuickViewModal } from "./QuickViewModal";
 import { pageFromUrl, setPageUrl, getDefaultColumnSize } from "./utils";
@@ -30,6 +32,7 @@ export function UITable<T extends { id?: any }>({
   renderQuickView,
   filters,
 }: UITableProps<T>) {
+  const { t } = useTranslation();
   const [view, setView] = useState<ViewMode>("table");
   const [gridCols, setGridCols] = useState<GridColumns>(3);
   const [page, setPage] = useState(pageFromUrl());
@@ -52,15 +55,13 @@ export function UITable<T extends { id?: any }>({
         id: "select",
         header: ({ table }) => {
           const checkbox = (
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={table.getIsAllRowsSelected()}
-                onChange={table.getToggleAllRowsSelectedHandler()}
-                className="size-3.5 rounded accent-primary cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-              />
-              <span className="text-[11px] font-semibold text-muted/80">#</span>
-            </div>
+            <input
+              type="checkbox"
+              checked={table.getIsAllRowsSelected()}
+              onChange={table.getToggleAllRowsSelectedHandler()}
+              className="size-3.5 cursor-pointer rounded accent-primary opacity-60 transition-opacity hover:opacity-100"
+              aria-label={t("ACTIONS.selectAll")}
+            />
           );
           if (table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()) {
             setTimeout(() => {
@@ -81,7 +82,7 @@ export function UITable<T extends { id?: any }>({
             <span className="text-[11px] font-semibold text-muted/80">{row.index + 1}</span>
           </div>
         ),
-        size: 84,
+        size: 60,
       },
     ];
 
@@ -101,7 +102,7 @@ export function UITable<T extends { id?: any }>({
     });
 
     return cols;
-  }, [columns, renderCell]);
+  }, [columns, renderCell, t]);
 
   const rows = useMemo(() => Array.isArray(data.data) ? data.data : [], [data.data]);
 
@@ -162,9 +163,24 @@ export function UITable<T extends { id?: any }>({
     });
   }, [columns]);
 
-  // Handle responsive view switching
+  // Handle responsive view switching - force grid on mobile
   useEffect(() => {
-    const check = () => setView(window.innerWidth < 1024 ? "grid" : "table");
+    const check = () => {
+      if (window.innerWidth < 640) {
+        // Force grid view on mobile (sm breakpoint)
+        setView("grid");
+        setGridCols(1); // Single column on mobile
+      } else if (window.innerWidth < 768) {
+        // Grid view on small tablets
+        setView("grid");
+        setGridCols(2); // Two columns on small tablets
+      } else if (window.innerWidth < 1024) {
+        // Grid view on tablets
+        setView("grid");
+        setGridCols(2); // Two columns on tablets
+      }
+      // Allow user choice on desktop (lg+)
+    };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
@@ -213,13 +229,22 @@ export function UITable<T extends { id?: any }>({
           rows={rows}
           onQuickView={setQuickItem}
         />
-      ) : (
+      ) : view === "grid" ? (
         <GridView
           table={table}
           selectedColumns={visibleColumns}
           loading={loading}
           rows={rows}
           gridCols={gridCols}
+          renderCell={renderCell}
+          onQuickView={setQuickItem}
+        />
+      ) : (
+        <CompactView
+          table={table}
+          selectedColumns={visibleColumns}
+          loading={loading}
+          rows={rows}
           renderCell={renderCell}
           onQuickView={setQuickItem}
         />

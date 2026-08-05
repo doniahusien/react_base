@@ -34,7 +34,7 @@ export function Layout({ children }: LayoutProps) {
       <ThemeCustomizer />
       <div className={`flex min-w-0 flex-1 flex-col transition-all duration-500 ease-in-out ${desktopMargin}`}>
         <Header mode={mode} />
-        <main className="flex-1 overflow-auto p-6 transition-all duration-500 ease-in-out">{children}</main>
+        <main className="flex-1 overflow-auto p-3 sm:p-4 lg:p-6 transition-all duration-500 ease-in-out">{children}</main>
       </div>
     </div>
   );

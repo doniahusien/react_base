@@ -69,6 +69,7 @@ export const en = {
     security: "Security",
    },
   TITLES: {
+    gridView: "Grid", compactView: "Compact", tableView: "Table",
     viewAll: "View All", cities: "Cities", created_at: "Created At",
     loading: "Loading...", noResults: "No results", adminPanel: "Admin Panel",
     menu: "Menu", active: "Active", inactive: "Inactive", search: "Search {{count}}...",

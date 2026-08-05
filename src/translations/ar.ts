@@ -69,6 +69,7 @@ export const ar = {
     security: "الأمان",
    },
   TITLES: {
+    gridView: "شبكة", compactView: "مضغوط", tableView: "جدول",
     viewAll: "عرض الكل", cities: "المدن", created_at: "تاريخ الإنشاء", city: "المدينة",
     loading: "جارٍ التحميل...", noResults: "لا توجد نتائج", adminPanel: "لوحة الإدارة",
     menu: "القائمة", active: "نشط", inactive: "غير نشط", banned: "محظور",

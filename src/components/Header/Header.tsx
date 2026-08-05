@@ -22,10 +22,10 @@ export function Header({ mode }: HeaderProps) {
   return (
     <header
       className={`header-bar sticky top-0 z-40 transition-all duration-500 ease-in-out ${
-        mode === "horizontal" ? "" : "mx-5 my-0.5 rounded-b-4xl"
+        mode === "horizontal" ? "" : " mx-0 md:mx-5 my-2 md:rounded-4xl"
       }`}
     >
-      <div className="flex items-center justify-between px-5 py-2.5 transition-all duration-500 ease-in-out">
+      <div className="flex items-center justify-between px-2 md:px-5 py-2.5 transition-all duration-500 ease-in-out">
         <div className="flex min-w-0 items-center gap-3">
           {mode === "vertical" && (
             <button
@@ -53,7 +53,7 @@ export function Header({ mode }: HeaderProps) {
             </button>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-0.5 md:gap-1.5">
           <div className="header-pill">
             <button
               type="button"
@@ -62,10 +62,10 @@ export function Header({ mode }: HeaderProps) {
               aria-label="Open theme customizer"
               title="Theme Customizer"
             >
-              <Settings2 width={14} height={14} />
+              <Settings2 width={12} height={12} />
             </button>
             <div className="h-3 w-px bg-border/70" />
-            <ThemeSwitcher variant="icon" iconSize={14} />
+            <ThemeSwitcher variant="icon" iconSize={12} />
           </div>
           <LanguageSwitcher variant="pills" />
           <div className="mx-0.5 h-6 w-px" />

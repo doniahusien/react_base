@@ -36,9 +36,9 @@ export function PageHeader({
 }: PageHeaderProps) {
   const { t } = useTranslation();
   return (
-    <div className="mb-5">
+    <div className="mb-3 sm:mb-5">
       {/* Header Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-card via-card/80 to-card/60 p-6 shadow-sm [--ph-grad-start:color-mix(in_srgb,var(--color-primary)_18%,var(--color-card))] [--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_8%,var(--color-card))] [--ph-overlay:var(--color-card)] [--ph-orb:color-mix(in_srgb,var(--color-secondary)_14%,transparent)] dark:[--ph-grad-start:color-mix(in_srgb,var(--color-primary)_10%,var(--color-card))] dark:[--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_4%,var(--color-card))] dark:[--ph-overlay:var(--color-card)] dark:[--ph-orb:color-mix(in_srgb,var(--color-secondary)_10%,transparent)]">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-card via-card/80 to-card/60 p-4 sm:p-6 shadow-sm [--ph-grad-start:color-mix(in_srgb,var(--color-primary)_18%,var(--color-card))] [--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_8%,var(--color-card))] [--ph-overlay:var(--color-card)] [--ph-orb:color-mix(in_srgb,var(--color-secondary)_14%,transparent)] dark:[--ph-grad-start:color-mix(in_srgb,var(--color-primary)_10%,var(--color-card))] dark:[--ph-grad-mid:color-mix(in_srgb,var(--color-primary)_4%,var(--color-card))] dark:[--ph-overlay:var(--color-card)] dark:[--ph-orb:color-mix(in_srgb,var(--color-secondary)_10%,transparent)]">
         {/* Wave Background (filled organic shape) */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <svg className="absolute left-0 top-0 w-full h-48 lg:h-56" viewBox="0 0 1600 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -65,7 +65,7 @@ export function PageHeader({
         <div className="absolute -bottom-20 -right-20 w-48 h-48 rounded-full pointer-events-none opacity-[0.08] bg-[radial-gradient(circle,var(--color-secondary),transparent_70%)] blur-[60px]" />
  
         {path.length > 0 && (
-          <div className="mb-8 w-full relative z-20">
+          <div className="mb-4 sm:mb-8 w-full relative z-20">
             <BannerBreadcrumb
               items={path.map((seg) =>
                 typeof seg === "string"
@@ -79,24 +79,24 @@ export function PageHeader({
           </div>
         )}
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+        <div className="relative z-10 flex flex-col lg:flex-row items-start justify-between gap-4 sm:gap-5">
           {/* Left: Title Section */}
-          <div className="flex items-center gap-4 flex-1 min-w-0">
+          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 w-full">
             {Icon && (
               <div className="relative shrink-0">
                 <div className="absolute inset-0 rounded-2xl bg-primary/10 animate-pulse" style={{ animationDuration: '3s' }} />
-                <div className="relative w-14 h-14 p-3 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/10 backdrop-blur-sm text-primary transition-transform hover:scale-105 hover:rotate-6">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-linear-to-br from-primary/15 to-secondary/10 backdrop-blur-sm text-primary transition-transform hover:scale-105 hover:rotate-6">
                   <Icon className="w-full h-full" />
                 </div>
               </div>
             )}
             
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl lg:text-3xl font-bold text-foreground leading-tight mb-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight mb-0.5 sm:mb-1">
                 {translateTitle ? t(`TITLES.${title}`) : title}
               </h1>
               {subtitle && (
-                <div className="text-sm text-muted-foreground leading-relaxed">
+                <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                   {typeof subtitle === 'string' 
                     ? (translateSubtitle ? t(`LABELS.${subtitle}`) : subtitle)
                     : subtitle
@@ -108,14 +108,14 @@ export function PageHeader({
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
             {rightActions}
             {addHref && (
               <a 
                 href={addHref} 
-                className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm transition-all duration-300 hover:bg-secondary hover:-translate-y-0.5 shadow-[0_2px_8px_color-mix(in_srgb,var(--color-primary)_25%,transparent)] hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-primary)_35%,transparent)] active:translate-y-0"
+                className="group inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs sm:text-sm transition-all duration-300 hover:bg-secondary hover:-translate-y-0.5 shadow-[0_2px_8px_color-mix(in_srgb,var(--color-primary)_25%,transparent)] hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-primary)_35%,transparent)] active:translate-y-0 flex-1 sm:flex-initial"
               >
-                <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:rotate-90" />
                 <span>{t("TITLES.add", { count: t(`TITLES.${addLabel ?? title}`) as any })}</span>
               </a>
             )}
