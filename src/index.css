@@ -332,6 +332,25 @@
     box-shadow:
       0 25px 50px color-mix(in srgb, var(--color-foreground) 8%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--color-card) 40%, transparent);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideInFromLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .drawer-shell:hover {
+    box-shadow:
+      0 30px 60px color-mix(in srgb, var(--color-foreground) 12%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-card) 50%, transparent);
   }
 
   .drawer-shell-h {
@@ -344,6 +363,25 @@
     box-shadow:
       0 25px 50px color-mix(in srgb, var(--color-foreground) 8%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--color-card) 40%, transparent);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideInFromTop 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideInFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .drawer-shell-h:hover {
+    box-shadow:
+      0 30px 60px color-mix(in srgb, var(--color-foreground) 12%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-card) 50%, transparent);
   }
 
   .drawer-orb {
@@ -408,6 +446,14 @@
     box-shadow:
       0 0 18px color-mix(in srgb, var(--color-primary) 28%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--color-primary-foreground) 12%, transparent);
+    transition: all 0.3s ease;
+  }
+
+  .drawer-logo-badge:hover {
+    transform: scale(1.05) rotate(5deg);
+    box-shadow:
+      0 0 25px color-mix(in srgb, var(--color-primary) 35%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-primary-foreground) 18%, transparent);
   }
 
   .drawer-divider {
@@ -417,6 +463,7 @@
       color-mix(in srgb, var(--color-primary) 22%, transparent) 50%,
       transparent 100%
     );
+    transition: all 0.5s ease;
   }
 
   .drawer-nav-scroll {
@@ -429,7 +476,7 @@
   }
 
   .drawer-nav-item {
-    @apply select-none;
+    @apply select-none transition-all duration-300 ease-in-out;
   }
 
   @keyframes drawer-entry {
@@ -448,44 +495,47 @@
   }
 
   .drawer-nav-active {
-    @apply rounded-lg text-foreground;
+    @apply rounded-lg text-foreground transition-all duration-300;
   }
 
   .drawer-nav-idle {
-    @apply rounded-lg text-muted-foreground;
+    @apply rounded-lg text-muted-foreground transition-all duration-300;
   }
 
   .drawer-nav-idle:hover {
     @apply text-foreground bg-foreground/5;
+    transform: translateX(4px);
   }
 
   .drawer-active-pill {
-    @apply absolute top-1/2 w-[3px] h-5 -translate-y-1/2 bg-primary rounded-full;
+    @apply absolute top-1/2 w-[3px] h-5 -translate-y-1/2 bg-primary rounded-full transition-all duration-300;
     inset-inline-start: 0;
   }
 
   .drawer-icon-active {
-    @apply text-primary;
+    @apply text-primary transition-all duration-300;
   }
 
   .drawer-icon-idle {
-    @apply text-muted-foreground;
+    @apply text-muted-foreground transition-all duration-300;
   }
 
   .drawer-nav-idle:hover .drawer-icon-idle {
     @apply text-foreground;
+    transform: scale(1.1);
   }
 
   .drawer-icon-badge-active {
-    @apply text-primary bg-primary/10;
+    @apply text-primary bg-primary/10 transition-all duration-300;
   }
 
   .drawer-icon-badge-idle {
-    @apply bg-transparent text-muted-foreground transition-all;
+    @apply bg-transparent text-muted-foreground transition-all duration-300;
   }
 
   .drawer-nav-idle:hover .drawer-icon-badge-idle {
     @apply text-foreground bg-foreground/5;
+    transform: scale(1.05);
   }
 
   @keyframes pulse-dot {
@@ -540,7 +590,7 @@
   }
 
   .drawer-user-card {
-    @apply rounded-xl;
+    @apply rounded-xl transition-all duration-300;
     background: color-mix(in srgb, var(--color-card) 50%, transparent);
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
@@ -556,6 +606,7 @@
     box-shadow:
       0 6px 16px color-mix(in srgb, var(--color-foreground) 8%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--color-card) 40%, transparent);
+    transform: translateY(-2px);
   }
 
   .drawer-avatar {
@@ -563,10 +614,16 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid color-mix(in srgb, var(--color-foreground) 12%, transparent);
+    transition: all 0.3s ease;
+  }
+
+  .drawer-user-card:hover .drawer-avatar {
+    transform: scale(1.05);
+    border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
   }
 
   .drawer-logout {
-    @apply border border-transparent text-muted-foreground;
+    @apply border border-transparent text-muted-foreground transition-all duration-300;
   }
 
   .drawer-logout:hover {
@@ -575,6 +632,7 @@
     border-color: color-mix(in srgb, var(--color-destructive) 18%, transparent);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    transform: scale(1.05);
   }
 
   /* Header */
@@ -586,24 +644,32 @@
     box-shadow:
       0 8px 25px color-mix(in srgb, var(--color-foreground) 6%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--color-card) 40%, transparent);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .header-pill {
     @apply flex items-center gap-0.5 rounded-xl border border-border p-1;
     background: color-mix(in srgb, var(--color-border) 30%, transparent);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .header-pill:hover {
+    background: color-mix(in srgb, var(--color-border) 40%, transparent);
+    transform: translateY(-1px);
   }
 
   .header-icon-btn {
-    @apply flex items-center justify-center rounded-lg p-[0.35rem] text-muted-foreground transition-all duration-150;
+    @apply flex items-center justify-center rounded-lg p-[0.35rem] text-muted-foreground transition-all duration-300 ease-in-out;
   }
 
   .header-icon-btn:hover {
     @apply text-foreground;
     background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    transform: scale(1.1);
   }
 
   .header-lang-btn {
-    @apply rounded-lg px-[0.55rem] py-0.5 text-[0.7rem] font-semibold tracking-wide transition-all duration-150;
+    @apply rounded-lg px-[0.55rem] py-0.5 text-[0.7rem] font-semibold tracking-wide transition-all duration-300 ease-in-out;
   }
 
   .header-lang-active {
@@ -619,6 +685,7 @@
   .header-lang-idle:hover {
     @apply text-foreground;
     background: color-mix(in srgb, var(--color-primary) 7%, transparent);
+    transform: translateY(-1px);
   }
 
   .header-avatar {

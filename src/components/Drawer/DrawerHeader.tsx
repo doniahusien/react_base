@@ -14,7 +14,7 @@ export function DrawerHeader({
 
   return (
     <div
-      className={`relative z-10 flex px-2 py-3 ${
+      className={`relative z-10 flex px-2 py-3 transition-all duration-500 ${
         !isMobileDrawer && collapsed
           ? "flex-col items-center gap-2"
           : "flex-row items-center gap-3 px-3.5 py-4"
@@ -26,8 +26,8 @@ export function DrawerHeader({
         </svg>
       </div>
       {showLabel && (
-        <div className="min-w-0 flex-1 overflow-hidden leading-tight">
-          <span className="truncate text-sm font-bold tracking-wide text-foreground">
+        <div className="min-w-0 flex-1 overflow-hidden leading-tight transition-all duration-300">
+          <span className="truncate text-sm font-bold tracking-wide text-foreground transition-colors duration-300">
             {t("SIDEBAR.Dashboard")}
           </span>
         </div>
@@ -37,10 +37,10 @@ export function DrawerHeader({
           <button
             type="button"
             onClick={onSearchClick}
-            className="relative flex size-9 shrink-0 items-center justify-center rounded-xl hover:bg-primary-soft"
+            className="relative flex size-9 shrink-0 items-center justify-center rounded-xl hover:bg-primary-soft transition-all duration-300 hover:scale-110"
             aria-label={t("SIDEBAR.Search")}
           >
-            <MagnifyingGlassIcon className="w-4 h-4 text-foreground-70" />
+            <MagnifyingGlassIcon className="w-4 h-4 text-foreground-70 transition-colors duration-300" />
           </button>
         </Tooltip>
       )}

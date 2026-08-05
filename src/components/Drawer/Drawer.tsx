@@ -404,7 +404,7 @@ export function Drawer() {
       {/* Standard Sidebar Layout */}
       {!isHorizontal && !isTwoColumn && (
         <div
-          className={`drawer-shell fixed inset-y-0 start-0 z-50 hidden flex-col overflow-hidden transition-all duration-300 lg:flex ${
+          className={`drawer-shell fixed inset-y-0 start-0 z-50 hidden flex-col overflow-hidden transition-all duration-500 ease-in-out lg:flex ${
             collapsed ? "w-[4.5rem]" : "w-64"
           }`}
         >
@@ -415,7 +415,7 @@ export function Drawer() {
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-background-70 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-background-70 backdrop-blur-sm lg:hidden transition-opacity duration-300 animate-in fade-in"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -423,12 +423,12 @@ export function Drawer() {
 
       {/* Mobile Drawer */}
       <div
-        className={`drawer-shell fixed inset-y-0 start-0 z-50 flex w-72 flex-col transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`drawer-shell fixed inset-y-0 start-0 z-50 flex w-72 flex-col transition-all duration-500 ease-in-out lg:hidden ${
           mobileOpen
-            ? "translate-x-0"
+            ? "translate-x-0 opacity-100"
             : locale === "ar"
-            ? "translate-x-full"
-            : "-translate-x-full"
+            ? "translate-x-full opacity-0"
+            : "-translate-x-full opacity-0"
         }`}
         aria-label="Mobile navigation"
       >

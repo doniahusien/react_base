@@ -191,12 +191,12 @@ export function ThemeCustomizer() {
     <div className="fixed inset-0 z-[100] flex justify-end">
       <button
         type="button"
-        className="absolute inset-0 bg-background/60"
+        className="absolute inset-0 bg-background/60 transition-opacity duration-500 ease-in-out"
         aria-label={t("THEME.Close")}
         onClick={() => setCustomizerOpen(false)}
       />
       <aside
-        className="relative z-10 flex h-full w-full max-w-md flex-col border-s border-border bg-card shadow-2xl shadow-foreground/10"
+        className="relative z-10 flex h-full w-full max-w-md flex-col border-s border-border bg-card shadow-2xl shadow-foreground/10 transition-all duration-500 ease-in-out translate-x-0"
         role="dialog"
         aria-labelledby="theme-customizer-title"
       >
