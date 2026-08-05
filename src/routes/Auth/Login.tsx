@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AtSymbolIcon as AtSign, LockClosedIcon as Lock, MoonIcon as Moon, SunIcon as Sun, ArrowRightIcon as ArrowRight } from "@heroicons/react/24/outline";
+import { AtSymbolIcon as AtSign, LockClosedIcon as Lock, ArrowRightIcon as ArrowRight } from "@heroicons/react/24/outline";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { Button } from "../../components/UI/Button";
 import { Form } from "../../components/Inputs/Form";
-import { ThemePresetSelectorCompact } from "../../components/ThemePresetSelector";
+import { ThemeSwitcher, LanguageSwitcher } from "../../components/Shared";
 import { useAuthStore } from "../../stores/auth";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
@@ -17,7 +17,7 @@ export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
-  const { theme, lang, setTheme, setLang } = useAppStore();
+  const { theme } = useAppStore();
   const [values, setValues] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
@@ -215,27 +215,11 @@ export default function Login() {
               <span className="text-2xl font-bold tracking-tight text-white">Dashboard</span>
             </div>
             <div className="flex items-center justify-end gap-3">
-            
-              
-              <div className="flex items-center gap-1.5 rounded-xl border border-border/50 bg-card/80 p-1 backdrop-blur-md">
-                {(["en", "ar"] as Locale[]).map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => setLang(l)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all duration-200 ${lang === l ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}
-                    aria-label={`Switch to ${l.toUpperCase()}`}
-                  >
-                    {l.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => setTheme(isDark ? "light" : "dark")}
+              <LanguageSwitcher variant="pills" className="flex items-center gap-1.5 rounded-xl border border-border/50 bg-card/80 p-1 backdrop-blur-md" />
+              <ThemeSwitcher 
+                iconSize={18}
                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/50 bg-card/80 text-muted-foreground backdrop-blur-md transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {isDark ? <Sun width={18} height={18} strokeWidth={2} /> : <Moon width={18} height={18} strokeWidth={2} />}
-              </button>
+              />
             </div>
 
           </div>
@@ -330,29 +314,18 @@ export default function Login() {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setTheme(isDark ? "light" : "dark")}
+                  <ThemeSwitcher 
+                    iconSize={18}
                     className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/50 bg-muted/50 text-muted-foreground transition-all duration-200 hover:bg-primary/10 hover:text-primary"
-                    aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                  >
-                    {isDark ? <Sun width={18} height={18} strokeWidth={2} /> : <Moon width={18} height={18} strokeWidth={2} />}
-                  </button>
+                  />
                 </div>
               </div>
               
               <div className="flex items-center gap-2">
-                <div className="flex flex-1 items-center gap-1 rounded-lg border border-border bg-card/50 p-0.5 backdrop-blur-sm">
-                  {(["en", "ar"] as Locale[]).map((l) => (
-                    <button
-                      key={l}
-                      onClick={() => setLang(l)}
-                      className={`flex-1 rounded-md px-3 py-1.5 text-xs font-bold tracking-wide transition-all duration-200 ${lang === l ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground/60 hover:text-foreground hover:bg-primary/5"}`}
-                      aria-label={`Switch to ${l.toUpperCase()}`}
-                    >
-                      {l.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
+                <LanguageSwitcher 
+                  variant="pills"
+                  className="flex flex-1 items-center gap-1 rounded-lg border border-border bg-card/50 p-0.5 backdrop-blur-sm"
+                />
               </div>
             </div>
 

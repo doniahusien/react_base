@@ -1,24 +1,19 @@
 import { Link } from "react-router-dom";
-import { Bars3Icon as Menu, MoonIcon as Moon, SunIcon as Sun, Cog6ToothIcon as Settings2 } from "@heroicons/react/24/outline";
-import { useTranslation } from "react-i18next";
+import { Bars3Icon as Menu, Cog6ToothIcon as Settings2 } from "@heroicons/react/24/outline";
 import { useAppStore } from "../../store";
 import { useAuthStore } from "../../stores/auth";
+import { ThemeSwitcher, LanguageSwitcher } from "../Shared";
 
 interface HeaderProps {
   mode: "vertical" | "horizontal" | "two-column";
 }
 
 export function Header({ mode }: HeaderProps) {
-  const { t } = useTranslation();
   const {
-    lang,
-    theme,
     sidebarCollapsed,
     setSidebarCollapsed,
     setSidebarOpen,
     sidebarOpen,
-    setTheme,
-    setLang,
     setCustomizerOpen,
   } = useAppStore();
   const user = useAuthStore((s) => s.user);
@@ -67,34 +62,12 @@ export function Header({ mode }: HeaderProps) {
               aria-label="Open theme customizer"
               title="Theme Customizer"
             >
-              <Settings2 width={15} height={15} />
+              <Settings2 width={14} height={14} />
             </button>
-            <div className="h-4 w-px bg-border/70" />
-            <button
-              type="button"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="header-icon-btn"
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? <Moon width={15} height={15} /> : <Sun width={15} height={15} />}
-            </button>
+            <div className="h-3 w-px bg-border/70" />
+            <ThemeSwitcher variant="icon" iconSize={14} />
           </div>
-          <div className="header-pill px-1">
-            <button
-              type="button"
-              onClick={() => setLang("en")}
-              className={`header-lang-btn ${lang === "en" ? "header-lang-active" : "header-lang-idle"}`}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              onClick={() => setLang("ar")}
-              className={`header-lang-btn ${lang === "ar" ? "header-lang-active" : "header-lang-idle"}`}
-            >
-              AR
-            </button>
-          </div>
+          <LanguageSwitcher variant="pills" />
           <div className="mx-0.5 h-6 w-px" />
           <Link
             to="/profile"
@@ -108,11 +81,11 @@ export function Header({ mode }: HeaderProps) {
                 className="size-7 rounded-full object-cover ring-2 ring-primary/20 transition-all duration-300 hover:ring-primary/40 hover:scale-110"
               />
             ) : (
-              <div className="header-avatar flex size-7 items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300 hover:scale-110">
+              <div className="header-avatar flex size-7 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 hover:scale-105">
                 {(user?.name ?? user?.full_name ?? "?")[0]?.toUpperCase()}
               </div>
             )}
-            <span className="hidden max-w-[110px] truncate text-sm font-medium text-foreground md:block">
+            <span className="hidden max-w-27.5 truncate text-sm font-medium text-foreground md:block">
               {user?.name ?? user?.full_name}
             </span>
           </Link>

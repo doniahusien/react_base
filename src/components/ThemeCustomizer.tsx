@@ -64,7 +64,7 @@ function LayoutPreview({ mode, active }: { mode: SidebarMode; active: boolean })
   }
 
   return (
-    <div className={`flex h-[4.5rem] gap-1 rounded-xl border bg-muted/40 p-2 transition-all ${ring}`}>
+    <div className={`flex h-18 gap-1 rounded-xl border bg-muted/40 p-2 transition-all ${ring}`}>
       <div className="w-6 rounded-sm bg-primary/80" />
       <div className="flex-1 space-y-1 pt-0.5">
         <div className="h-2 rounded-sm bg-card" />

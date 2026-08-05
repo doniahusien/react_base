@@ -28,12 +28,7 @@ export default function ProfileShow() {
         ]}
         rightActions={
           <>
-            {user.role && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-semibold text-success-foreground capitalize">
-                <Shield width={11} height={11} />
-                {user.role}
-              </span>
-            )}
+       
             <Button type="button" variant="soft" onClick={() => navigate("/profile/edit")}>
               <Pencil width={14} height={14} />
               {t("PROFILE.editTitle")}
@@ -51,10 +46,7 @@ export default function ProfileShow() {
               {user.image ? <ImagePreviewTrigger src={user.image} alt={user.name || user.full_name} className="size-20 rounded-full border-4 border-card object-cover shadow-lg" wrapperClassName="rounded-full" /> : <div className="flex size-20 items-center justify-center rounded-full border-4 border-card bg-primary text-2xl font-black text-foreground shadow-lg">{initials || <User width={28} height={28} />}</div>}
               <span className="absolute bottom-1 inset-e-1 size-4 rounded-full border-2 border-card bg-success" />
             </div>
-            <Button type="button" variant="soft" onClick={() => navigate("/profile/edit")}>
-              <Pencil width={14} height={14} />
-              {t("PROFILE.editTitle")}
-            </Button>
+       
           </div>
           <div className="mt-3"><h2 className="text-xl font-black text-foreground">{user.full_name || user.name || "—"}</h2>{user.role && <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-semibold text-success-foreground capitalize">{user.role}</span>}</div>
         </div>

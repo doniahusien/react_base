@@ -30,7 +30,7 @@ export function ToastContainer() {
   const toasts = useToastStore((s) => s.toasts);
   if (!toasts.length) return null;
   return (
-    <div className="fixed bottom-5 inset-e-5 z-[200] flex flex-col gap-2 w-80 max-w-[calc(100vw-2.5rem)]">
+    <div className="fixed bottom-5 inset-e-5 z-200 flex flex-col gap-2 w-80 max-w-[calc(100vw-2.5rem)]">
       {toasts.map((t) => <ToastItem key={t.id} t={t} />)}
     </div>
   );

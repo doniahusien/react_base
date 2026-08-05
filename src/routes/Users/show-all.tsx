@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { UsersIcon as Users, MagnifyingGlassIcon as Search, EnvelopeIcon as Mail, PhoneIcon as Phone, EllipsisHorizontalIcon as MoreHorizontal, Squares2X2Icon as LayoutDashboard } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+import { Button } from "../../components/UI/Button";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { ActionsMenu } from "../../components/Shared/ActionsMenu";
