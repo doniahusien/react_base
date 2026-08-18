@@ -23,27 +23,19 @@ function cssColor(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-const ACCENT = {
-  violet:  { bar: "bg-accent-violet",  glow: "bg-accent-violet-soft",  text: "text-accent-violet",  icon: "icon-accent-violet",  ring: "ring-accent-violet"  },
-  blue:    { bar: "bg-accent-blue",    glow: "bg-accent-blue-soft",    text: "text-accent-blue",    icon: "icon-accent-blue",      ring: "ring-accent-blue"    },
-  emerald: { bar: "bg-accent-emerald", glow: "bg-accent-emerald-soft", text: "text-accent-emerald", icon: "icon-accent-emerald", ring: "ring-accent-emerald" },
-  amber:   { bar: "bg-accent-amber",   glow: "bg-accent-amber-soft",   text: "text-accent-amber",   icon: "icon-accent-amber",    ring: "ring-accent-amber"   },
-};
-
-function StatCard({ icon: Icon, label, value, accent }: StatCardProps) {
-  const c = ACCENT[accent];
+function StatCard({ icon: Icon, label, value }: StatCardProps) {
   return (
-    <div className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border/80 bg-card p-5 shadow-sm ring-1 ${c.ring} transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}>
-      <div className={`absolute top-0 inset-x-0 h-0.5 ${c.bar} opacity-80`} />
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border/80 bg-card p-5 shadow-sm ring-1 ring-primary/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+      <div className="absolute top-0 inset-x-0 h-0.5 bg-primary opacity-80" />
       <div className="pointer-events-none absolute -bottom-4 -inset-e-4 opacity-[0.06] dark:opacity-[0.08]"><Icon width={110} height={110} strokeWidth={1} /></div>
-      <div className={`pointer-events-none absolute -top-8 -inset-e-8 h-28 w-28 rounded-full ${c.glow} blur-3xl`} />
+      <div className="pointer-events-none absolute -top-8 -inset-e-8 h-28 w-28 rounded-full bg-primary/15 blur-3xl" />
       <div className="relative flex items-start justify-between">
         <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
-        <div className={`flex size-9 items-center justify-center rounded-xl ring-1 ${c.ring} ${c.icon}`}><Icon width={16} height={16} strokeWidth={2.5} /></div>
+        <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20"><Icon width={16} height={16} strokeWidth={2.5} /></div>
       </div>
       <div className="relative mt-5">
         <p className="text-3xl font-black tracking-tight text-foreground">{value}</p>
-        <div className={`mt-2 h-0.5 w-10 rounded-full ${c.bar} opacity-60`} />
+        <div className="mt-2 h-0.5 w-10 rounded-full bg-primary opacity-60" />
       </div>
     </div>
   );
@@ -75,21 +67,6 @@ export default function Home() {
   const gridColor = cssColor("--color-border");
   const labelColor = cssColor("--color-foreground");
   const primaryColor = cssColor("--color-primary");
-  
-  // Chart colors that adapt to theme - recalculate when theme changes
-  const chartColors = useMemo(
-    () => [
-      cssColor("--color-primary"),
-      cssColor("--color-secondary"),
-      cssColor("--color-violet"),
-      cssColor("--color-blue"),
-      cssColor("--color-emerald"),
-      cssColor("--color-amber"),
-      cssColor("--color-success"),
-      cssColor("--color-destructive"),
-    ],
-    [primaryColor] // Recalculate when primary color changes (theme preset change)
-  );
   const ttTheme = dark ? "dark" : "light" as const;
 
   const base: ApexOptions = useMemo(() => ({
@@ -115,15 +92,15 @@ export default function Home() {
   const topProducts = useMemo(() => (stats.top_selling_products ?? []).slice(0, 10), [stats]);
 
   const topProductsOptions: ApexOptions = useMemo(() => ({
-    ...base, colors: chartColors,
+    ...base, colors: [primaryColor],
     xaxis: { ...base.xaxis, categories: topProducts.map((p) => productName(p, locale)), labels: { style: { colors: textColor, fontSize: "11px" }, rotate: -45, rotateAlways: true, maxHeight: 120 } },
     yaxis: { ...base.yaxis, title: { text: t("ANALYTICS.unitsSold"), style: { color: textColor, fontSize: "12px", fontWeight: 500 } } },
-    plotOptions: { bar: { borderRadius: 4, columnWidth: "70%", distributed: true, dataLabels: { position: "top" } } },
+    plotOptions: { bar: { borderRadius: 4, columnWidth: "70%", distributed: false, dataLabels: { position: "top" } } },
     dataLabels: { enabled: true, offsetY: -20, style: { fontSize: "11px", colors: [labelColor] } },
     legend: { show: false },
     tooltip: { theme: ttTheme, y: { formatter: (v: number) => `${v} ${t("ANALYTICS.unitsSold")}` } },
     grid: { ...base.grid, xaxis: { lines: { show: false } } },
-  }), [base, topProducts, locale, textColor, ttTheme, t, chartColors, labelColor]);
+  }), [base, topProducts, locale, textColor, ttTheme, t, primaryColor, labelColor]);
 
   const topProductsSeries = useMemo(() => [{ name: t("ANALYTICS.unitsSold"), data: topProducts.map((p) => p.number_of_sold_item) }], [topProducts, t]);
 
@@ -146,10 +123,10 @@ export default function Home() {
 
       {loading ? <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}</div>
         : <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard icon={DollarSign} accent="violet" label={t("ANALYTICS.yearlyRevenue")} value={fmt(stats.yearly_revenue)} />
-            <StatCard icon={ShoppingBag} accent="blue" label={t("ANALYTICS.totalOrders")} value={fmt(stats.total_new_orders)} />
-            <StatCard icon={Users} accent="emerald" label={t("ANALYTICS.totalUsers")} value={fmt(stats.total_users)} />
-            <StatCard icon={BarChart3} accent="amber" label={t("ANALYTICS.totalProducts")} value={fmt(stats.total_products)} />
+            <StatCard icon={DollarSign} label={t("ANALYTICS.yearlyRevenue")} value={fmt(stats.yearly_revenue)} />
+            <StatCard icon={ShoppingBag} label={t("ANALYTICS.totalOrders")} value={fmt(stats.total_new_orders)} />
+            <StatCard icon={Users} label={t("ANALYTICS.totalUsers")} value={fmt(stats.total_users)} />
+            <StatCard icon={BarChart3} label={t("ANALYTICS.totalProducts")} value={fmt(stats.total_products)} />
           </div>}
 
       {loading ? <SkeletonChart height={300} /> : (

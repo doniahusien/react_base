@@ -16,5 +16,4 @@ export interface DashboardStats {
 
 export interface StatCardProps {
   icon: any; label: string; value: string;
-  accent: "violet" | "blue" | "emerald" | "amber";
 }

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { ChevronRightIcon, ChevronDownIcon, MapPinIcon } from "@heroicons/react/24/outline";
-import { MapPinIcon as MapPinIconSolid } from "@heroicons/react/24/solid";
+import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Pin } from "lucide-react";
 import { Tooltip } from "../Tooltip";
 import { isItemActive } from "./utils";
 import { SortablePinnedItem } from "./SortablePinnedItem";
@@ -77,9 +77,9 @@ export function DrawerNavItem({
               title={isPinned ? "Unpin" : "Pin"}
             >
               {isPinned ? (
-                <MapPinIconSolid className="w-3 h-3 text-primary" />
+                <Pin className="w-3 h-3 text-primary fill-primary" />
               ) : (
-                <MapPinIcon className="w-3 h-3 text-foreground-40" />
+                <Pin className="w-3 h-3 text-foreground-40" />
               )}
             </button>
           )}

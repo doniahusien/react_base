@@ -85,7 +85,7 @@ export function TableToolbar({
               className={`flex items-center gap-1 rounded-md px-1.5 py-1.5 text-xs font-semibold transition-all duration-200 sm:rounded-lg sm:px-2 ${
                 view === id
                   ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
               aria-label={`${label} view`}
             >

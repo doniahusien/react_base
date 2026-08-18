@@ -79,7 +79,7 @@ export function UITable<T extends { id?: any }>({
               onChange={row.getToggleSelectedHandler()}
               className="size-3.5 rounded accent-primary cursor-pointer"
             />
-            <span className="text-[11px] font-semibold text-muted/80">{row.index + 1}</span>
+            <span className="text-[11px] font-semibold text-muted-foreground/80">{row.index + 1}</span>
           </div>
         ),
         size: 60,

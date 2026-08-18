@@ -58,7 +58,7 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
             ))}
           </div>
           <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
-            <button onClick={() => onChange([...columns])} className="text-xs font-medium text-primary hover:text-accent-hover transition-colors">{t("ACTIONS.selectAll")}</button>
+            <button onClick={() => onChange([...columns])} className="text-xs font-medium text-primary hover:text-main transition-colors">{t("ACTIONS.selectAll")}</button>
             <button onClick={() => onChange([])} className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">{t("ACTIONS.deselectAll")}</button>
           </div>
         </div>

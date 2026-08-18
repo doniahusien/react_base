@@ -110,7 +110,7 @@ export function ColumnVisibilityMenu<T>({ table }: ColumnVisibilityMenuProps<T>)
             <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
               <button
                 onClick={handleSelectAll}
-                className="text-xs font-medium text-primary hover:text-accent-hover transition-colors"
+                className="text-xs font-medium text-primary hover:text-main transition-colors"
               >
                 {t("ACTIONS.selectAll")}
               </button>

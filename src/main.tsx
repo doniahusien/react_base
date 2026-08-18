@@ -9,8 +9,10 @@ import { applyBrandTheme } from "./theme-presets";
 // Apply saved brand theme on app start
 try {
   const savedTheme = localStorage.getItem('selected-brand-theme');
-  if (savedTheme) {
-    applyBrandTheme(savedTheme);
+  const theme = !savedTheme || savedTheme === 'purple' ? 'elwaseet' : savedTheme;
+  applyBrandTheme(theme);
+  if (savedTheme === 'purple') {
+    localStorage.setItem('selected-brand-theme', 'elwaseet');
   }
 } catch {
   // Fail silently if localStorage is not available

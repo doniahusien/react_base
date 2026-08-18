@@ -108,7 +108,7 @@ export function GridView<T extends { id?: any }>({
                   onChange={row.getToggleSelectedHandler()}
                   className="size-4 cursor-pointer rounded border-border accent-primary"
                 />
-                <span className="rounded-md bg-accent px-2 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground">
+                <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground">
                   #{(item as any).id}
                 </span>
               </div>
@@ -117,7 +117,7 @@ export function GridView<T extends { id?: any }>({
                   <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
                     isActive
                       ? "border-success/30 bg-success-soft text-success-foreground"
-                      : "border-border bg-accent text-muted-foreground"
+                      : "border-border bg-muted text-muted-foreground"
                   }`}>
                     <span className={`size-1.5 rounded-full ${isActive ? "bg-success" : "bg-muted-foreground"}`} />
                     {isActive ? t("TITLES.active") : t("TITLES.inactive")}

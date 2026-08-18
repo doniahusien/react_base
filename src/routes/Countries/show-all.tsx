@@ -58,11 +58,11 @@ export default function CountriesShowAll() {
 
   const renderCell = (field: string, item: Country, index: number) => {
     switch (field) {
-      case "flag": return item.flag ? <ImagePreviewTrigger src={item.flag} alt={item.name} className="h-8 w-12 rounded-lg border border-border object-cover" wrapperClassName="rounded-lg" /> : <div className="flex h-8 w-12 items-center justify-center rounded-lg border border-border  "><Earth width={16} height={16} className="text-muted" /></div>;
-      case "name": return <span className="text-sm font-medium text-text">{item.name}</span>;
-      case "phone_code": return <div className="flex items-center gap-1.5"><Phone width={13} height={13} className="text-muted" /><span className="text-sm text-text">+{item.phone_code}</span></div>;
-      case "phone_length": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-text">{item.phone_length} {t("TITLES.digits")}</span>;
-      case "currency": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-text">{item.currency ?? "—"}</span>;
+      case "flag": return item.flag ? <ImagePreviewTrigger src={item.flag} alt={item.name} className="h-8 w-12 rounded-lg border border-border object-cover" wrapperClassName="rounded-lg" /> : <div className="flex h-8 w-12 items-center justify-center rounded-lg border border-border  "><Earth width={16} height={16} className="text-muted-foreground" /></div>;
+      case "name": return <span className="text-sm font-medium text-foreground">{item.name}</span>;
+      case "phone_code": return <div className="flex items-center gap-1.5"><Phone width={13} height={13} className="text-muted-foreground" /><span className="text-sm text-foreground">+{item.phone_code}</span></div>;
+      case "phone_length": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-foreground">{item.phone_length} {t("TITLES.digits")}</span>;
+      case "currency": return <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-foreground">{item.currency ?? "—"}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/countries/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
         <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>

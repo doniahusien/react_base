@@ -45,11 +45,13 @@ export function DrawerTwoColumnLayout({
       <div className="drawer-shell fixed inset-y-0 inset-s-0 z-50 hidden w-74 overflow-hidden lg:flex">
         <div className="flex w-18 shrink-0 flex-col border-e border-border/60">
           <div className="flex justify-center px-2 py-4">
-            <div className="drawer-logo-badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" fillOpacity=".95" />
-              </svg>
-            </div>
+            <img
+              src="/logo.svg"
+              alt="Logo"
+              width={28}
+              height={28}
+              className="h-7 w-7"
+            />
           </div>
           <div className="mx-2.5 mb-2 h-px drawer-divider" />
           <nav className="drawer-nav-scroll flex flex-1 flex-col items-center gap-1 overflow-y-auto px-1.5">
@@ -59,7 +61,9 @@ export function DrawerTwoColumnLayout({
               return (
                 <Tooltip
                   key={group.groupKey}
-                  content={t(`SIDEBAR.${group.groupKey}`, { defaultValue: group.groupLabelStr })}
+                  content={t(`SIDEBAR.${group.groupKey}`, {
+                    defaultValue: group.groupLabelStr,
+                  })}
                 >
                   <button
                     type="button"
@@ -94,13 +98,12 @@ export function DrawerTwoColumnLayout({
 
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="px-4 py-4">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-base font-bold uppercase tracking-[0.18em] text-foreground">
               {activeGroup
-                ? t(`SIDEBAR.${activeGroup.groupKey}`, { defaultValue: activeGroup.groupLabelStr })
+                ? t(`SIDEBAR.${activeGroup.groupKey}`, {
+                    defaultValue: activeGroup.groupLabelStr,
+                  })
                 : t("SIDEBAR.Menu", { defaultValue: "Menu" })}
-            </p>
-            <p className="mt-0.5 truncate text-sm font-bold text-foreground">
-              {activeGroup?.groupLabelStr}
             </p>
           </div>
           <div className="mx-3 mb-2 h-px drawer-divider" />

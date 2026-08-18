@@ -96,9 +96,9 @@ export function ActionsMenu({
       {showUrl && (
         <Link
           to={showUrl}
-          className="flex items-center gap-2 rounded-t-2xl border-b border-border p-2 text-purple-500 hover:bg-purple-500/10"
+          className="flex items-center gap-2 rounded-t-2xl border-b border-border p-2 text-main hover:bg-main/10"
         >
-          <span className="action-btn purple">
+          <span className="action-btn main">
             <Eye className="size-4" />
           </span>
           <span className="text-sm">{t("ACTIONS.show")}</span>

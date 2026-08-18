@@ -20,15 +20,22 @@ export function DrawerHeader({
           : "flex-row items-center gap-3 px-3.5 py-4"
       }`}
     >
-      <div className="drawer-logo-badge shrink-0">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" fillOpacity=".95" />
-        </svg>
+      <div className=" shrink-0">
+        <img
+          src="/logo.svg"
+          alt="Logo"
+          width={28}
+          height={28}
+          className="h-7 w-7"
+        />
       </div>
       {showLabel && (
-        <div className="min-w-0 flex-1 overflow-hidden leading-tight transition-all duration-300">
-          <span className="truncate text-sm font-bold tracking-wide text-foreground transition-colors duration-300">
-            {t("SIDEBAR.Dashboard")}
+        <div className="flex flex-col">
+          <span className="text-sm font-bold text-foreground">
+            {t("TITLES.dashName")}
+          </span>
+          <span className="text-xs text-gray-300/80">
+            {t("TITLES.dashDescription")}
           </span>
         </div>
       )}

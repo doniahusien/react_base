@@ -53,8 +53,8 @@ export default function CitiesShowAll() {
 
   const renderCell = (field: string, item: City, index: number) => {
     switch (field) {
-      case "name": return <span className="text-sm font-medium text-text">{item.name}</span>;
-      case "created_at": return <span className="text-sm text-muted">{new Date(item.created_at).toLocaleDateString()}</span>;
+      case "name": return <span className="text-sm font-medium text-foreground">{item.name}</span>;
+      case "created_at": return <span className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/cities/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
         <div className="relative w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>

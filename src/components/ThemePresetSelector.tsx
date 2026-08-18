@@ -45,14 +45,14 @@ interface ThemePresetSelectorProps {
  * ```tsx
  * <ThemePresetSelector />
  * <ThemePresetSelector variant="compact" />
- * <ThemePresetSelector variant="pill" defaultTheme="blue" />
+ * <ThemePresetSelector variant="pill" defaultTheme="elwaseet" />
  * ```
  */
 export function ThemePresetSelector({
   className = '',
   showPreview = true,
   variant = 'default',
-  defaultTheme = 'purple'
+  defaultTheme = 'elwaseet'
 }: ThemePresetSelectorProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -210,7 +210,7 @@ export function ThemePresetSelector({
                       transition-all duration-150
                       ${isActive 
                         ? 'bg-primary/10 text-primary ring-1 ring-primary/20' 
-                        : 'text-foreground hover:bg-accent hover:text-foreground'
+                        : 'text-foreground hover:bg-muted hover:text-foreground'
                       }
                     `}
                   >

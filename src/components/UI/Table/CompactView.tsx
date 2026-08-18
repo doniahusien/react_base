@@ -81,7 +81,7 @@ export function CompactView<T extends { id?: any }>({
               aria-label={`${t("ACTIONS.select")} #${item.id}`}
             />
 
-            <span className="hidden shrink-0 rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground sm:inline">
+            <span className="hidden shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground sm:inline">
               #{item.id}
             </span>
 
@@ -113,7 +113,7 @@ export function CompactView<T extends { id?: any }>({
             {phone && (
               <a
                 href={`tel:${phone.replace(/\s/g, "")}`}
-                className="hidden size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground lg:flex"
+                className="hidden size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
                 aria-label={phone}
               >
                 <Phone width={14} height={14} />
@@ -124,7 +124,7 @@ export function CompactView<T extends { id?: any }>({
               <button
                 type="button"
                 onClick={() => onQuickView(item)}
-                className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label={t("TITLES.quick_view")}
               >
                 <Eye width={14} height={14} />
@@ -132,7 +132,7 @@ export function CompactView<T extends { id?: any }>({
             )}
 
             {hasActions && renderCell && (
-              <div className="shrink-0 [&_button]:size-7 [&_button]:rounded-md [&_button]:border-transparent [&_button]:bg-transparent [&_button]:shadow-none [&_button]:hover:bg-accent [&_button]:hover:text-accent-foreground">
+              <div className="shrink-0 [&_button]:size-7 [&_button]:rounded-md [&_button]:border-transparent [&_button]:bg-transparent [&_button]:shadow-none [&_button]:hover:bg-muted [&_button]:hover:text-foreground">
                 {renderCell("actions", item, row.index)}
               </div>
             )}

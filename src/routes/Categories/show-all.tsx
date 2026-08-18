@@ -67,9 +67,9 @@ export default function CategoriesShowAll() {
 
   const renderCell = (field: string, item: Category, index: number) => {
     switch (field) {
-      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border  "><Library width={16} height={16} className="text-muted" /></div>;
-      case "name": return <span className="text-sm font-medium text-text">{item.name ?? item.en?.name ?? item.ar?.name ?? "—"}</span>;
-      case "created_at": return <span className="text-sm text-muted">{formatDate(item.created_at)}</span>;
+      case "image": return item.image ? <ImagePreviewTrigger src={item.image} alt={item.name ?? ""} className="h-10 w-10 rounded-full border-2 border-border object-cover" wrapperClassName="rounded-full" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border  "><Library width={16} height={16} className="text-muted-foreground" /></div>;
+      case "name": return <span className="text-sm font-medium text-foreground">{item.name ?? item.en?.name ?? item.ar?.name ?? "—"}</span>;
+      case "created_at": return <span className="text-sm text-muted-foreground">{formatDate(item.created_at)}</span>;
       case "status": return <Switcher key={`status-${item.id}`} value={item.is_active} url={`/categories/${item.id}`} method="PUT" body={{ is_active: !item.is_active }} onReload={fetchData} />;
       case "actions": return (
         <div className="relative w-7 sm:w-9 overflow-visible" onClick={(e) => e.stopPropagation()}>

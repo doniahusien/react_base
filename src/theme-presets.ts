@@ -13,18 +13,19 @@ export interface BrandTheme {
 }
 
 export const brandPresets: Record<string, BrandTheme> = {
+  elwaseet: {
+    name: 'Elwaseet',
+    brand500: 'rgb(15 76 129)',
+    brand600: 'rgb(25 78 124)',
+    description: 'Navy brand (default)',
+  },
   purple: {
     name: 'Purple',
     brand500: '#8b7dd8',
     brand600: '#6a5acd',
-    description: 'Professional, modern (default)',
+    description: 'Professional, modern',
   },
-  blue: {
-    name: 'Blue',
-    brand500: '#3b82f6',
-    brand600: '#2563eb',
-    description: 'Corporate, trustworthy',
-  },
+
   teal: {
     name: 'Teal',
     brand500: '#14b8a6',
@@ -76,7 +77,7 @@ export const brandPresets: Record<string, BrandTheme> = {
  * import { applyBrandTheme } from './theme-presets';
  *
  * // Apply preset
- * applyBrandTheme('blue');
+ * applyBrandTheme('elwaseet');
  *
  * // Apply custom colors
  * applyBrandTheme({ brand500: '#ff0000', brand600: '#cc0000' });
@@ -120,5 +121,5 @@ export function getCurrentBrandTheme(): { brand500: string; brand600: string } {
  * Reset to default theme
  */
 export function resetBrandTheme(): void {
-  applyBrandTheme('purple');
+  applyBrandTheme('elwaseet');
 }

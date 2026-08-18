@@ -121,9 +121,9 @@ export function ThemeCustomizer() {
 
   const [selectedPreset, setSelectedPreset] = useState<string>(() => {
     try {
-      return localStorage.getItem('selected-brand-theme') || 'purple';
+      return localStorage.getItem('selected-brand-theme') || 'elwaseet';
     } catch {
-      return 'purple';
+      return 'elwaseet';
     }
   });
 
@@ -294,11 +294,7 @@ export function ThemeCustomizer() {
                       </p>
                       <p className="text-xs text-muted-foreground">{preset.description}</p>
                     </div>
-                    {active && (
-                      <span className="mt-3 inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
-                        {t("BUTTONS.selected") || "Selected"}
-                      </span>
-                    )}
+                  
                   </button>
                 );
               })}

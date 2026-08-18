@@ -40,7 +40,7 @@ interface FilterProps {
 }
 
 const fieldControlClasses =
-  "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-all hover:border-primary/50 hover:bg-accent focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-all hover:border-primary/50 hover:bg-muted focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 const actionButtonClasses =
   "flex-1 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95";
@@ -94,7 +94,7 @@ function FilterSectionComponent({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        className="flex w-full items-center justify-between rounded-xl border border-transparent px-4 py-2.5 text-left text-sm transition-all hover:border-primary/50 hover:bg-accent group"
+        className="flex w-full items-center justify-between rounded-xl border border-transparent px-4 py-2.5 text-left text-sm transition-all hover:border-primary/50 hover:bg-muted group"
       >
         <div className="flex items-center gap-2.5">
           {Icon && (
@@ -106,7 +106,7 @@ function FilterSectionComponent({
               )}
             </div>
           )}
-          <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-accent-foreground">
+          <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-foreground">
             {section.label}
           </span>
         </div>
@@ -117,9 +117,9 @@ function FilterSectionComponent({
             </span>
           )}
           {isOpen ? (
-            <ChevronUpIcon className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-accent-foreground" />
+            <ChevronUpIcon className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-foreground" />
           ) : (
-            <ChevronDownIcon className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-accent-foreground" />
+            <ChevronDownIcon className="h-4 w-4 text-muted-foreground transition-transform group-hover:text-foreground" />
           )}
         </div>
       </button>
@@ -134,7 +134,7 @@ function FilterSectionComponent({
               {section.options.map((option, index) => (
                 <label
                   key={option.id}
-                  className="flex items-center gap-3 cursor-pointer group rounded-lg p-2 transition-all hover:bg-accent"
+                  className="flex items-center gap-3 cursor-pointer group rounded-lg p-2 transition-all hover:bg-muted"
                   style={{ 
                     animation: isOpen ? `filterOptionSlide 0.3s ease-out ${index * 0.05}s both` : 'none'
                   }}
@@ -153,7 +153,7 @@ function FilterSectionComponent({
                       }}
                     />
                   </div>
-                  <span className="text-sm font-medium text-foreground transition-colors group-hover:text-accent-foreground">
+                  <span className="text-sm font-medium text-foreground transition-colors group-hover:text-foreground">
                     {option.label}
                   </span>
                 </label>
@@ -166,7 +166,7 @@ function FilterSectionComponent({
               {section.options.map((option, index) => (
                 <label
                   key={option.id}
-                  className="flex items-center gap-3 cursor-pointer group rounded-lg p-2 transition-all hover:bg-accent"
+                  className="flex items-center gap-3 cursor-pointer group rounded-lg p-2 transition-all hover:bg-muted"
                   style={{ 
                     animation: isOpen ? `filterOptionSlide 0.3s ease-out ${index * 0.05}s both` : 'none'
                   }}
@@ -180,7 +180,7 @@ function FilterSectionComponent({
                     />
                     <CheckIcon className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-3 w-3 text-primary-foreground pointer-events-none opacity-0 peer-checked:opacity-100 transition-all peer-checked:scale-100 scale-0" />
                   </div>
-                  <span className="text-sm font-medium text-foreground transition-colors group-hover:text-accent-foreground">
+                  <span className="text-sm font-medium text-foreground transition-colors group-hover:text-foreground">
                     {option.label}
                   </span>
                 </label>
@@ -385,7 +385,7 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 hover:rotate-90 hover:bg-accent hover:text-accent-foreground"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 hover:rotate-90 hover:bg-muted hover:text-foreground"
                 >
                   <XMarkIcon className="h-[18px] w-[18px]" />
                 </button>
@@ -421,7 +421,7 @@ export function Filter({ sections, items, onApply, onClear, triggerButton }: Fil
                 <button
                   type="button"
                   onClick={handleClear}
-                  className={`${actionButtonClasses} border-border bg-card text-foreground hover:bg-accent hover:text-accent-foreground`}
+                  className={`${actionButtonClasses} border-border bg-card text-foreground hover:bg-muted hover:text-foreground`}
                 >
                   {t("TITLES.clearAll") || "Clear all"}
                 </button>

@@ -21,22 +21,29 @@
   --color-card-foreground: #475569;
   --color-popover: #ffffff;
   --color-popover-foreground: #475569;
-  --color-primary: #8b7dd8;
+
+  /* Brand — same names and values as the website */
+  --color-main: rgb(212 175 55);
+  --color-primary: rgb(15 76 129);
   --color-primary-foreground: #ffffff;
-  --color-secondary: #6a5acd;
+  --color-secondary: rgb(25 78 124);
   --color-secondary-foreground: #ffffff;
+  --color-accent: rgb(2 175 55);
+  --color-accent-foreground: #ffffff;
+  --color-light-blue: rgb(157 189 224);
+  --color-navy: rgb(10 23 36);
+  --color-mute: rgb(14 30 48);
+
   --color-muted: #3f4142;
   --color-muted-foreground: #6b7280;
-  --color-accent: #f3f4f6;
-  --color-accent-foreground: #475569;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
-  --color-success: #16a34a;
-  --color-success-soft: color-mix(in srgb, #16a34a 15%, transparent);
-  --color-success-foreground: #15803d;
+  --color-success: rgb(2 175 55);
+  --color-success-soft: color-mix(in srgb, rgb(2 175 55) 15%, transparent);
+  --color-success-foreground: rgb(1 140 44);
   --color-border: #e2e8f0;
   --color-input: #e2e8f0;
-  --color-ring: #8b7dd8;
+  --color-ring: rgb(15 76 129);
 
   --color-violet: #7c3aed;
   --color-violet-soft: color-mix(in srgb, #7c3aed 15%, transparent);
@@ -59,9 +66,9 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
 
-  --sidebar-top: #0f0a1a;
-  --sidebar-mid: #1a0d3a;
-  --sidebar-bottom: #05020a;
+  --sidebar-top: rgb(10 23 36);
+  --sidebar-mid: rgb(15 76 129);
+  --sidebar-bottom: rgb(14 30 48);
 }
 
 :root {
@@ -78,22 +85,15 @@
     --color-card-foreground: #e4e4e7;
     --color-popover: #18181b;
     --color-popover-foreground: #e4e4e7;
-    --color-primary: #8b7dd8;
-    --color-primary-foreground: #ffffff;
-    --color-secondary: #6a5acd;
-    --color-secondary-foreground: #ffffff;
     --color-muted: #d4d4d8;
     --color-muted-foreground: #a1a1aa;
-    --color-accent: #27272a;
-    --color-accent-foreground: #e4e4e7;
     --color-destructive: #ef4444;
     --color-destructive-foreground: #ffffff;
-    --color-success: #22c55e;
-    --color-success-soft: color-mix(in srgb, #22c55e 15%, transparent);
+    --color-success: rgb(2 175 55);
+    --color-success-soft: color-mix(in srgb, rgb(2 175 55) 15%, transparent);
     --color-success-foreground: #4ade80;
     --color-border: #27272a;
     --color-input: #27272a;
-    --color-ring: #8b7dd8;
   }
 }
 
@@ -302,8 +302,8 @@
     @apply inline-flex h-7 w-7 items-center justify-center rounded-xl;
   }
 
-  .action-btn.purple {
-    @apply bg-purple-500/10 text-purple-500;
+  .action-btn.main {
+    @apply bg-main/10 text-main;
   }
 
   .action-btn.primary {
@@ -382,11 +382,7 @@
     }
   }
 
-  .drawer-shell-h:hover {
-    box-shadow:
-      0 30px 60px color-mix(in srgb, var(--color-foreground) 12%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-card) 50%, transparent);
-  }
+  
 
   .drawer-orb {
     @apply pointer-events-none absolute rounded-full;
@@ -439,26 +435,6 @@
     background-size: 128px;
   }
 
-  .drawer-logo-badge {
-    @apply flex size-[2.1rem] shrink-0 items-center justify-center rounded-xl;
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-primary) 40%, transparent) 0%,
-      color-mix(in srgb, var(--color-secondary) 25%, transparent) 100%
-    );
-    border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
-    box-shadow:
-      0 0 18px color-mix(in srgb, var(--color-primary) 28%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-primary-foreground) 12%, transparent);
-    transition: all 0.3s ease;
-  }
-
-  .drawer-logo-badge:hover {
-    transform: scale(1.05) rotate(5deg);
-    box-shadow:
-      0 0 25px color-mix(in srgb, var(--color-primary) 35%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-primary-foreground) 18%, transparent);
-  }
 
   .drawer-divider {
     background: linear-gradient(
@@ -1104,7 +1080,7 @@
     background: 
       radial-gradient(at 0% 0%, color-mix(in srgb, var(--color-primary) 8%, transparent) 0px, transparent 50%),
       radial-gradient(at 100% 0%, color-mix(in srgb, var(--color-secondary) 6%, transparent) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, color-mix(in srgb, var(--color-violet) 7%, transparent) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, color-mix(in srgb, var(--color-main) 7%, transparent) 0px, transparent 50%),
       radial-gradient(at 0% 100%, color-mix(in srgb, var(--color-primary) 5%, transparent) 0px, transparent 50%);
   }
 
@@ -1147,7 +1123,7 @@
     height: 450px;
     background: radial-gradient(
       circle,
-      color-mix(in srgb, var(--color-violet) 18%, transparent),
+      color-mix(in srgb, var(--color-main) 18%, transparent),
       transparent 70%
     );
     animation-delay: -14s;
