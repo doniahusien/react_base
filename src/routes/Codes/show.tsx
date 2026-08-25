@@ -81,7 +81,7 @@ export default function CodeShow() {
         path={[
           { label: "dashboard", href: "/", icon: LayoutDashboard },
           { label: "codes", href: "/codes?page=1", icon: Ticket },
-          { label: code.code, icon: Ticket },
+          { label: code.code, icon: Ticket, translate: false },
         ]}
         rightActions={
           <div className="flex items-center gap-2">

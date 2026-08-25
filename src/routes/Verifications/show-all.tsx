@@ -83,6 +83,8 @@ export default function VerificationsShowAll() {
           { id: "active", label: t("STATUS.active") },
           { id: "suspended", label: t("STATUS.suspended") },
           { id: "pending", label: t("STATUS.pending") },
+          { id: "approved", label: t("STATUS.approved") },
+          { id: "rejected", label: t("STATUS.rejected") },
         ],
       },
     ],
@@ -102,7 +104,7 @@ export default function VerificationsShowAll() {
           page,
           type,
           search: search || undefined,
-          status: status || undefined,
+          status: status && status !== "all" ? status : undefined,
         },
       });
       setData(
@@ -166,9 +168,9 @@ export default function VerificationsShowAll() {
         );
       case "email":
         return item.email ? (
-          <div className="flex items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-1.5">
             <Mail width={14} height={14} className="shrink-0 text-muted-foreground" />
-            <a href={`mailto:${item.email}`} className="text-sm text-primary hover:opacity-80">
+            <a href={`mailto:${item.email}`} title={item.email} className="min-w-0 truncate text-sm text-primary hover:opacity-80">
               {item.email}
             </a>
           </div>

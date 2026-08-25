@@ -327,7 +327,7 @@
 
   /* Drawer shell */
   .drawer-shell {
-    @apply overflow-visible border border-border border-l-0;
+    @apply overflow-hidden border border-border border-l-0;
     background: color-mix(in srgb, var(--color-card) 75%, transparent);
     backdrop-filter: blur(60px) saturate(180%);
     -webkit-backdrop-filter: blur(60px) saturate(180%);
@@ -349,12 +349,6 @@
       opacity: 1;
       transform: translateX(0);
     }
-  }
-
-  .drawer-shell:hover {
-    box-shadow:
-      0 30px 60px color-mix(in srgb, var(--color-foreground) 12%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-card) 50%, transparent);
   }
 
   .drawer-shell-h {
@@ -446,9 +440,66 @@
     transition: all 0.5s ease;
   }
 
+  .drawer-section-title {
+    @apply relative mb-1 flex min-w-0 items-center gap-2 px-2.5 py-1 select-none;
+  }
+
+  .drawer-section-title__mark {
+    @apply relative flex size-4 shrink-0 items-center justify-center;
+  }
+
+  .drawer-section-title__dot {
+    @apply size-1.5 rounded-full bg-primary transition-transform duration-300;
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--color-primary) 16%, transparent),
+      0 0 10px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+
+  .group\/title:hover .drawer-section-title__dot {
+    transform: scale(1.25);
+  }
+
+  .drawer-section-title__label {
+    @apply shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-primary;
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 14%, transparent);
+  }
+
+  .drawer-section-title--lg .drawer-section-title__label {
+    @apply px-2 py-1 text-sm tracking-[0.16em];
+  }
+
+  .drawer-section-title--lg .drawer-section-title__mark {
+    @apply size-5;
+  }
+
+  .drawer-section-title--lg .drawer-section-title__dot {
+    @apply size-2;
+  }
+
+  .drawer-section-title__line {
+    @apply h-px min-w-4 flex-1 rounded-full;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-primary) 45%, transparent) 0%,
+      color-mix(in srgb, var(--color-primary) 8%, transparent) 70%,
+      transparent 100%
+    );
+  }
+
+  :dir(rtl) .drawer-section-title__line,
+  [dir="rtl"] .drawer-section-title__line {
+    background: linear-gradient(
+      270deg,
+      color-mix(in srgb, var(--color-primary) 45%, transparent) 0%,
+      color-mix(in srgb, var(--color-primary) 8%, transparent) 70%,
+      transparent 100%
+    );
+  }
+
   .drawer-nav-scroll {
     scrollbar-width: none;
-    overflow-x: visible;
+    overflow-x: hidden;
   }
 
   .drawer-nav-scroll::-webkit-scrollbar {
@@ -475,21 +526,62 @@
   }
 
   .drawer-nav-active {
-    @apply rounded-lg text-foreground transition-all duration-300;
+    @apply rounded-xl text-primary font-semibold transition-all duration-300;
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 18%, transparent);
   }
 
   .drawer-nav-idle {
-    @apply rounded-lg text-muted-foreground transition-all duration-300;
+    @apply rounded-xl text-muted-foreground transition-all duration-300;
   }
 
   .drawer-nav-idle:hover {
-    @apply text-foreground bg-foreground/5;
+    @apply text-foreground;
+    background: color-mix(in srgb, var(--color-foreground) 5%, transparent);
     transform: translateX(4px);
   }
 
+  .drawer-nav-item--compact {
+    @apply mx-auto w-full max-w-10;
+  }
+
+  .drawer-nav-item--compact.drawer-nav-active,
+  .drawer-nav-item--compact.drawer-nav-idle,
+  .drawer-nav-item--compact.drawer-nav-idle:hover {
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .drawer-nav-item--compact.drawer-nav-active {
+    @apply text-primary;
+  }
+
+  .drawer-nav-item--compact .drawer-icon-badge-active {
+    background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  .drawer-nav-item--compact.drawer-nav-idle:hover .drawer-icon-badge-idle {
+    background: color-mix(in srgb, var(--color-foreground) 6%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-border) 70%, transparent);
+    transform: none;
+  }
+
+  :dir(rtl) .drawer-nav-idle:hover,
+  [dir="rtl"] .drawer-nav-idle:hover {
+    transform: translateX(-4px);
+  }
+
   .drawer-active-pill {
-    @apply absolute top-1/2 w-[3px] h-5 -translate-y-1/2 bg-primary rounded-full transition-all duration-300;
+    @apply absolute top-1/2 w-1 h-6 -translate-y-1/2 rounded-full transition-all duration-300;
     inset-inline-start: 0;
+    background: linear-gradient(
+      180deg,
+      var(--color-primary) 0%,
+      var(--color-secondary) 100%
+    );
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-primary) 45%, transparent);
   }
 
   .drawer-icon-active {
@@ -506,7 +598,9 @@
   }
 
   .drawer-icon-badge-active {
-    @apply text-primary bg-primary/10 transition-all duration-300;
+    @apply text-primary transition-all duration-300;
+    background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 22%, transparent);
   }
 
   .drawer-icon-badge-idle {
@@ -514,7 +608,8 @@
   }
 
   .drawer-nav-idle:hover .drawer-icon-badge-idle {
-    @apply text-foreground bg-foreground/5;
+    @apply text-foreground;
+    background: color-mix(in srgb, var(--color-foreground) 5%, transparent);
     transform: scale(1.05);
   }
 
@@ -531,37 +626,41 @@
   }
 
   .drawer-active-pulse {
-    @apply absolute bottom-0.5 size-1.5 rounded-full bg-primary;
-    inset-inline-end: 2px;
+    @apply absolute size-1.5 rounded-full bg-primary;
+    bottom: 1px;
+    inset-inline-end: 1px;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-card) 85%, transparent);
     animation: pulse-dot 2s ease-in-out infinite;
   }
 
   .drawer-tooltip {
-    @apply pointer-events-none absolute z-[9999] whitespace-nowrap rounded-xl px-[0.9rem] py-2 text-[0.8rem] font-semibold text-primary-foreground opacity-0;
+    @apply pointer-events-none absolute z-[9999] whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[0.75rem] font-semibold tracking-wide text-foreground opacity-0;
     inset-inline-start: calc(100% + 12px);
     top: 50%;
-    transform: translateY(-50%) translateX(-8px);
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-    border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+    transform: translateY(-50%) translateX(-6px);
+    background: color-mix(in srgb, var(--color-card) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
     transition:
-      opacity 0.15s ease,
-      transform 0.15s ease;
+      opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow:
-      0 8px 28px color-mix(in srgb, var(--color-primary) 35%, transparent),
-      0 4px 12px color-mix(in srgb, var(--color-foreground) 25%, transparent);
+      0 10px 28px color-mix(in srgb, var(--color-foreground) 10%, transparent),
+      0 2px 8px color-mix(in srgb, var(--color-foreground) 6%, transparent);
   }
 
   .drawer-nav-item:hover .drawer-tooltip {
     @apply opacity-100;
     transform: translateY(-50%) translateX(0);
-    transition-delay: 0.3s;
+    transition-delay: 0.25s;
   }
 
   :dir(rtl) .drawer-tooltip,
   [dir="rtl"] .drawer-tooltip {
     inset-inline-end: calc(100% + 12px);
     inset-inline-start: auto;
-    transform: translateY(-50%) translateX(8px);
+    transform: translateY(-50%) translateX(6px);
   }
 
   :dir(rtl) .drawer-nav-item:hover .drawer-tooltip,
@@ -1712,21 +1811,57 @@
     @apply pointer-events-none opacity-65;
   }
 
-  /* Portal tooltip */
+  /* Portal tooltip — sidebar / collapsed nav */
   .app-tooltip {
-    @apply pointer-events-none fixed z-[9999] whitespace-nowrap rounded-xl px-[0.85rem] py-[0.45rem] text-[0.8125rem] font-semibold text-foreground;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-background) 100%);
-    border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+    @apply pointer-events-none fixed z-[9999] whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[0.75rem] font-semibold tracking-wide text-foreground;
+    background: color-mix(in srgb, var(--color-card) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow:
+      0 10px 28px color-mix(in srgb, var(--color-foreground) 10%, transparent),
+      0 2px 8px color-mix(in srgb, var(--color-foreground) 6%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-card) 70%, transparent);
+    animation: tooltipFadeIn 0.18s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
 
-    animation: tooltipFadeIn 0.15s ease forwards;
+  .app-tooltip::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    background: color-mix(in srgb, var(--color-card) 92%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .app-tooltip[data-side="right"]::before {
+    left: -4px;
+  }
+
+  .app-tooltip[data-side="left"]::before {
+    right: -4px;
+    transform: translateY(-50%) rotate(225deg);
+  }
+
+  .dark .app-tooltip {
+    background: color-mix(in srgb, var(--color-card) 88%, transparent);
+    border-color: color-mix(in srgb, var(--color-border) 80%, transparent);
+    box-shadow:
+      0 12px 32px color-mix(in srgb, #000 45%, transparent),
+      0 2px 8px color-mix(in srgb, #000 25%, transparent);
   }
 
   @keyframes tooltipFadeIn {
     from {
       opacity: 0;
+      filter: blur(2px);
     }
     to {
       opacity: 1;
+      filter: blur(0);
     }
   }
 }

@@ -16,6 +16,7 @@ import { UITable } from "../../components/UI/Table";
 import { ActionsMenu } from "../../components/Shared/ActionsMenu";
 import { PageHeader } from "../../components/UI/PageHeader";
 import {
+  Avatar,
   StatusBadge,
   displayName,
   formatDate,
@@ -131,25 +132,25 @@ export default function LawyerDeletionRequestsShowAll() {
         );
       case "lawyer":
         return (
-          <div className="min-w-0 space-y-0.5">
-            <p className="text-sm font-medium text-foreground">
-              {displayName(item.lawyer?.name)}
-            </p>
-            {item.lawyer?.email ? (
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Mail width={12} height={12} className="shrink-0" />
-                <span className="truncate">{item.lawyer.email}</span>
-              </div>
-            ) : null}
-            {item.lawyer?.phone ? (
-              <bdo
-                dir="rtl"
-                className="flex items-center gap-1.5 text-xs text-muted-foreground"
-              >
-                <Phone width={12} height={12} className="shrink-0" />
-                {item.lawyer.phone}
-              </bdo>
-            ) : null}
+          <div className="flex items-center gap-3">
+            <Avatar name={item.lawyer?.name} />
+            <div className="min-w-0 space-y-0.5">
+              <p className="text-sm font-medium text-foreground">
+                {displayName(item.lawyer?.name)}
+              </p>
+              {item.lawyer?.email ? (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Mail width={12} height={12} className="shrink-0" />
+                  <span className="truncate">{item.lawyer.email}</span>
+                </div>
+              ) : null}
+              {item.lawyer?.phone ? (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Phone width={12} height={12} className="shrink-0" />
+                  <bdo dir="ltr">{item.lawyer.phone}</bdo>
+                </div>
+              ) : null}
+            </div>
           </div>
         );
       case "reason":

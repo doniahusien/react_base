@@ -18,7 +18,7 @@ export function DrawerHorizontalLayout({
       dir={locale === "ar" ? "rtl" : "ltr"}
       className={locale === "ar" ? "text-right" : "text-left"}
     >
-      <div className="fixed inset-x-0 top-0 z-50 hidden h-14 lg:block">
+      <div className="fixed inset-x-0 top-0 z-30 hidden h-14 lg:block">
         <div className="flex h-full items-center gap-5 px-5">
           <div className="flex shrink-0 items-center gap-2.5">
             <img

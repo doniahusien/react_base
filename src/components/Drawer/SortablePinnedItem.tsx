@@ -21,7 +21,12 @@ export function SortablePinnedItem({ id, children, disabled }: SortablePinnedIte
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} className="relative group">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={`relative group ${disabled ? "flex w-full justify-center" : ""}`}
+    >
       {!disabled && (
         <div
           className="-left-4 absolute top-1/2 -translate-y-1/2 rounded-full bg-card/90 p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-all cursor-grab active:cursor-grabbing z-10"

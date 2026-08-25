@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import {
   QuestionMarkCircleIcon as QuestionIcon,
   MagnifyingGlassIcon as Search,
@@ -8,12 +8,16 @@ import {
   ChatBubbleBottomCenterTextIcon as Answer,
   GlobeAltIcon as Publish,
   EyeSlashIcon as Unpublish,
+  XMarkIcon as X,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { ActionsMenu } from "../../components/Shared/ActionsMenu";
 import { PageHeader } from "../../components/UI/PageHeader";
+import { Button } from "../../components/UI/Button";
+import { Form } from "../../components/Inputs/Form";
+import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import {
   StatusBadge,
   displayName,
@@ -26,6 +30,8 @@ import type { Question } from "../../types/questions";
 import type { TableColumn } from "../../components/UI/ModifyColumns";
 import type { TableData } from "../../components/UI/Table/types";
 
+const MAX_ANSWER = 5000;
+
 export default function QuestionsShowAll() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -35,16 +41,18 @@ export default function QuestionsShowAll() {
     id: number;
     anchor: HTMLElement;
   } | null>(null);
+  const [answerItem, setAnswerItem] = useState<Question | null>(null);
+  const [adminAnswer, setAdminAnswer] = useState("");
+  const [savingAnswer, setSavingAnswer] = useState(false);
 
   const columns: TableColumn[] = useMemo(
     () => [
-      { index: 0, field: "id", header: t("TITLES.id") },
-      { index: 1, field: "question_text", header: t("TITLES.question") },
-      { index: 2, field: "client", header: t("TITLES.client") },
-      { index: 3, field: "status", header: t("TITLES.status") },
-      { index: 4, field: "submitted_at", header: t("TITLES.submittedAt") },
-      { index: 5, field: "answered_at", header: t("TITLES.answeredAt") },
-      { index: 6, field: "actions", header: t("TITLES.actions") },
+      { index: 0, field: "question_text", header: t("TITLES.question") },
+      { index: 1, field: "client", header: t("TITLES.client") },
+      { index: 2, field: "status", header: t("TITLES.status") },
+      { index: 3, field: "submitted_at", header: t("TITLES.submittedAt") },
+      { index: 4, field: "answered_at", header: t("TITLES.answeredAt") },
+      { index: 5, field: "actions", header: t("TITLES.actions") },
     ],
     [t]
   );
@@ -128,6 +136,50 @@ export default function QuestionsShowAll() {
       fetchData();
     } catch (e: any) {
       toast.error(t("MESSAGES.updateFailed"), e?.response?.data?.message);
+    }
+  };
+
+  const openAnswer = (item: Question) => {
+    setOpenMenu(null);
+    setAnswerItem(item);
+    setAdminAnswer(item.admin_answer ?? "");
+  };
+
+  const closeAnswer = () => {
+    setAnswerItem(null);
+    setAdminAnswer("");
+  };
+
+  const submitAnswer = async () => {
+    if (!answerItem || savingAnswer) return;
+    const answer = adminAnswer.trim();
+    if (!answer) {
+      toast.error(
+        t("MESSAGES.updateFailed"),
+        t("VALIDATIONS.required", { field: t("TITLES.adminAnswer") })
+      );
+      return;
+    }
+    if (answer.length > MAX_ANSWER) {
+      toast.error(
+        t("MESSAGES.updateFailed"),
+        t("VALIDATIONS.maxLength", { count: MAX_ANSWER })
+      );
+      return;
+    }
+    try {
+      setSavingAnswer(true);
+      const res = await api.put(`questions/${answerItem.id}/answer`, {
+        admin_answer: answer,
+      });
+      toast.success(t("MESSAGES.questionAnswered"), res.data?.message);
+      setAnswerItem(null);
+      setAdminAnswer("");
+      fetchData();
+    } catch (e: any) {
+      toast.error(t("MESSAGES.updateFailed"), e?.response?.data?.message);
+    } finally {
+      setSavingAnswer(false);
     }
   };
 
@@ -216,9 +268,9 @@ export default function QuestionsShowAll() {
                 onReload={fetchData}
                 onClose={() => setOpenMenu(null)}
               >
-                <Link
-                  to={`/questions/${item.id}?answer=1`}
-                  onClick={() => setOpenMenu(null)}
+                <button
+                  type="button"
+                  onClick={() => openAnswer(item)}
                   className="flex w-full items-center gap-2 border-b border-border p-2 text-sm text-primary hover:bg-primary/10"
                 >
                   <span className="action-btn primary">
@@ -227,7 +279,7 @@ export default function QuestionsShowAll() {
                   {item.admin_answer
                     ? t("ACTIONS.editAnswer")
                     : t("ACTIONS.answerQuestion")}
-                </Link>
+                </button>
                 {canPublish ? (
                   <button
                     type="button"
@@ -282,6 +334,77 @@ export default function QuestionsShowAll() {
         renderCell={renderCell}
         filters={<Filter items={filterItems} />}
       />
+
+      {answerItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+            onClick={() => !savingAnswer && closeAnswer()}
+          />
+          <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-3xl border border-border bg-background shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <h3 className="text-base font-semibold text-foreground">
+                {answerItem.admin_answer
+                  ? t("ACTIONS.editAnswer")
+                  : t("ACTIONS.answerQuestion")}
+              </h3>
+              <button
+                type="button"
+                disabled={savingAnswer}
+                onClick={() => !savingAnswer && closeAnswer()}
+                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <X width={16} height={16} />
+              </button>
+            </div>
+            <Form
+              values={{ admin_answer: adminAnswer }}
+              onSubmit={submitAnswer}
+              className="space-y-4 p-5"
+            >
+              {() => (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    {t("LABELS.answerQuestionDesc")}
+                  </p>
+                  <div className="rounded-xl border border-border bg-muted/40 p-3">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t("TITLES.question")}
+                    </p>
+                    <p className="text-sm text-foreground">
+                      {answerItem.question_text || "—"}
+                    </p>
+                  </div>
+                  <BaseTextInput
+                    name="admin_answer"
+                    type="textarea"
+                    label={t("TITLES.adminAnswer")}
+                    value={adminAnswer}
+                    onInput={setAdminAnswer}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {adminAnswer.length}/{MAX_ANSWER}
+                  </p>
+                  <div className="flex gap-3 pt-1">
+                    <Button
+                      type="button"
+                      variant="soft"
+                      className="flex-1"
+                      disabled={savingAnswer}
+                      onClick={() => !savingAnswer && closeAnswer()}
+                    >
+                      {t("BUTTONS.cancel")}
+                    </Button>
+                    <Button type="submit" className="flex-1" loading={savingAnswer}>
+                      {t("ACTIONS.answerQuestion")}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </Form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

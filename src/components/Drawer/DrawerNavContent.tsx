@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { NavGroup, NavItem } from "../../types/sidebar";
 import { DrawerNavItem } from "./DrawerNavItem";
 import { DrawerNavGroup } from "./DrawerNavGroup";
+import { DrawerSectionTitle } from "./DrawerSectionTitle";
 
 interface DrawerNavContentProps {
   groups: NavGroup[];
@@ -66,13 +67,15 @@ export function DrawerNavContent({
     .filter(Boolean) as NavItem[];
 
   return (
-    <nav className="relative z-10 flex-1 px-2 pt-1 overflow-y-auto overflow-x-hidden drawer-nav-scroll">
+    <nav
+      className={`relative z-10 flex-1 pt-1 overflow-y-auto overflow-x-hidden drawer-nav-scroll ${
+        showLabel ? "px-2" : "px-1"
+      }`}
+    >
       {/* If searching, show filtered results */}
       {searchQuery.trim() !== "" ? (
         <div className="px-2">
-          <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-foreground-70 select-none">
-            {t("SIDEBAR.Results")}
-          </p>
+          <DrawerSectionTitle>{t("SIDEBAR.Results")}</DrawerSectionTitle>
           <div className="space-y-1 mt-2">
             {searchResults.map((item, idx) => (
               <div key={`${item.href}-${idx}`}>
@@ -101,9 +104,7 @@ export function DrawerNavContent({
           {pinnedNavItems.length > 0 && (
             <div className="mb-3">
               {showLabel && (
-                <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-foreground-70 select-none">
-                  {t("SIDEBAR.Pinned")}
-                </p>
+                <DrawerSectionTitle>{t("SIDEBAR.Pinned")}</DrawerSectionTitle>
               )}
               <DndContext
                 sensors={sensors}
@@ -114,7 +115,7 @@ export function DrawerNavContent({
                   items={pinnedItemsV2.map((p) => p.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="space-y-0.5">
+                  <div className={`space-y-0.5 ${!showLabel ? "flex flex-col items-center" : ""}`}>
                     {pinnedNavItems.map((item, idx) => (
                       <DrawerNavItem
                         key={item.href}
@@ -137,7 +138,7 @@ export function DrawerNavContent({
                 </SortableContext>
               </DndContext>
               {showLabel && <div className="mx-2 drawer-divider h-px my-3" />}
-              {!showLabel && <div className="mx-2 drawer-divider h-px my-2" />}
+              {!showLabel && <div className="drawer-divider mx-auto my-2 h-px w-8" />}
             </div>
           )}
 

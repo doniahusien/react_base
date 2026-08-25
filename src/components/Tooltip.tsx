@@ -5,39 +5,47 @@ interface TooltipProps {
   children: ReactElement;
   content: string;
   disabled?: boolean;
+  centered?: boolean;
 }
 
-export function Tooltip({ children, content, disabled = false }: TooltipProps) {
+export function Tooltip({ children, content, disabled = false, centered = false }: TooltipProps) {
   const [visible, setVisible] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0, transform: "translateY(-50%)" });
+  const [pos, setPos] = useState({
+    top: 0,
+    left: 0,
+    transform: "translateY(-50%)",
+    side: "right" as "left" | "right",
+  });
   const ref = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const updatePos = useCallback(() => {
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect();
-      const isRTL = document.documentElement.dir === "rtl" || document.body.dir === "rtl" || ref.current.closest('[dir="rtl"]') !== null;
-      
+      const isRTL =
+        document.documentElement.dir === "rtl" ||
+        document.body.dir === "rtl" ||
+        ref.current.closest('[dir="rtl"]') !== null;
+
       let left: number;
       let transform: string;
-      
+      let side: "left" | "right";
+
       if (isRTL) {
-        // RTL: sidebar is on right side, tooltip should appear FULLY to the LEFT of icon
-        // Use rect.left (left edge of icon) as anchor point
-        // Transform moves tooltip 100% of its own width to the left, and centers vertically
-        left = rect.left - 8;
+        left = rect.left - 10;
         transform = "translate(-100%, -50%)";
+        side = "left";
       } else {
-        // LTR: sidebar is on left side, tooltip should appear to the RIGHT of icon
-        // Use rect.right (right edge of icon) as anchor point
-        left = rect.right + 8;
+        left = rect.right + 10;
         transform = "translateY(-50%)";
+        side = "right";
       }
-      
+
       setPos({
         top: rect.top + rect.height / 2,
         left,
         transform,
+        side,
       });
     }
   }, []);
@@ -47,7 +55,7 @@ export function Tooltip({ children, content, disabled = false }: TooltipProps) {
     timerRef.current = setTimeout(() => {
       updatePos();
       setVisible(true);
-    }, 300);
+    }, 220);
   }, [updatePos]);
 
   const hide = useCallback(() => {
@@ -65,7 +73,7 @@ export function Tooltip({ children, content, disabled = false }: TooltipProps) {
         ref={ref}
         onMouseEnter={show}
         onMouseLeave={hide}
-        style={{ display: "block" }}
+        className={centered ? "flex w-full justify-center" : "inline-flex max-w-full"}
       >
         {children}
       </div>
@@ -74,6 +82,7 @@ export function Tooltip({ children, content, disabled = false }: TooltipProps) {
           <div
             role="tooltip"
             className="app-tooltip"
+            data-side={pos.side}
             style={{
               top: pos.top,
               left: pos.left,

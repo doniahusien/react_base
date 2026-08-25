@@ -131,7 +131,7 @@ export const ar = {
     joinedAt: "تاريخ الانضمام", verification: "التحقق", membership: "العضوية",
     lawyerGenderPreference: "تفضيل جنس المحامي",
     legalRequests: "الطلبات القانونية", subscription: "الاشتراك",
-    autoRenew: "تجديد تلقائي", planId: "رقم الخطة", noSubscription: "لا يوجد اشتراك",
+    autoRenew: "تجديد تلقائي", planId: "رقم الخطة", noSubscription: "لا يوجد اشتراك", noPayments: "لا توجد مدفوعات",
     officialName: "الاسم الرسمي", licenseNumber: "رقم الرخصة",
     qualification: "المؤهل", commercialRegistry: "السجل التجاري",
     ratings: "التقييمات", avgRating: "متوسط التقييم", ratingsCount: "عدد التقييمات",

@@ -113,9 +113,9 @@ export default function LawFirmsShowAll() {
         );
       case "email":
         return item.email ? (
-          <div className="flex items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-1.5">
             <Mail width={14} height={14} className="shrink-0 text-muted-foreground" />
-            <a href={`mailto:${item.email}`} className="text-sm text-primary hover:opacity-80">
+            <a href={`mailto:${item.email}`} title={item.email} className="min-w-0 truncate text-sm text-primary hover:opacity-80">
               {item.email}
             </a>
           </div>

@@ -7,6 +7,7 @@ import { Layout } from "./components/Layout";
 import { ToastContainer } from "./components/UI/Toast";
 import { useAuthStore } from "./stores/auth";
 import { routes } from "./routes/routeList";
+import { PageLoadSkeleton } from "./components/UI/Skeleton";
 
 const Login = lazy(() => import("./routes/Auth/Login"));
 
@@ -17,32 +18,32 @@ function AuthGuard() {
   return <Outlet />;
 }
 
-// Spinner for lazy page loads — only shown in the content area
-const Spinner = () => (
-  <div className="flex h-full items-center justify-center py-20">
-    <span className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-  </div>
-);
-
 // Layout wrapper rendered once for all protected routes.
 // Suspense lives HERE so lazy-loading only suspends the page content,
 // NOT the Drawer/sidebar — which stays mounted and never re-animates.
 function ProtectedLayout() {
   return (
     <Layout>
-      <Suspense fallback={<Spinner />}>
+      <Suspense fallback={<PageLoadSkeleton />}>
         <Outlet />
       </Suspense>
     </Layout>
   );
 }
 
-// Full-screen spinner only for the initial login page lazy load
-const FullSpinner = () => (
-  <div className="flex h-screen items-center justify-center">
-    <span className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-  </div>
-);
+function LoginFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md space-y-4 rounded-3xl border border-border bg-card p-8">
+        <div className="skeleton-item mx-auto size-12 rounded-2xl" />
+        <div className="skeleton-item mx-auto h-5 w-40 rounded-full" />
+        <div className="skeleton-item h-11 w-full rounded-xl" />
+        <div className="skeleton-item h-11 w-full rounded-xl" />
+        <div className="skeleton-item h-12 w-full rounded-xl" />
+      </div>
+    </div>
+  );
+}
 
 export function App() {
   return (
@@ -50,7 +51,7 @@ export function App() {
       <BrowserRouter>
           <Routes>
             {/* Login gets its own Suspense since it's outside the layout */}
-            <Route path="/auth/login" element={<Suspense fallback={<FullSpinner />}><Login /></Suspense>} />
+            <Route path="/auth/login" element={<Suspense fallback={<LoginFallback />}><Login /></Suspense>} />
             {/* AuthGuard + ProtectedLayout mount once and stay alive across navigations.
                 Suspense is now INSIDE ProtectedLayout so the Drawer never unmounts. */}
             <Route element={<AuthGuard />}>

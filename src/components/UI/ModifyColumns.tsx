@@ -51,7 +51,7 @@ export function ModifyColumns({ columns, selected, onChange }: ModifyColumnsProp
                 className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-border/20 ${i % 2 === 0 ? "bg-panel/5" : ""}`}
               >
                 <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${checked(col) ? "bg-primary border-primary" : "border-border"}`}>
-                  {checked(col) && <Check width={11} height={11} className="text-foreground" />}
+                  {checked(col) && <Check width={12} height={12} className="stroke-[2.5] text-primary-foreground" />}
                 </span>
                 <span className="flex-1 text-start text-foreground">{col.header}</span>
               </button>

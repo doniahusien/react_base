@@ -123,13 +123,10 @@ export default function ContactsShowAll() {
                 </a>
               ) : null}
               {item.phone ? (
-                <bdo
-                  dir="ltr"
-                  className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground"
-                >
-                  <Phone width={12} height={12} />
-                  {item.phone}
-                </bdo>
+                <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                  <Phone width={12} height={12} className="shrink-0" />
+                  <bdo dir="ltr">{item.phone}</bdo>
+                </div>
               ) : null}
             </div>
           </div>

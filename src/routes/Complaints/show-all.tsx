@@ -55,13 +55,12 @@ export default function ComplaintsShowAll() {
 
   const columns: TableColumn[] = useMemo(
     () => [
-      { index: 0, field: "id", header: t("TITLES.id") },
-      { index: 1, field: "submitted_by", header: t("TITLES.submittedBy") },
-      { index: 2, field: "type", header: t("TITLES.type") },
-      { index: 3, field: "status", header: t("TITLES.status") },
-      { index: 4, field: "description", header: t("TITLES.description") },
-      { index: 5, field: "created_at", header: t("TITLES.createdAt") },
-      { index: 6, field: "actions", header: t("TITLES.actions") },
+      { index: 0, field: "submitted_by", header: t("TITLES.submittedBy") },
+      { index: 1, field: "type", header: t("TITLES.type") },
+      { index: 2, field: "status", header: t("TITLES.status") },
+      { index: 3, field: "description", header: t("TITLES.description") },
+      { index: 4, field: "created_at", header: t("TITLES.createdAt") },
+      { index: 5, field: "actions", header: t("TITLES.actions") },
     ],
     [t]
   );

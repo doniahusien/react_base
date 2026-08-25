@@ -28,9 +28,9 @@ interface PageHeaderProps {
   breadcrumbVariant?: "pill" | "minimal" | "underline" | "arrow";
 }
 
-/** Simple keys like `dashboard` / `subscriptionPlans` are translated; `#1` or names are not. */
+/** Simple keys like `dashboard` / `subscriptionPlans` are translated; codes, IDs, or names are not. */
 function isTitlesKey(label: string) {
-  return /^[a-zA-Z][a-zA-Z0-9_]*$/.test(label);
+  return /^[a-z][a-zA-Z]*$/.test(label);
 }
 
 export function PageHeader({
@@ -55,7 +55,9 @@ export function PageHeader({
     translate?: boolean
   ): string => {
     if (translate === false) return label;
-    if (translate === true || isTitlesKey(label)) return t(`TITLES.${label}`);
+    if (translate === true || isTitlesKey(label)) {
+      return t(`TITLES.${label}`, { defaultValue: label });
+    }
     return label;
   };
 

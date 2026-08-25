@@ -10,6 +10,7 @@ export interface PaymentUser {
 export interface Payment {
   id: number;
   subscription_id: number | null;
+  subscription_name?: string | null;
   user: PaymentUser | null;
   amount: number;
   payment_gateway: string | null;

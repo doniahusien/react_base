@@ -61,3 +61,28 @@ export function Skeleton({ showImageSection = true, showSectionHeaders = true, s
 }
 
 export default Skeleton;
+
+/** Shown while a lazy route chunk is loading (replaces the old page spinner). */
+export function PageLoadSkeleton() {
+  return (
+    <div className="space-y-5">
+      <div className="overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card p-4 sm:p-6">
+        <div className="flex items-center gap-3">
+          <div className="skeleton-item size-10 rounded-xl" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="skeleton-item h-5 w-40 max-w-full rounded-full" />
+            <div className="skeleton-item h-3 w-64 max-w-full rounded-full" />
+          </div>
+        </div>
+      </div>
+      <Skeleton
+        showImageSection={false}
+        showActions={false}
+        sections={[
+          { fields: [{}, {}, {}, {}] },
+          { fields: [{}, {}, {}] },
+        ]}
+      />
+    </div>
+  );
+}

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
@@ -79,6 +80,18 @@ function statusStyles(status: string | null | undefined): {
           "bg-amber-500/10 text-amber-800 ring-1 ring-inset ring-amber-500/20 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/25",
         dot: "bg-amber-500 shadow-[0_0_0_2px] shadow-amber-500/20",
       };
+    case "premium":
+      return {
+        badge:
+          "bg-amber-500/10 text-amber-800 ring-1 ring-inset ring-amber-500/25 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/25",
+        dot: "bg-amber-500 shadow-[0_0_0_2px] shadow-amber-500/20",
+      };
+    case "regular":
+      return {
+        badge:
+          "bg-slate-500/10 text-slate-700 ring-1 ring-inset ring-slate-500/20 dark:bg-slate-400/10 dark:text-slate-300 dark:ring-slate-400/25",
+        dot: "bg-slate-500 shadow-[0_0_0_2px] shadow-slate-500/20",
+      };
     default:
       return {
         badge:
@@ -99,14 +112,18 @@ export function StatusBadge({
   status: string | null | undefined;
   label?: ReactNode;
 }) {
+  const { t } = useTranslation();
   if (!status) return <span className="text-sm text-muted-foreground">—</span>;
   const { badge, dot } = statusStyles(status);
+  const text =
+    label ??
+    t(`STATUS.${status}`, { defaultValue: status.replace(/_/g, " ") });
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-semibold tracking-wide capitalize ${badge}`}
+      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-semibold tracking-wide ${badge}`}
     >
       <span className={`size-1.5 shrink-0 rounded-full ${dot}`} aria-hidden />
-      {label ?? status.replace(/_/g, " ")}
+      {text}
     </span>
   );
 }
@@ -114,15 +131,24 @@ export function StatusBadge({
 export function InfoCard({
   label,
   children,
+  icon: Icon,
 }: {
   label: string;
   children: ReactNode;
+  icon?: any;
 }) {
   return (
     <div className="rounded-xl border border-border bg-background p-4">
-      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
+      <div className="mb-1.5 flex items-center gap-2">
+        {Icon ? (
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+            <Icon width={13} height={13} />
+          </span>
+        ) : null}
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {label}
+        </p>
+      </div>
       <div className="text-sm font-semibold text-foreground">{children}</div>
     </div>
   );

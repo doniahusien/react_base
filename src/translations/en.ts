@@ -131,7 +131,7 @@ export const en = {
     joinedAt: "Joined At", verification: "Verification", membership: "Membership",
     lawyerGenderPreference: "Lawyer gender preference",
     legalRequests: "Legal requests", subscription: "Subscription",
-    autoRenew: "Auto renew", planId: "Plan ID", noSubscription: "No subscription",
+    autoRenew: "Auto renew", planId: "Plan ID", noSubscription: "No subscription", noPayments: "No payments",
     officialName: "Official name", licenseNumber: "License number",
     qualification: "Qualification", commercialRegistry: "Commercial registry",
     ratings: "Ratings", avgRating: "Average rating", ratingsCount: "Ratings count",

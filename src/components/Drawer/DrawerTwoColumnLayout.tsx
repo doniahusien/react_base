@@ -2,6 +2,7 @@ import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "../Tooltip";
 import { DrawerNavItem } from "./DrawerNavItem";
+import { DrawerSectionTitle } from "./DrawerSectionTitle";
 import type { NavGroup } from "../../types/sidebar";
 
 interface DrawerTwoColumnLayoutProps {
@@ -42,7 +43,7 @@ export function DrawerTwoColumnLayout({
       dir={locale === "ar" ? "rtl" : "ltr"}
       className={locale === "ar" ? "text-right" : "text-left"}
     >
-      <div className="drawer-shell fixed inset-y-0 inset-s-0 z-50 hidden w-74 overflow-hidden lg:flex">
+      <div className="drawer-shell fixed inset-y-0 inset-s-0 z-30 hidden w-74 overflow-hidden lg:flex">
         <div className="flex w-18 shrink-0 flex-col border-e border-border/60">
           <div className="flex justify-center px-2 py-4">
             <img
@@ -97,14 +98,14 @@ export function DrawerTwoColumnLayout({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="px-4 py-4">
-            <p className="text-base font-bold uppercase tracking-[0.18em] text-foreground">
+          <div className="px-3 py-4">
+            <DrawerSectionTitle size="lg">
               {activeGroup
                 ? t(`SIDEBAR.${activeGroup.groupKey}`, {
                     defaultValue: activeGroup.groupLabelStr,
                   })
                 : t("SIDEBAR.Menu", { defaultValue: "Menu" })}
-            </p>
+            </DrawerSectionTitle>
           </div>
           <div className="mx-3 mb-2 h-px drawer-divider" />
           <nav className="drawer-nav-scroll relative z-10 flex-1 overflow-x-hidden overflow-y-auto px-2 pb-3">

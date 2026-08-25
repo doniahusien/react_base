@@ -40,10 +40,22 @@ export interface ClientSubscription {
   updated_at: string;
 }
 
+export interface ClientPayment {
+  id: number;
+  subscription_id: number | null;
+  user_id?: number;
+  amount: string | number;
+  payment_gateway: string | null;
+  gateway_transaction_id: string | null;
+  status: string | null;
+  paid_at: string | null;
+  created_at?: string | null;
+}
+
 export interface ClientDetail extends ClientListItem {
   lawyer_gender_preference?: string | null;
   subscription?: ClientSubscription | null;
-  payments?: unknown;
+  payments?: ClientPayment[];
   legal_requests_count?: number;
 }
 

@@ -181,11 +181,16 @@ export default function LawFirmShow() {
                 />
               </InfoCard>
               <InfoCard label={t("TITLES.membership")}>
-                {firm.membership_type
-                  ? t(`STATUS.${firm.membership_type}`, {
-                      defaultValue: firm.membership_type,
-                    })
-                  : "—"}
+                <StatusBadge
+                  status={firm.membership_type}
+                  label={
+                    firm.membership_type
+                      ? t(`STATUS.${firm.membership_type}`, {
+                          defaultValue: firm.membership_type,
+                        })
+                      : undefined
+                  }
+                />
               </InfoCard>
               <InfoCard label={t("TITLES.commercialRegistry")}>
                 {firm.commercial_registry_verified ? t("BUTTONS.yes") : t("BUTTONS.no")}

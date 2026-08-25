@@ -21,11 +21,11 @@ export function Header({ mode }: HeaderProps) {
 
   return (
     <header
-      className={`header-bar sticky top-0 z-40 transition-all duration-500 ease-in-out ${
+      className={`header-bar sticky top-0 z-[60] transition-all duration-500 ease-in-out ${
         mode === "horizontal" ? "" : " mx-0 md:mx-5 my-2 md:rounded-4xl"
       }`}
     >
-      <div className="flex items-center justify-between px-2 md:px-5 py-2.5 transition-all duration-500 ease-in-out">
+      <div className="relative z-10 flex items-center justify-between px-2 md:px-5 py-2.5 transition-all duration-500 ease-in-out">
         <div className="flex min-w-0 items-center gap-3">
           {mode === "vertical" && (
             <button
@@ -34,7 +34,7 @@ export function Header({ mode }: HeaderProps) {
                 if (window.innerWidth < 1024) setSidebarOpen(!sidebarOpen);
                 else setSidebarCollapsed(!collapsed);
               }}
-              className="header-icon-btn shrink-0"
+              className="header-icon-btn relative z-10 shrink-0"
               aria-label="Toggle sidebar"
             >
               <Menu width={17} height={17} />
@@ -53,7 +53,7 @@ export function Header({ mode }: HeaderProps) {
             </button>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-0.5 md:gap-1.5">
+        <div className="relative z-10 flex shrink-0 items-center gap-0.5 md:gap-1.5">
           <div className="header-pill">
             <button
               type="button"

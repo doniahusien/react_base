@@ -137,10 +137,10 @@ export default function PaymentsShowAll() {
                 </a>
               ) : null}
               {item.user?.phone ? (
-                <bdo dir="rtl" className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                   <Phone width={12} height={12} />
-                  {item.user.phone}
-                </bdo>
+                  <bdo dir="ltr">{item.user.phone}</bdo>
+                </div>
               ) : null}
             </div>
           </div>
@@ -177,10 +177,12 @@ export default function PaymentsShowAll() {
           </span>
         );
       case "subscription_id":
-        return (
-          <span className="text-sm tabular-nums text-foreground">
-            {item.subscription_name?? "—"}
+        return item.subscription_name ? (
+          <span className="inline-flex max-w-44 items-center rounded-md bg-primary/10 px-2 py-1 text-start text-[11px] font-semibold leading-snug text-primary ring-1 ring-inset ring-primary/20">
+            {item.subscription_name}
           </span>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
         );
       case "paid_at":
         return (

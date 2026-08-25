@@ -95,7 +95,7 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
                 : options.map((opt) => (
                   <button key={opt.id} type="button" onClick={() => handleSelect(opt)} className={`flex w-full items-center gap-3 px-4 py-2.5 text-start text-sm transition-colors ${isSelected(opt) ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"}`}>
                     <span className="min-w-0 flex-1 truncate text-start">{opt.name}</span>
-                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-primary border-primary" : "border-border"}`}>{isSelected(opt) && <Check width={10} height={10} className="text-foreground" />}</span>
+                    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${isSelected(opt) ? "bg-primary border-primary" : "border-border"}`}>{isSelected(opt) && <Check width={10} height={10} className="stroke-[2.5] text-primary-foreground" />}</span>
                   </button>
                 ))}
             </div>

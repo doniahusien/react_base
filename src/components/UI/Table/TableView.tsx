@@ -7,6 +7,7 @@ import {
 import { flexRender } from "@tanstack/react-table";
 import { EmptyState } from "../EmptyState";
 import { SkeletonRow } from "./SkeletonRow";
+import { getColumnWidthStyle, isCompactTableColumn } from "./utils";
 import type { TableViewProps } from "./types";
 
 export function TableView<T extends { id?: any }>({
@@ -32,6 +33,11 @@ export function TableView<T extends { id?: any }>({
   return (
     <div className="w-full overflow-x-auto rounded-xl sm:rounded-2xl -mx-1 px-1">
       <table className="w-full min-w-140 border-separate border-spacing-y-1 text-sm" style={{ width: "100%", tableLayout: "fixed" }}>
+        <colgroup>
+          {table.getVisibleLeafColumns().map((column) => (
+            <col key={column.id} style={getColumnWidthStyle(column.id, column.getSize())} />
+          ))}
+        </colgroup>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -44,13 +50,14 @@ export function TableView<T extends { id?: any }>({
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
                     style={{
-                      width: header.getSize(),
-                      minWidth: header.getSize(),
+                      ...getColumnWidthStyle(header.column.id, header.getSize()),
                       boxSizing: "border-box",
                       ...(header.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 20 } : {}),
                     }}
                     className={`relative bg-primary/80 text-primary-foreground px-2 sm:px-3 py-2.5 sm:py-3.5 text-start text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)] ${
-                      isSelect ? "w-12 px-2 sm:px-3" : ""
+                      isSelect ? "w-11 !px-1 text-center" : ""
+                    } ${
+                      isCompactTableColumn(header.column.id) && !isSelect ? "!px-1.5 sm:!px-2" : ""
                     } ${
                       isFirst ? "rounded-s-xl sm:rounded-s-2xl" : ""
                     } ${
@@ -60,7 +67,7 @@ export function TableView<T extends { id?: any }>({
                     }`}
                   >
                     {header.isPlaceholder ? null : (
-                      <div className="flex items-center justify-between gap-2">
+                      <div className={`flex items-center gap-2 ${isSelect ? "justify-center" : "justify-between"}`}>
                         <span className="inline-flex items-center gap-1">
                           {flexRender(header.column.columnDef.header, header.getContext())}
                           {header.column.getCanSort() && !isSelect && <SortIcon column={header.column} />}
@@ -107,31 +114,33 @@ export function TableView<T extends { id?: any }>({
                   {row.getVisibleCells().map((cell, cellIndex) => {
                     const isFirst = cellIndex === 0;
                     const isLast = cellIndex === row.getVisibleCells().length - 1;
+                    const isCompact = isCompactTableColumn(cell.column.id);
                     return (
                       <td
                         key={cell.id}
                         style={{
-                          width: cell.column.getSize(),
-                          minWidth: cell.column.getSize(),
+                          ...getColumnWidthStyle(cell.column.id, cell.column.getSize()),
                           boxSizing: "border-box",
-                          ...(cell.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 10, overflow: "visible" } : {}),
+                          ...(cell.column.id === "actions"
+                            ? { position: "sticky", right: 0, zIndex: 10, overflow: "visible" }
+                            : { overflow: "hidden" }),
                         }}
-                        className={`${cellBase} ${cellHover} ${selected ? cellSelected : "bg-panel"} ${
+                        className={`relative ${cellBase} ${cellHover} ${selected ? cellSelected : "bg-panel"} ${
                           isFirst ? "rounded-s-xl sm:rounded-s-2xl" : ""
                         } ${isLast ? "rounded-e-xl sm:rounded-e-2xl" : ""} ${
                           cell.column.id === "actions" ? "bg-panel" : ""
+                        } ${
+                          cell.column.id === "select" ? "!px-1" : isCompact ? "!px-1.5 sm:!px-2" : ""
                         }`}
                       >
-                        {isFirst ? (
-                          <div className="flex h-full items-center">
-                            <div
-                              className={`me-3 h-6 w-0.5 rounded-full bg-primary transition-all duration-200 ${
-                                selected ? "opacity-100" : "opacity-0 group-hover:opacity-40"
-                              }`}
-                            />
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </div>
-                        ) : cell.column.id === "quick_view" ? (
+                        {cellIndex === 1 && (
+                          <div
+                            className={`absolute start-1.5 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-primary transition-all duration-200 ${
+                              selected ? "opacity-100" : "opacity-0 group-hover:opacity-40"
+                            }`}
+                          />
+                        )}
+                        {cell.column.id === "quick_view" ? (
                           <button
                             type="button"
                             onClick={() => onQuickView(row.original)}

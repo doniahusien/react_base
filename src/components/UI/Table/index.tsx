@@ -19,7 +19,7 @@ import { GridView } from "./GridView";
 import { CompactView } from "./CompactView";
 import { Pagination } from "./Pagination";
 import { QuickViewModal } from "./QuickViewModal";
-import { getDefaultColumnSize } from "./utils";
+import { getCompactColumnSize, getDefaultColumnSize } from "./utils";
 import type { UITableProps, TableColumn, ViewMode, GridColumns } from "./types";
 
 export * from "./types";
@@ -43,9 +43,9 @@ export function UITable<T extends { id?: any }>({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ select: true });
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() => {
-    const initial: ColumnSizingState = {};
+    const initial: ColumnSizingState = { select: getCompactColumnSize("select") ?? 44 };
     columns.forEach((col, index) => {
-      initial[col.field] = getDefaultColumnSize(col.header, index);
+      initial[col.field] = getDefaultColumnSize(col.header, index, col.field);
     });
     return initial;
   });
@@ -61,22 +61,30 @@ export function UITable<T extends { id?: any }>({
           </span>
         ),
         cell: ({ row }) => (
-          <span className="text-[11px] font-semibold tabular-nums text-muted-foreground/80">
+          <span className="block text-center text-[11px] font-semibold tabular-nums text-muted-foreground/80">
             {row.index + 1}
           </span>
         ),
-        size: 48,
+        size: getCompactColumnSize("select") ?? 44,
+        minSize: getCompactColumnSize("select") ?? 44,
+        maxSize: getCompactColumnSize("select") ?? 44,
         enableSorting: false,
+        enableResizing: false,
       },
     ];
 
     columns.forEach((col, index) => {
+      const compactSize = getCompactColumnSize(col.field);
+      const size = compactSize ?? getDefaultColumnSize(col.header, index, col.field);
       cols.push({
         id: col.field,
         accessorKey: col.field,
         header: col.header as string,
         enableSorting: col.sortable ?? false,
-        size: getDefaultColumnSize(col.header, index),
+        enableResizing: compactSize == null,
+        size,
+        minSize: compactSize ?? 72,
+        maxSize: compactSize ?? 480,
         cell: ({ row, cell }) => {
           const index = row.index;
           const item = row.original;
@@ -107,8 +115,8 @@ export function UITable<T extends { id?: any }>({
     onColumnVisibilityChange: setColumnVisibility,
     onColumnSizingChange: setColumnSizing,
     defaultColumn: {
-      minSize: 80,
-      maxSize: 320,
+      minSize: 44,
+      maxSize: 480,
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -136,8 +144,12 @@ export function UITable<T extends { id?: any }>({
     setColumnSizing((prev) => {
       const next = { ...prev };
       let changed = false;
+      if (typeof next.select !== "number") {
+        next.select = getCompactColumnSize("select") ?? 44;
+        changed = true;
+      }
       columns.forEach((col, index) => {
-        const defaultSize = getDefaultColumnSize(col.header, index);
+        const defaultSize = getDefaultColumnSize(col.header, index, col.field);
         if (typeof next[col.field] !== "number") {
           next[col.field] = defaultSize;
           changed = true;

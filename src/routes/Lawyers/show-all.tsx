@@ -116,9 +116,9 @@ export default function LawyersShowAll() {
         );
       case "email":
         return item.email ? (
-          <div className="flex items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-1.5">
             <Mail width={14} height={14} className="shrink-0 text-muted-foreground" />
-            <a href={`mailto:${item.email}`} className="text-sm text-primary hover:opacity-80">
+            <a href={`mailto:${item.email}`} title={item.email} className="min-w-0 truncate text-sm text-primary hover:opacity-80">
               {item.email}
             </a>
           </div>
@@ -127,10 +127,12 @@ export default function LawyersShowAll() {
         );
       case "phone":
         return item.phone ? (
-          <bdo dir="ltr" className="flex items-start gap-1.5 text-sm">
-            <Phone width={14} height={14} className="text-muted-foreground" />
+          <div className="flex items-center gap-1.5">
+          <Phone width={14} height={14} className="shrink-0 text-muted-foreground" />
+          <bdo dir="ltr" className="text-sm text-foreground">
             {item.phone}
           </bdo>
+        </div>
         ) : (
           <span className="text-sm text-muted-foreground">—</span>
         );
@@ -161,14 +163,17 @@ export default function LawyersShowAll() {
           />
         );
       case "membership_type":
-        return item.membership_type ? (
-          <span className="text-sm capitalize text-foreground">
-            {t(`STATUS.${item.membership_type}`, {
-              defaultValue: item.membership_type,
-            })}
-          </span>
-        ) : (
-          <span className="text-sm text-muted-foreground">—</span>
+        return (
+          <StatusBadge
+            status={item.membership_type}
+            label={
+              item.membership_type
+                ? t(`STATUS.${item.membership_type}`, {
+                    defaultValue: item.membership_type,
+                  })
+                : undefined
+            }
+          />
         );
       case "joined_at":
         return (

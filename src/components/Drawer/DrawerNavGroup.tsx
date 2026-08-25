@@ -1,6 +1,7 @@
 import { Pin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { DrawerNavItem } from "./DrawerNavItem";
+import { DrawerSectionTitle } from "./DrawerSectionTitle";
 import type { DrawerNavGroupProps } from "./types";
 
 export function DrawerNavGroup({
@@ -20,8 +21,10 @@ export function DrawerNavGroup({
   const { t } = useTranslation();
   const showLabel = isMobileDrawer || !collapsed;
 
-  // Keep all group items visible (pinned items may also appear under Pinned)
-  const visibleItems = group.items;
+  // Hide pinned items from their original group (they live under Pinned)
+  const visibleItems = group.items.filter(
+    (item) => !pinnedItemsV2.some((p) => p.id === `item-${item.href}`)
+  );
   if (visibleItems.length === 0) return null;
 
   const groupItemHrefs = group.items.map((item) => item.href);
@@ -33,31 +36,31 @@ export function DrawerNavGroup({
   );
 
   return (
-    <div key={group.groupKey} className={index > 0 ? "mt-3" : ""}>
-      <div className="flex items-center justify-between group">
+    <div key={group.groupKey} className={`group ${index > 0 ? "mt-3" : ""}`}>
+      <div className="flex items-center justify-between gap-1">
         {showLabel && (
-          <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] select-none">
+          <DrawerSectionTitle className="min-w-0 flex-1">
             {t(`SIDEBAR.${group.groupKey}`)}
-          </p>
+          </DrawerSectionTitle>
         )}
         {showPin && showLabel && (
           <button
             onClick={() => togglePinGroup(group.groupKey, group.items)}
-            className="shrink-0 p-1 rounded-md transition-all duration-200 opacity-0 group-hover:opacity-100 mr-2"
+            className="me-2 shrink-0 rounded-md p-1 opacity-0 transition-all duration-200 group-hover:opacity-100"
             title={allPinned ? "Unpin All" : "Pin All"}
           >
             {allPinned ? (
-              <Pin className="w-3 h-3 text-primary fill-primary" />
+              <Pin className="h-3 w-3 fill-primary text-primary" />
             ) : somePinned ? (
-              <Pin className="w-3 h-3 text-primary/60 fill-primary/60" />
+              <Pin className="h-3 w-3 fill-primary/60 text-primary/60" />
             ) : (
-              <Pin className="w-3 h-3 text-foreground-40" />
+              <Pin className="h-3 w-3 text-foreground-40" />
             )}
           </button>
         )}
       </div>
-      {!showLabel && index > 0 && <div className="mx-2 drawer-divider h-px my-2" />}
-      <div className="space-y-0.5">
+      {!showLabel && index > 0 && <div className="drawer-divider mx-auto my-2 h-px w-8" />}
+      <div className={`space-y-0.5 ${!showLabel ? "flex flex-col items-center" : ""}`}>
         {visibleItems.map((item, ii) => (
           <DrawerNavItem
             key={item.href}

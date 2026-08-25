@@ -196,15 +196,20 @@ export default function VerificationShow() {
                   : "—"}
               </InfoCard>
               <InfoCard label={t("TITLES.membership")}>
-                {item.membership_type
-                  ? t(`STATUS.${item.membership_type}`, {
-                      defaultValue: item.membership_type,
-                    })
-                  : "—"}
+                <StatusBadge
+                  status={item.membership_type}
+                  label={
+                    item.membership_type
+                      ? t(`STATUS.${item.membership_type}`, {
+                          defaultValue: item.membership_type,
+                        })
+                      : undefined
+                  }
+                />
               </InfoCard>
-              <InfoCard label={t("TITLES.subtype")}>
+    {/*           <InfoCard label={t("TITLES.subtype")}>
                 {item.account_subtype || "—"}
-              </InfoCard>
+              </InfoCard> */}
               <InfoCard label={t("TITLES.city")}>{item.city || "—"}</InfoCard>
               <InfoCard label={t("TITLES.region")}>{regionName || "—"}</InfoCard>
               <InfoCard label={t("TITLES.verification")}>

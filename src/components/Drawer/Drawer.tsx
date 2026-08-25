@@ -46,6 +46,7 @@ export function Drawer() {
     sidebarMode,
     sidebarOpen,
     setSidebarOpen,
+    setCustomizerOpen,
     pinnedItemsV2,
     togglePinItem,
     togglePinGroup,
@@ -303,7 +304,7 @@ export function Drawer() {
       subtitle: t("SIDEBAR.TerminalSettingsDesc"),
       icon: Cog6ToothIcon,
       shortcut: isMac ? "⌘," : "Ctrl+,",
-      action: () => console.log("Settings"),
+      action: () => setCustomizerOpen(true),
     },
     {
       id: "notifications",
@@ -460,7 +461,10 @@ export function Drawer() {
   };
 
   return (
-    <div dir={locale === "ar" ? "rtl" : "ltr"} className={locale === "ar" ? "text-right" : "text-left"}>
+    <div
+      dir={locale === "ar" ? "rtl" : "ltr"}
+      className={`contents ${locale === "ar" ? "text-right" : "text-left"}`}
+    >
       {/* Horizontal Layout */}
       {isHorizontal && <DrawerHorizontalLayout groups={groups} pathname={pathname} locale={locale} />}
 
@@ -486,7 +490,7 @@ export function Drawer() {
       {/* Standard Sidebar Layout */}
       {!isHorizontal && !isTwoColumn && (
         <div
-          className={`drawer-shell fixed inset-y-0 inset-s-0 z-99999 hidden flex-col overflow-hidden transition-all duration-500 ease-in-out lg:flex ${
+          className={`drawer-shell fixed inset-y-0 inset-s-0 z-30 hidden flex-col overflow-hidden transition-all duration-500 ease-in-out lg:flex ${
             collapsed ? "w-18" : "w-64"
           }`}
         >
@@ -507,11 +511,12 @@ export function Drawer() {
       <div
         className={`drawer-shell fixed inset-y-0 inset-s-0 z-50 flex w-72 flex-col transition-all duration-500 ease-in-out lg:hidden ${
           mobileOpen
-            ? "translate-x-0 opacity-100"
+            ? "translate-x-0 opacity-100 pointer-events-auto"
             : locale === "ar"
-            ? "translate-x-full opacity-0"
-            : "-translate-x-full opacity-0"
+            ? "translate-x-full opacity-0 pointer-events-none invisible"
+            : "-translate-x-full opacity-0 pointer-events-none invisible"
         }`}
+        aria-hidden={!mobileOpen}
         aria-label="Mobile navigation"
       >
         {sidebarContent(true)}

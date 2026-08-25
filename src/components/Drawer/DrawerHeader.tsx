@@ -40,11 +40,11 @@ export function DrawerHeader({
         </div>
       )}
       {!showLabel && (
-        <Tooltip content={`${t("SIDEBAR.Search")} (${shortcutLabel})`}>
+        <Tooltip content={`${t("SIDEBAR.Search")} (${shortcutLabel})`} centered>
           <button
             type="button"
             onClick={onSearchClick}
-            className="relative flex size-9 shrink-0 items-center justify-center rounded-xl hover:bg-primary-soft transition-all duration-300 hover:scale-110"
+            className="relative flex size-10 shrink-0 items-center justify-center rounded-xl hover:bg-primary-soft transition-all duration-300 hover:scale-110"
             aria-label={t("SIDEBAR.Search")}
           >
             <MagnifyingGlassIcon className="w-4 h-4 text-foreground-70 transition-colors duration-300" />

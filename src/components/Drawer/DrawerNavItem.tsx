@@ -25,17 +25,20 @@ export function DrawerNavItem({
   const hasChildren = (link.children?.length ?? 0) > 0;
   const subOpen = openSubMenu === link.href;
   const showLabel = isMobileDrawer || !collapsed;
+  const isCompact = !showLabel && !isChild;
   const itemId = `item-${link.href}`;
   const isPinned = pinnedItemsV2.some((p) => p.id === itemId);
 
   const sharedClassName = `drawer-nav-item group relative flex items-center rounded-xl transition-all duration-200 cursor-pointer ${
+    isCompact ? "drawer-nav-item--compact" : ""
+  } ${
     isChild
       ? showLabel
         ? "gap-2.5 ms-9 px-3 py-2"
         : "justify-center py-2.5 mx-0.5"
       : showLabel
       ? "gap-3 px-3 py-2.5"
-      : "justify-center py-3 mx-0.5"
+      : "w-full justify-center p-0"
   } ${active ? "drawer-nav-active" : "drawer-nav-idle"}`;
 
   const innerContent = (
@@ -43,23 +46,25 @@ export function DrawerNavItem({
       {active && showLabel && !isChild && <span className="drawer-active-pill" />}
       <span
         className={`relative shrink-0 flex items-center justify-center transition-all duration-200 ${
-          !showLabel ? "size-9 rounded-xl" : ""
+          showLabel ? "size-8 rounded-lg" : "size-10 rounded-xl"
         } ${
           active
-            ? !showLabel
-              ? "drawer-icon-badge-active"
-              : "drawer-icon-active"
-            : !showLabel
-            ? "drawer-icon-badge-idle"
-            : "drawer-icon-idle"
+            ? "drawer-icon-badge-active"
+            : showLabel
+            ? "drawer-icon-idle"
+            : "drawer-icon-badge-idle"
         }`}
       >
         <link.icon className={isChild ? "w-3.5 h-3.5" : "w-4 h-4"} />
-        {active && !showLabel && <span className="drawer-active-pulse" />}
+        {active && isCompact && <span className="drawer-active-pulse" aria-hidden="true" />}
       </span>
       {showLabel && (
         <>
-          <span className={`flex-1 truncate font-medium ${isChild ? "text-xs" : "text-sm"}`}>
+          <span
+            className={`flex-1 truncate font-medium ${isChild ? "text-xs" : "text-sm"} ${
+              active ? "text-primary" : ""
+            }`}
+          >
             {link.label}
           </span>
           {showPin && !isChild && (
@@ -132,7 +137,7 @@ export function DrawerNavItem({
   const tooltipContent = String(link.label);
   const contentWithTooltip =
     !showLabel && !isChild ? (
-      <Tooltip content={tooltipContent} disabled={isMobileDrawer}>
+      <Tooltip content={tooltipContent} disabled={isMobileDrawer} centered>
         {content}
       </Tooltip>
     ) : (
@@ -140,7 +145,7 @@ export function DrawerNavItem({
     );
 
   const wrapper = (
-    <div key={link.href} className="relative">
+    <div key={link.href} className={`relative w-full ${isCompact ? "flex justify-center" : ""}`}>
       {contentWithTooltip}
       {hasChildren && showLabel && subOpen && (
         <div className="mt-0.5 space-y-0.5 overflow-hidden">

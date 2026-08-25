@@ -13,6 +13,7 @@ import {
   XMarkIcon as X
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { 
   useAppStore, 
@@ -187,8 +188,8 @@ export function ThemeCustomizer() {
 
   if (!customizerOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[100] flex justify-end">
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex justify-end">
       <button
         type="button"
         className="absolute inset-0 bg-background/60 transition-opacity duration-500 ease-in-out"
@@ -198,6 +199,7 @@ export function ThemeCustomizer() {
       <aside
         className="relative z-10 flex h-full w-full max-w-md flex-col border-s border-border bg-card shadow-2xl shadow-foreground/10 transition-all duration-500 ease-in-out translate-x-0"
         role="dialog"
+        aria-modal="true"
         aria-labelledby="theme-customizer-title"
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -452,7 +454,8 @@ export function ThemeCustomizer() {
           </section>
         </div>
       </aside>
-    </div>
+    </div>,
+    document.body
   );
 }
 

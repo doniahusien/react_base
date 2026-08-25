@@ -97,7 +97,9 @@ export function ColumnVisibilityMenu<T>({ table }: ColumnVisibilityMenuProps<T>)
                       column.getIsVisible() ? "bg-primary border-primary" : "border-border"
                     }`}
                   >
-                    {column.getIsVisible() && <Check width={11} height={11} className="text-foreground" />}
+                    {column.getIsVisible() && (
+                      <Check width={12} height={12} className="stroke-[2.5] text-primary-foreground" />
+                    )}
                   </span>
                   <span className="flex-1 text-start text-foreground">
                     {typeof column.columnDef.header === "string"

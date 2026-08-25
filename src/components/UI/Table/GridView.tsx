@@ -142,7 +142,7 @@ export function GridView<T extends { id?: any }>({
                         <span className="size-1 rounded-full bg-primary" />
                         {column.header}
                       </span>
-                      <div className="min-w-0 flex-1 text-end text-sm text-foreground">
+                      <div className="flex min-w-0 flex-1 items-center justify-end text-end text-sm text-foreground">
                         {renderCell
                           ? renderCell(column.field, item, row.index)
                           : <span className="line-clamp-1">{String(dig(item, column.field) ?? "—")}</span>}

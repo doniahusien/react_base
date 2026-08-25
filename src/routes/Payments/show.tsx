@@ -103,7 +103,7 @@ export default function PaymentShow() {
                 />
               </InfoCard>
               <InfoCard label={t("TITLES.subscription")}>
-                {payment.subscription_id ?? "—"}
+                {payment.subscription_name ?? "—"}
               </InfoCard>
               <InfoCard label={t("TITLES.paymentGateway")}>
                 {payment.payment_gateway || "—"}
