@@ -6,28 +6,22 @@ import {
   AtSymbolIcon as AtSign,
   ShieldCheckIcon as Shield,
   LockClosedIcon as Lock,
-  UserCircleIcon as Contact,
   XMarkIcon as X,
-  PhotoIcon as ImageIcon,
   Squares2X2Icon as LayoutDashboard,
   UserCircleIcon as UserCircle,
   KeyIcon as KeyRound,
+  LanguageIcon as Language,
 } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
 import { useAuthStore } from "../../stores/auth";
-import Cookies from "js-cookie";
 import { Form } from "../../components/Inputs/Form";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
-import { type FileOutputItem } from "../../components/Inputs/BaseFilesInput";
-import { AvatarPicker } from "../../components/Inputs/AvatarPicker";
-import { BasePhoneInput } from "../../components/Inputs/BasePhoneInput";
+import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
 import { SectionCard } from "../../components/Shared/SectionCard";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
 import { schemas } from "../../lib/schemas";
-
-const USER_DATA_KEY = import.meta.env.VITE_USER_DATA ?? "admin_data";
 
 function ChangePasswordDialog({
   onClose,
@@ -41,20 +35,21 @@ function ChangePasswordDialog({
   const { t } = useTranslation();
   const [values, setValues] = useState({
     current_password: "",
-    password: "",
-    password_confirmation: "",
+    new_password: "",
+    new_password_confirmation: "",
   });
   const [loading, setLoading] = useState(false);
   const set = (k: keyof typeof values) => (v: string) =>
     setValues((p) => ({ ...p, [k]: v }));
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const fd = new FormData();
-      fd.append("current_password", values.current_password);
-      fd.append("password", values.password);
-      fd.append("password_confirmation", values.password_confirmation);
-      await api.post("/profile/change-password", fd);
+      await api.put("profile/change-password", {
+        current_password: values.current_password,
+        new_password: values.new_password,
+        new_password_confirmation: values.new_password_confirmation,
+      });
       toast.success(successMsg);
       onClose();
     } catch (e: any) {
@@ -63,13 +58,14 @@ function ChangePasswordDialog({
       setLoading(false);
     }
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-background/70 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-background border border-border shadow-2xl">
+      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -82,7 +78,7 @@ function ChangePasswordDialog({
           <button
             type="button"
             onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-xl   text-muted-foreground hover:bg-muted border border-border transition-all"
+            className="flex size-8 items-center justify-center rounded-xl border border-border text-muted-foreground transition-all hover:bg-muted"
           >
             <X width={14} height={14} />
           </button>
@@ -107,41 +103,34 @@ function ChangePasswordDialog({
                 {...field("current_password", errors)}
               />
               <BaseTextInput
-                name="password"
+                name="new_password"
                 label={t("PROFILE.newPassword")}
                 type="password"
-                value={values.password}
+                value={values.new_password}
                 onInput={(v) => {
-                  set("password")(v);
-                  touch("password");
+                  set("new_password")(v);
+                  touch("new_password");
                 }}
                 prependInputIcon={Lock}
-                {...field("password", errors)}
+                {...field("new_password", errors)}
               />
               <BaseTextInput
-                name="password_confirmation"
+                name="new_password_confirmation"
                 label={t("PROFILE.confirmPassword")}
                 type="password"
-                value={values.password_confirmation}
+                value={values.new_password_confirmation}
                 onInput={(v) => {
-                  set("password_confirmation")(v);
-                  touch("password_confirmation");
+                  set("new_password_confirmation")(v);
+                  touch("new_password_confirmation");
                 }}
                 prependInputIcon={Lock}
-                {...field("password_confirmation", errors)}
+                {...field("new_password_confirmation", errors)}
               />
               <div className="flex items-center justify-end gap-3 pt-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={onClose}
-                >
+                <Button type="button" variant="secondary" onClick={onClose}>
                   <X width={14} height={14} /> {t("BUTTONS.cancel")}
                 </Button>
-                <Button
-                  type="submit"
-                  loading={loading}
-                >
+                <Button type="submit" loading={loading}>
                   <Shield width={14} height={14} />
                   {t("BUTTONS.saveChanges")}
                 </Button>
@@ -158,48 +147,34 @@ export default function ProfileEdit() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, fetchProfile } = useAuthStore();
-  const [imageValue] = useState<any>(
-    user?.image
-      ? { id: user.image?.id ?? null, media: user.image?.media ?? user.image }
-      : null,
-  );
-  const [imageFile, setImageFile] = useState<FileOutputItem | null>(null);
-  const [imageLoading, setImgLoad] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
   const [values, setValues] = useState({
-    first_name: user?.first_name ?? "",
-    last_name: user?.last_name ?? "",
+    full_name: user?.full_name ?? "",
     email: user?.email ?? "",
-    phone_code: user?.phone_code ?? "966",
-    phone: user?.phone ?? "",
+    preferred_language: (user?.preferred_language === "en" ? "en" : "ar") as
+      | "ar"
+      | "en",
   });
+
+  const langOptions = [
+    { id: "ar", name: t("TITLES.arabic") },
+    { id: "en", name: t("TITLES.english") },
+  ];
+
   const set = <K extends keyof typeof values>(k: K, v: string) =>
     setValues((p) => ({ ...p, [k]: v }));
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const fd = new FormData();
-      if (imageFile?.str) fd.append("image", imageFile.str);
-      fd.append("first_name", values.first_name);
-      fd.append("last_name", values.last_name);
-      fd.append("email", values.email);
-      fd.append("phone_code", values.phone_code);
-      fd.append("phone", values.phone);
-      fd.append("_method", "PUT");
-      const res = await api.post("profile", fd);
-      const updated = res.data?.data ?? {};
-      const {
-        token: _t,
-        verification_token: _vt,
-        permissions: _p,
-        permissions_of_roles: _por,
-        ...userData
-      } = updated;
-      Cookies.set(USER_DATA_KEY, JSON.stringify(userData));
+      const res = await api.put("profile", {
+        full_name: values.full_name,
+        email: values.email,
+        preferred_language: values.preferred_language,
+      });
       await fetchProfile();
-      toast.success(res.data?.message);
+      toast.success(res.data?.message || t("PROFILE.updatedSuccess"));
       navigate("/profile");
     } catch (e: any) {
       toast.error(t("PROFILE.updateFailed"), e?.response?.data?.message);
@@ -220,47 +195,18 @@ export default function ProfileEdit() {
           { label: "profile", href: "/profile", icon: UserCircle },
           { label: "editProfile" },
         ]}
+        rightActions={
+          <Button type="button" variant="soft" onClick={() => setPwOpen(true)}>
+            <KeyRound width={14} height={14} />
+            {t("PROFILE.changePassword")}
+          </Button>
+        }
       />
-      <Form
-        schema={schemas.profileEdit}
-        values={values}
-        onSubmit={handleSubmit}
-      >
+
+      <Form schema={schemas.profileEdit} values={values} onSubmit={handleSubmit}>
         {({ errors, field, touch }) => (
           <div className="space-y-6">
-            <SectionCard
-              icon={ImageIcon}
-              title={t("PROFILE.profilePhoto")}
-              subtitle=""
-              color="sky"
-              step={3}
-            >
-              <div className="flex flex-col gap-4">
-                <div className="w-full">
-                  <AvatarPicker
-                    name="image"
-                    label={t("PROFILE.profilePhoto")}
-                    accept="image/*"
-                    attachment
-                    model="users"
-                    value={imageValue}
-                    onChange={(v) => setImageFile(v)}
-                    onLoadingChange={setImgLoad}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant="soft"
-                  onClick={() => setPwOpen(true)}
-                  className="self-start"
-                >
-                  <KeyRound width={14} height={14} />
-                  {t("PROFILE.changePassword")}
-                </Button>
-              </div>
-            </SectionCard>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <SectionCard
                 icon={User}
                 title={t("PROFILE.basicInfo")}
@@ -270,33 +216,40 @@ export default function ProfileEdit() {
               >
                 <div className="grid grid-cols-1 gap-4">
                   <BaseTextInput
-                    name="first_name"
-                    label={t("TITLES.firstName")}
-                    placeholder={t("LABELS.firstName")}
-                    value={values.first_name}
+                    name="full_name"
+                    label={t("TITLES.name")}
+                    placeholder={t("LABELS.name")}
+                    value={values.full_name}
                     prependInputIcon={User}
                     onInput={(v) => {
-                      set("first_name", v);
-                      touch("first_name");
+                      set("full_name", v);
+                      touch("full_name");
                     }}
-                    {...field("first_name", errors)}
+                    {...field("full_name", errors)}
                   />
-                  <BaseTextInput
-                    name="last_name"
-                    label={t("TITLES.lastName")}
-                    placeholder={t("LABELS.lastName")}
-                    value={values.last_name}
-                    prependInputIcon={User}
-                    onInput={(v) => {
-                      set("last_name", v);
-                      touch("last_name");
+                  <BaseSelectInput
+                    name="preferred_language"
+                    label={t("TITLES.preferredLanguage")}
+                    items={langOptions}
+                    value={
+                      langOptions.find((o) => o.id === values.preferred_language) ??
+                      langOptions[0]
+                    }
+                    onChange={(v) => {
+                      const id = Array.isArray(v) ? v[0]?.id : v?.id;
+                      if (id === "ar" || id === "en") {
+                        set("preferred_language", id);
+                        touch("preferred_language");
+                      }
                     }}
-                    {...field("last_name", errors)}
+                    prependInputIcon={Language}
+                    {...field("preferred_language", errors)}
                   />
                 </div>
               </SectionCard>
+
               <SectionCard
-                icon={Contact}
+                icon={AtSign}
                 title={t("PROFILE.contactInfo")}
                 subtitle=""
                 color="blue"
@@ -316,26 +269,11 @@ export default function ProfileEdit() {
                     }}
                     {...field("email", errors)}
                   />
-                  <BasePhoneInput
-                    phoneCode={values.phone_code}
-                    phone={values.phone}
-                    label={t("TITLES.phone")}
-                    onPhoneCode={(v) => {
-                      set("phone_code", v);
-                      touch("phone_code");
-                    }}
-                    onPhone={(v) => {
-                      set("phone", v);
-                      touch("phone");
-                    }}
-                    errorCode={errors.phone_code}
-                    errorPhone={errors.phone}
-                    touched={!!errors.phone}
-                  />
                 </div>
               </SectionCard>
             </div>
-            <div className="flex items-center justify-end gap-3 pt-2 pb-4">
+
+            <div className="flex items-center justify-end gap-3 pb-4 pt-2">
               <Button
                 type="button"
                 variant="secondary"
@@ -344,11 +282,7 @@ export default function ProfileEdit() {
                 <X width={15} height={15} />
                 {t("BUTTONS.cancel")}
               </Button>
-              <Button
-                type="submit"
-                loading={loading}
-                disabled={imageLoading}
-              >
+              <Button type="submit" loading={loading}>
                 <Shield width={15} height={15} />
                 {t("BUTTONS.saveChanges")}
               </Button>
@@ -356,6 +290,7 @@ export default function ProfileEdit() {
           </div>
         )}
       </Form>
+
       {pwOpen && (
         <ChangePasswordDialog
           onClose={() => setPwOpen(false)}

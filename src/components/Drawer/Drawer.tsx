@@ -3,9 +3,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   ChartBarIcon,
   UsersIcon,
-  GlobeAltIcon,
+  ScaleIcon,
+  BuildingOffice2Icon,
+  ShieldCheckIcon,
+  TrashIcon,
   BookOpenIcon,
-  PlusCircleIcon,
+  MapPinIcon,
+  PhoneIcon,
+  BanknotesIcon,
+  RectangleStackIcon,
+  TicketIcon,
+  NewspaperIcon,
+  ChatBubbleLeftRightIcon,
+  ExclamationTriangleIcon,
+  QuestionMarkCircleIcon,
+  EnvelopeIcon,
   LockClosedIcon,
   Cog6ToothIcon,
   BellIcon,
@@ -41,7 +53,7 @@ export function Drawer() {
     activeNavGroupKey,
     setActiveNavGroupKey,
   } = useAppStore();
-  const { clearAuth, user } = useAuthStore();
+  const { logout, user } = useAuthStore();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -89,66 +101,134 @@ export function Drawer() {
       ],
     },
     {
-      groupKey: "groupManagement",
-      groupLabelStr: "Management",
+      groupKey: "groupAccounts",
+      groupLabelStr: "Accounts",
       items: [
         {
-          href: "/users",
-          label: t("SIDEBAR.Users"),
-          labelStr: "Users",
+          href: "/clients?page=1",
+          label: t("SIDEBAR.Clients"),
+          labelStr: "Clients",
           icon: UsersIcon,
-          children: [
-            {
-              href: "/users",
-              label: t("TITLES.viewAll"),
-              labelStr: "Users",
-              icon: UsersIcon,
-            },
-            {
-              href: "/users/form",
-              label: t("TITLES.add", { count: t("TITLES.user") as any }),
-              labelStr: "Add User",
-              icon: PlusCircleIcon,
-            },
-          ],
         },
         {
-          href: "/categories",
-          label: t("SIDEBAR.Categories"),
-          labelStr: "Categories",
-          icon: BookOpenIcon,
-          children: [
-            {
-              href: "/categories",
-              label: t("TITLES.viewAll"),
-              labelStr: "Category",
-              icon: BookOpenIcon,
-            },
-            {
-              href: "/categories/form",
-              label: t("TITLES.add", { count: t("TITLES.category") as any }),
-              labelStr: "Add Category",
-              icon: PlusCircleIcon,
-            },
-          ],
+          href: "/lawyers?page=1",
+          label: t("SIDEBAR.Lawyers"),
+          labelStr: "Lawyers",
+          icon: ScaleIcon,
+        },
+        {
+          href: "/law-firms?page=1",
+          label: t("SIDEBAR.LawFirms"),
+          labelStr: "Law Firms",
+          icon: BuildingOffice2Icon,
         },
       ],
     },
     {
-      groupKey: "groupPlaces",
-      groupLabelStr: "Places",
+      groupKey: "groupVerifications",
+      groupLabelStr: "Verifications",
       items: [
         {
-          href: "/countries",
-          label: t("SIDEBAR.Countries"),
-          labelStr: "Countries",
-          icon: GlobeAltIcon,
+          href: "/verifications?page=1",
+          label: t("SIDEBAR.Verifications"),
+          labelStr: "Verifications",
+          icon: ShieldCheckIcon,
         },
         {
-          href: "/cities",
-          label: t("SIDEBAR.Cities"),
-          labelStr: "Cities",
-          icon: GlobeAltIcon,
+          href: "/lawyer-deletion-requests?page=1",
+          label: t("SIDEBAR.DeletionRequests"),
+          labelStr: "Deletion Requests",
+          icon: TrashIcon,
+        },
+      ],
+    },
+    {
+      groupKey: "groupBilling",
+      groupLabelStr: "Billing",
+      items: [
+        {
+          href: "/payments?page=1",
+          label: t("SIDEBAR.Payments"),
+          labelStr: "Payments",
+          icon: BanknotesIcon,
+        },
+        {
+          href: "/subscription-plans?page=1",
+          label: t("SIDEBAR.SubscriptionPlans"),
+          labelStr: "Subscription Plans",
+          icon: RectangleStackIcon,
+        },
+        {
+          href: "/codes?page=1",
+          label: t("SIDEBAR.Codes"),
+          labelStr: "Codes",
+          icon: TicketIcon,
+        },
+      ],
+    },
+    {
+      groupKey: "groupSupport",
+      groupLabelStr: "Support",
+      items: [
+        {
+          href: "/complaints?page=1",
+          label: t("SIDEBAR.Complaints"),
+          labelStr: "Complaints",
+          icon: ExclamationTriangleIcon,
+        },
+        {
+          href: "/questions?page=1",
+          label: t("SIDEBAR.Questions"),
+          labelStr: "Questions",
+          icon: QuestionMarkCircleIcon,
+        },
+        {
+          href: "/contacts?page=1",
+          label: t("SIDEBAR.Contacts"),
+          labelStr: "Contacts",
+          icon: EnvelopeIcon,
+        },
+      ],
+    },
+    {
+      groupKey: "groupContent",
+      groupLabelStr: "Content",
+      items: [
+        {
+          href: "/blogs?page=1",
+          label: t("SIDEBAR.Blogs"),
+          labelStr: "Blogs",
+          icon: NewspaperIcon,
+        },
+      ],
+    },
+    {
+      groupKey: "groupGeneralSettings",
+      groupLabelStr: "General Settings",
+      items: [
+        {
+          href: "/languages?page=1",
+          label: t("SIDEBAR.Languages"),
+          labelStr: "Languages",
+          icon: LanguageIcon,
+        },
+        {
+          href: "/practice-areas?page=1",
+          label: t("SIDEBAR.PracticeAreas"),
+          labelStr: "Practice Areas",
+          icon: BookOpenIcon,
+        },
+        {
+          href: "/regions?page=1",
+          label: t("SIDEBAR.Regions"),
+          labelStr: "Regions",
+          icon: MapPinIcon,
+        },
+        {
+          href: "/contact-settings",
+          label: t("SIDEBAR.ContactSettings"),
+          labelStr: "Contact Settings",
+          icon: PhoneIcon,
         },
       ],
     },
@@ -162,8 +242,12 @@ export function Drawer() {
   const mobileOpen = sidebarOpen;
 
   const groupIcon = (groupKey: string) => {
-    if (groupKey === "groupManagement") return UsersIcon;
-    if (groupKey === "groupPlaces") return GlobeAltIcon;
+    if (groupKey === "groupAccounts") return UsersIcon;
+    if (groupKey === "groupVerifications") return ShieldCheckIcon;
+    if (groupKey === "groupBilling") return BanknotesIcon;
+    if (groupKey === "groupSupport") return ChatBubbleLeftRightIcon;
+    if (groupKey === "groupContent") return NewspaperIcon;
+    if (groupKey === "groupCatalog" || groupKey === "groupGeneralSettings") return LanguageIcon;
     return ChartBarIcon;
   };
 
@@ -368,7 +452,7 @@ export function Drawer() {
           user={user}
           collapsed={collapsed}
           isMobileDrawer={isMobileDrawer}
-          clearAuth={clearAuth}
+          clearAuth={logout}
           onMobileClose={() => setSidebarOpen(false)}
         />
       </>
@@ -389,7 +473,7 @@ export function Drawer() {
           setActiveNavGroupKey={setActiveNavGroupKey}
           groupIcon={groupIcon}
           user={user}
-          clearAuth={clearAuth}
+          clearAuth={logout}
           pathname={pathname}
           openSubMenu={openSubMenu}
           setOpenSubMenu={setOpenSubMenu}

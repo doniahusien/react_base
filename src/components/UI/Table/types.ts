@@ -8,6 +8,8 @@ export interface TableMeta {
   per_page: number;
   from?: number;
   to?: number;
+  filters?: Record<string, Array<{ value: string; label: string }>>;
+  available_statuses?: string[];
 }
 
 export interface TableData<T = any> {

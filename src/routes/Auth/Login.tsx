@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { AtSymbolIcon as AtSign, LockClosedIcon as Lock, ArrowRightIcon as ArrowRight } from "@heroicons/react/24/outline";
+import { AtSymbolIcon as AtSign, LockClosedIcon as Lock } from "@heroicons/react/24/outline";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { Button } from "../../components/UI/Button";
 import { Form } from "../../components/Inputs/Form";
@@ -10,7 +10,6 @@ import { useAuthStore } from "../../stores/auth";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
 import { useAppStore } from "../../store";
-import type { Locale } from "../../i18n";
 import { schemas } from "../../lib/schemas";
 
 export default function Login() {
@@ -26,16 +25,18 @@ export default function Login() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const fd = new FormData();
-      fd.append("login", values.email);
-      fd.append("password", values.password);
-      const res = await api.post("auth/login", fd);
+      const res = await api.post("auth/login", {
+        email: values.email,
+        password: values.password,
+      });
       setAuth(res.data?.data);
       toast.success(t("MESSAGES.welcome"), res.data?.message);
       navigate("/");
     } catch (err: any) {
       toast.error("Login failed", err?.response?.data?.message);
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isDark = theme === "dark";

@@ -11,7 +11,7 @@ interface DrawerTwoColumnLayoutProps {
   setActiveNavGroupKey: (key: string) => void;
   groupIcon: (key: string) => any;
   user: any;
-  clearAuth: () => void;
+  clearAuth: () => void | Promise<void>;
   pathname: string;
   openSubMenu: string | null;
   setOpenSubMenu: (href: string | null) => void;

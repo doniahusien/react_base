@@ -72,21 +72,13 @@ export function Header({ mode }: HeaderProps) {
           <Link
             to="/profile"
             className="flex items-center gap-2 rounded-xl border border-transparent px-2 py-1.5 transition-all duration-300 ease-in-out hover:border-border/80 hover:bg-background/80 hover:scale-105"
-            title={user?.name ?? user?.full_name ?? "Profile"}
+            title={user?.full_name ?? "Profile"}
           >
-            {user?.image ? (
-              <img
-                src={user.image?.media ?? user.image}
-                alt={user.name}
-                className="size-7 rounded-full object-cover ring-2 ring-primary/20 transition-all duration-300 hover:ring-primary/40 hover:scale-110"
-              />
-            ) : (
-              <div className="header-avatar flex size-7 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 hover:scale-105">
-                {(user?.name ?? user?.full_name ?? "?")[0]?.toUpperCase()}
-              </div>
-            )}
+            <div className="header-avatar flex size-7 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 hover:scale-105">
+              {(user?.full_name ?? "?")[0]?.toUpperCase()}
+            </div>
             <span className="hidden max-w-27.5 truncate text-sm font-medium text-foreground md:block">
-              {user?.name ?? user?.full_name}
+              {user?.full_name}
             </span>
           </Link>
         </div>

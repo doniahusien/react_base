@@ -34,7 +34,7 @@
   --color-navy: rgb(10 23 36);
   --color-mute: rgb(14 30 48);
 
-  --color-muted: #3f4142;
+  --color-muted: #f1f5f9;
   --color-muted-foreground: #6b7280;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
@@ -85,7 +85,7 @@
     --color-card-foreground: #e4e4e7;
     --color-popover: #18181b;
     --color-popover-foreground: #e4e4e7;
-    --color-muted: #d4d4d8;
+    --color-muted: #27272a;
     --color-muted-foreground: #a1a1aa;
     --color-destructive: #ef4444;
     --color-destructive-foreground: #ffffff;

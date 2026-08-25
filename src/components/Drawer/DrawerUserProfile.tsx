@@ -13,6 +13,11 @@ export function DrawerUserProfile({
   const { t } = useTranslation();
   const showLabel = isMobileDrawer || !collapsed;
 
+  const handleLogout = async () => {
+    await clearAuth();
+    onMobileClose?.();
+  };
+
   return (
     <div className="relative z-10 p-3 shrink-0">
       <div className="drawer-divider h-px mb-3" />
@@ -21,7 +26,7 @@ export function DrawerUserProfile({
       {!showLabel ? (
         <Tooltip content={t("SIDEBAR.Logout")} disabled={isMobileDrawer}>
           <button
-            onClick={clearAuth}
+            onClick={handleLogout}
             className="drawer-logout group flex items-center justify-center gap-2.5 w-full rounded-xl px-3 py-2.5 transition-all duration-200"
           >
             <ArrowRightOnRectangleIcon className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:scale-110" />
@@ -29,7 +34,7 @@ export function DrawerUserProfile({
         </Tooltip>
       ) : (
         <button
-          onClick={clearAuth}
+          onClick={handleLogout}
           className="drawer-logout group flex items-center gap-2.5 w-full rounded-xl px-3 py-2.5 transition-all duration-200"
         >
           <ArrowRightOnRectangleIcon className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:scale-110" />

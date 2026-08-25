@@ -102,14 +102,8 @@ export function GridView<T extends { id?: any }>({
           >
             <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
               <div className="flex items-center gap-2.5">
-                <input
-                  type="checkbox"
-                  checked={selected}
-                  onChange={row.getToggleSelectedHandler()}
-                  className="size-4 cursor-pointer rounded border-border accent-primary"
-                />
                 <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground">
-                  #{(item as any).id}
+                  #{row.index + 1}
                 </span>
               </div>
               <div className="flex items-center gap-2">

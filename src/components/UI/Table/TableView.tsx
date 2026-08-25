@@ -50,7 +50,7 @@ export function TableView<T extends { id?: any }>({
                       ...(header.column.id === "actions" ? { position: "sticky", right: 0, zIndex: 20 } : {}),
                     }}
                     className={`relative bg-primary/80 text-primary-foreground px-2 sm:px-3 py-2.5 sm:py-3.5 text-start text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap shadow-[0_1px_3px_color-mix(in_srgb,var(--color-foreground)_4%,transparent)] ${
-                      isSelect ? "w-[60px] px-3 sm:px-4" : ""
+                      isSelect ? "w-12 px-2 sm:px-3" : ""
                     } ${
                       isFirst ? "rounded-s-xl sm:rounded-s-2xl" : ""
                     } ${

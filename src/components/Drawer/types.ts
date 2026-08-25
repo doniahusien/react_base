@@ -50,6 +50,6 @@ export interface DrawerUserProfileProps {
   user: any;
   collapsed: boolean;
   isMobileDrawer: boolean;
-  clearAuth: () => void;
+  clearAuth: () => void | Promise<void>;
   onMobileClose?: () => void;
 }

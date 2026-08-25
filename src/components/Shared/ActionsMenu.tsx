@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import type { ReactNode } from "react";
@@ -11,9 +11,38 @@ interface ActionsMenuProps {
   showUrl?: string;
   editUrl?: string;
   deleteUrl?: string;
+  deleteLabel?: string;
   onReload?: () => void;
+  onClose?: () => void;
   children?: ReactNode;
-  anchorEl?: HTMLElement | null;
+  anchorEl: HTMLElement;
+}
+
+function computePosition(anchorEl: HTMLElement, menuEl: HTMLElement | null) {
+  const rect = anchorEl.getBoundingClientRect();
+  const menuHeight = menuEl?.offsetHeight || 160;
+  const menuWidth = menuEl?.offsetWidth || 128;
+  const viewportHeight = window.innerHeight;
+  const viewportWidth = window.innerWidth;
+  const spaceBelow = viewportHeight - rect.bottom;
+  const spaceAbove = rect.top;
+  const rtl = document.documentElement.dir === "rtl";
+
+  let top: number;
+  let maxHeight: number;
+
+  if (spaceBelow >= menuHeight || spaceBelow > spaceAbove) {
+    top = rect.bottom + 4;
+    maxHeight = Math.max(spaceBelow - 8, 120);
+  } else {
+    top = Math.max(rect.top - menuHeight - 4, 8);
+    maxHeight = Math.max(spaceAbove - 8, 120);
+  }
+
+  let left = rtl ? rect.left : rect.right - menuWidth;
+  left = Math.min(Math.max(8, left), viewportWidth - menuWidth - 8);
+
+  return { top, left, maxHeight };
 }
 
 export function ActionsMenu({
@@ -21,76 +50,82 @@ export function ActionsMenu({
   showUrl,
   editUrl,
   deleteUrl,
+  deleteLabel,
   onReload,
+  onClose,
   children,
   anchorEl,
 }: ActionsMenuProps) {
   const { t } = useTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState<{ top: number; left: number; maxHeight: number } | null>(null);
+  const anchorRef = useRef(anchorEl);
+  anchorRef.current = anchorEl;
 
-  useEffect(() => {
-    if (!anchorEl) return;
+  const [position, setPosition] = useState(() =>
+    computePosition(anchorEl, null)
+  );
 
+  useLayoutEffect(() => {
     const updatePosition = () => {
-      if (!anchorEl) return;
-      
-      const buttonRect = anchorEl.getBoundingClientRect();
-      const menuHeight = menuRef.current?.offsetHeight || 150;
-      const viewportHeight = window.innerHeight;
-      const spaceBelow = viewportHeight - buttonRect.bottom;
-      const spaceAbove = buttonRect.top;
-
-      let top: number;
-      let maxHeight: number;
-
-      // Check if menu fits below
-      if (spaceBelow >= menuHeight || spaceBelow > spaceAbove) {
-        // Position below
-        top = buttonRect.bottom + 4;
-        maxHeight = spaceBelow - 8;
-      } else {
-        // Position above
-        top = buttonRect.top - menuHeight - 4;
-        maxHeight = spaceAbove - 8;
-      }
-
-      // Position horizontally (align to right edge of button)
-      const left = buttonRect.right - 125; // 125px is menu width
-
-      setPosition({ top, left, maxHeight });
+      const anchor = anchorRef.current;
+      if (!anchor.isConnected) return;
+      setPosition(computePosition(anchor, menuRef.current));
     };
 
-    // Immediate update
     updatePosition();
-    
-    // Delayed update to ensure DOM is ready
-    const timeoutId = setTimeout(updatePosition, 0);
-    
+    const raf = requestAnimationFrame(updatePosition);
+
     window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("resize", updatePosition);
 
     return () => {
-      clearTimeout(timeoutId);
+      cancelAnimationFrame(raf);
       window.removeEventListener("scroll", updatePosition, true);
       window.removeEventListener("resize", updatePosition);
     };
   }, [anchorEl]);
 
-  if (!anchorEl) return null;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (menuRef.current?.contains(target)) return;
+      if (anchorRef.current.contains(target)) return;
+      onCloseRef.current?.();
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCloseRef.current?.();
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      document.addEventListener("mousedown", onPointerDown);
+      document.addEventListener("touchstart", onPointerDown);
+      document.addEventListener("keydown", onKeyDown);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [anchorEl]);
 
   return createPortal(
     <div
       ref={menuRef}
       data-id={data?.id}
+      role="menu"
       onClick={(e) => e.stopPropagation()}
-      className="fixed z-9999 flex w-31.25 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
+      className="fixed z-[9999] flex min-w-32 max-w-56 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-lg"
       style={{
-        top: position ? `${position.top}px` : '0px',
-        left: position ? `${position.left}px` : '0px',
-        maxHeight: position ? `${position.maxHeight}px` : '300px',
-        opacity: position ? 1 : 0,
-        pointerEvents: position ? 'auto' : 'none',
+        top: position.top,
+        left: position.left,
+        maxHeight: position.maxHeight,
       }}
     >
       {showUrl && (
@@ -104,7 +139,7 @@ export function ActionsMenu({
           <span className="text-sm">{t("ACTIONS.show")}</span>
         </Link>
       )}
-      
+
       {editUrl && (
         <Link
           to={editUrl}
@@ -116,14 +151,14 @@ export function ActionsMenu({
           <span className="text-sm">{t("ACTIONS.edit")}</span>
         </Link>
       )}
-      
+
       {children}
-      
+
       {deleteUrl && (
-        <Deleter 
-          url={deleteUrl} 
-          onReload={onReload} 
-          text={t("ACTIONS.delete")}
+        <Deleter
+          url={deleteUrl}
+          onReload={onReload}
+          text={deleteLabel ?? t("ACTIONS.delete")}
         />
       )}
     </div>,

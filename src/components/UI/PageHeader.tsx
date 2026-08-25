@@ -12,11 +12,25 @@ interface PageHeaderProps {
   total?: number;
   addHref?: string;
   addLabel?: string;
-  path?: Array<string | { label: string; href?: string; icon?: React.ComponentType<any> }>;
+  path?: Array<
+    | string
+    | {
+        label: string;
+        href?: string;
+        icon?: React.ComponentType<any>;
+        /** Default: auto — translate only simple TITLES keys */
+        translate?: boolean;
+      }
+  >;
   rightActions?: React.ReactNode;
   showHomeBreadcrumb?: boolean;
   breadcrumbSeparator?: "chevron" | "slash" | "dot";
   breadcrumbVariant?: "pill" | "minimal" | "underline" | "arrow";
+}
+
+/** Simple keys like `dashboard` / `subscriptionPlans` are translated; `#1` or names are not. */
+function isTitlesKey(label: string) {
+  return /^[a-zA-Z][a-zA-Z0-9_]*$/.test(label);
 }
 
 export function PageHeader({
@@ -35,6 +49,16 @@ export function PageHeader({
   breadcrumbVariant = "pill",
 }: PageHeaderProps) {
   const { t } = useTranslation();
+
+  const resolvePathLabel = (
+    label: string,
+    translate?: boolean
+  ): string => {
+    if (translate === false) return label;
+    if (translate === true || isTitlesKey(label)) return t(`TITLES.${label}`);
+    return label;
+  };
+
   return (
     <div className="mb-3 sm:mb-5">
       {/* Header Card */}
@@ -69,8 +93,12 @@ export function PageHeader({
             <BannerBreadcrumb
               items={path.map((seg) =>
                 typeof seg === "string"
-                  ? { label: t(`TITLES.${seg}`) }
-                  : { label: t(`TITLES.${seg.label}`), href: seg.href, icon: seg.icon }
+                  ? { label: resolvePathLabel(seg) }
+                  : {
+                      label: resolvePathLabel(seg.label, seg.translate),
+                      href: seg.href,
+                      icon: seg.icon,
+                    }
               )}
               showHome={showHomeBreadcrumb}
               separator={breadcrumbSeparator}

@@ -20,16 +20,10 @@ export function DrawerNavGroup({
   const { t } = useTranslation();
   const showLabel = isMobileDrawer || !collapsed;
 
-  // Filter out pinned items from this group
-  const pinnedHrefs = new Set(
-    pinnedItemsV2.filter((p) => p.type === "item" && p.href).map((p) => p.href)
-  );
-  const visibleItems = group.items.filter((item) => !pinnedHrefs.has(item.href));
-
-  // If all items are pinned and group is empty, don't render it
+  // Keep all group items visible (pinned items may also appear under Pinned)
+  const visibleItems = group.items;
   if (visibleItems.length === 0) return null;
 
-  // Check if all visible items from this group are pinned
   const groupItemHrefs = group.items.map((item) => item.href);
   const allPinned = groupItemHrefs.every((href) =>
     pinnedItemsV2.some((p) => p.id === `item-${href}`)

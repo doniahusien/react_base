@@ -4,7 +4,9 @@ export function getTextValue(value: React.ReactNode | string | undefined): strin
 }
 
 export function isItemActive(href: string, pathname: string): boolean {
-  return href === "/" ? pathname === "/" : pathname.endsWith(href);
+  const pathOnly = href.split("?")[0].split("#")[0];
+  if (pathOnly === "/") return pathname === "/";
+  return pathname === pathOnly || pathname.startsWith(`${pathOnly}/`);
 }
 
 export function makeKeyHint(label?: React.ReactNode): string {

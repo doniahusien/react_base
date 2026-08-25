@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   useReactTable,
@@ -18,7 +19,7 @@ import { GridView } from "./GridView";
 import { CompactView } from "./CompactView";
 import { Pagination } from "./Pagination";
 import { QuickViewModal } from "./QuickViewModal";
-import { pageFromUrl, setPageUrl, getDefaultColumnSize } from "./utils";
+import { getDefaultColumnSize } from "./utils";
 import type { UITableProps, TableColumn, ViewMode, GridColumns } from "./types";
 
 export * from "./types";
@@ -33,9 +34,10 @@ export function UITable<T extends { id?: any }>({
   filters,
 }: UITableProps<T>) {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
   const [view, setView] = useState<ViewMode>("table");
   const [gridCols, setGridCols] = useState<GridColumns>(3);
-  const [page, setPage] = useState(pageFromUrl());
   const [quickItem, setQuickItem] = useState<T | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -53,36 +55,18 @@ export function UITable<T extends { id?: any }>({
     const cols: ColumnDef<T>[] = [
       {
         id: "select",
-        header: ({ table }) => {
-          const checkbox = (
-            <input
-              type="checkbox"
-              checked={table.getIsAllRowsSelected()}
-              onChange={table.getToggleAllRowsSelectedHandler()}
-              className="size-3.5 cursor-pointer rounded accent-primary opacity-60 transition-opacity hover:opacity-100"
-              aria-label={t("ACTIONS.selectAll")}
-            />
-          );
-          if (table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()) {
-            setTimeout(() => {
-              const input = document.querySelector('thead input[type="checkbox"]') as HTMLInputElement;
-              if (input) input.indeterminate = true;
-            }, 0);
-          }
-          return checkbox;
-        },
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={row.getIsSelected()}
-              onChange={row.getToggleSelectedHandler()}
-              className="size-3.5 rounded accent-primary cursor-pointer"
-            />
-            <span className="text-[11px] font-semibold text-muted-foreground/80">{row.index + 1}</span>
-          </div>
+        header: () => (
+          <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest opacity-80">
+            #
+          </span>
         ),
-        size: 60,
+        cell: ({ row }) => (
+          <span className="text-[11px] font-semibold tabular-nums text-muted-foreground/80">
+            {row.index + 1}
+          </span>
+        ),
+        size: 48,
+        enableSorting: false,
       },
     ];
 
@@ -115,7 +99,7 @@ export function UITable<T extends { id?: any }>({
       columnVisibility,
       columnSizing,
     },
-    enableRowSelection: true,
+    enableRowSelection: false,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     onSortingChange: setSorting,
@@ -131,7 +115,7 @@ export function UITable<T extends { id?: any }>({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
-    getRowId: (row: any) => String(row.id ?? row.index),
+    getRowId: (row: any) => String(row._rowKey ?? row.id ?? row.index),
   });
 
   // Initialize column visibility
@@ -167,35 +151,40 @@ export function UITable<T extends { id?: any }>({
   useEffect(() => {
     const check = () => {
       if (window.innerWidth < 640) {
-        // Force grid view on mobile (sm breakpoint)
         setView("grid");
-        setGridCols(1); // Single column on mobile
+        setGridCols(1);
       } else if (window.innerWidth < 768) {
-        // Grid view on small tablets
         setView("grid");
-        setGridCols(2); // Two columns on small tablets
+        setGridCols(2);
       } else if (window.innerWidth < 1024) {
-        // Grid view on tablets
         setView("grid");
-        setGridCols(2); // Two columns on tablets
+        setGridCols(2);
       }
-      // Allow user choice on desktop (lg+)
     };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Handle URL-based pagination
+  // Ensure list URLs always include ?page=1 (or current page)
   useEffect(() => {
-    const handlePopState = () => setPage(pageFromUrl());
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+    if (searchParams.has("page")) return;
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("page", "1");
+        return next;
+      },
+      { replace: true }
+    );
+  }, [searchParams, setSearchParams]);
 
   const handlePage = (p: number) => {
-    setPage(p);
-    setPageUrl(p);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("page", String(p));
+      return next;
+    });
   };
 
   const selectedRowIds = Object.keys(rowSelection).filter((key) => rowSelection[key]);

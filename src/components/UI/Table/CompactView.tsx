@@ -69,20 +69,10 @@ export function CompactView<T extends { id?: any }>({
         return (
           <article
             key={row.id}
-            className={`group flex min-h-15 items-center gap-2.5 rounded-lg border px-3 py-2 transition-all duration-200 hover:-translate-y-px hover:border-primary/40 hover:shadow-sm ${
-              selected ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20" : "border-border bg-card"
-            }`}
+            className="group flex min-h-15 items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 transition-all duration-200 hover:-translate-y-px hover:border-primary/40 hover:shadow-sm"
           >
-            <input
-              type="checkbox"
-              checked={selected}
-              onChange={row.getToggleSelectedHandler()}
-              className="size-4 shrink-0 cursor-pointer rounded border-border accent-primary"
-              aria-label={`${t("ACTIONS.select")} #${item.id}`}
-            />
-
-            <span className="hidden shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground sm:inline">
-              #{item.id}
+            <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground">
+              #{row.index + 1}
             </span>
 
             <div className="flex min-w-0 max-w-45 flex-1 items-center gap-2 sm:max-w-55">
