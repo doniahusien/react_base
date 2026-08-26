@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { PhoneIcon as Phone, ChevronDownIcon as ChevronDown, MagnifyingGlassIcon as Search, XMarkIcon as X } from "@heroicons/react/24/outline";
 import api from "../../lib/axios";
+import { mediaUrl } from "../../lib/mediaUrl";
 import { useTranslation } from "react-i18next";
 
 interface Country { id: number; name: string; phone_code: string; flag: string; }
@@ -25,7 +26,7 @@ export function BasePhoneInput({ phoneCode = "", phone = "", onPhoneCode, onPhon
 
   const fetchCountries = useCallback(async () => {
     if (countries.length > 0) return;
-    try { setLoadingCountries(true); const res = await api.get("countries?paginate=0"); setCountries((res.data?.data ?? []).map((c: any) => ({ id: c.id, name: c.name, phone_code: c.phone_code, flag: c.flag }))); }
+    try { setLoadingCountries(true); const res = await api.get("countries?paginate=0"); setCountries((res.data?.data ?? []).map((c: any) => ({ id: c.id, name: c.name, phone_code: c.phone_code, flag: mediaUrl(c.flag) ?? c.flag }))); }
     catch { setCountries([]); } finally { setLoadingCountries(false); }
   }, [countries.length]);
 
@@ -50,7 +51,7 @@ export function BasePhoneInput({ phoneCode = "", phone = "", onPhoneCode, onPhon
       <div className="relative" ref={dropdownRef}>
         <div className={`relative flex items-stretch rounded-xl border bg-card transition-all duration-200 overflow-hidden ${borderCls} ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
           <button type="button" onClick={() => setOpen((v) => !v)} className="flex h-11 shrink-0 items-center gap-1.5 border-e border-border px-3 text-sm transition-colors hover:bg-muted">
-            {selected ? (<><img src={selected.flag} alt={selected.name} className="h-4 w-6 rounded-sm object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /><span className="font-semibold text-foreground text-sm leading-none"><bdo dir="ltr">+{selected.phone_code}</bdo></span></>) : (<><Phone width={14} height={14} className="text-muted-foreground shrink-0" /><span className="text-muted-foreground text-sm">+{phoneCode || "—"}</span></>)}
+            {selected ? (<><img src={selected.flag} alt={selected.name} referrerPolicy="no-referrer" className="h-4 w-6 rounded-sm object-cover shrink-0" /><span className="font-semibold text-foreground text-sm leading-none"><bdo dir="ltr">+{selected.phone_code}</bdo></span></>) : (<><Phone width={14} height={14} className="text-muted-foreground shrink-0" /><span className="text-muted-foreground text-sm">+{phoneCode || "—"}</span></>)}
             <ChevronDown width={13} height={13} className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
           </button>
           <div className="relative flex-1">
@@ -69,7 +70,7 @@ export function BasePhoneInput({ phoneCode = "", phone = "", onPhoneCode, onPhon
                 : filtered.length === 0 ? <p className="px-4 py-3 text-sm text-muted-foreground">{t("TITLES.noResults")}</p>
                 : filtered.map((c) => (
                   <button key={c.id} type="button" onClick={() => selectCountry(c)} className={`flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors ${c.phone_code === phoneCode ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"}`}>
-                    <img src={c.flag} alt={c.name} className="h-4 w-6 rounded-sm object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <img src={c.flag} alt={c.name} referrerPolicy="no-referrer" className="h-4 w-6 rounded-sm object-cover shrink-0" />
                     <span className="flex-1 truncate text-start">{c.name}</span>
                     <span className="shrink-0 tabular-nums text-xs text-muted-foreground">+{c.phone_code}</span>
                   </button>

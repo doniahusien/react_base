@@ -5,6 +5,11 @@ export interface BlogAuthorAdmin {
   name: string | null;
 }
 
+export interface BlogCategoryRef {
+  id: number;
+  name: string | null;
+}
+
 export interface Blog {
   id: number;
   title: string | null;
@@ -13,6 +18,7 @@ export interface Blog {
   content: string | null;
   content_ar: string | null;
   content_en: string | null;
+  category: BlogCategoryRef | null;
   image_url: string | null;
   is_published: boolean;
   source_type: BlogSourceType | null;
@@ -27,6 +33,6 @@ export interface BlogPayload {
   title_en?: string | null;
   content_ar: string;
   content_en?: string | null;
-  image_url?: string | null;
+  blog_category_id?: number | null;
   is_published?: boolean;
 }

@@ -14,6 +14,7 @@ import {
   RectangleStackIcon,
   TicketIcon,
   NewspaperIcon,
+  TagIcon,
   ChatBubbleLeftRightIcon,
   ExclamationTriangleIcon,
   QuestionMarkCircleIcon,
@@ -26,6 +27,7 @@ import {
   LanguageIcon,
   UserGroupIcon,
   KeyIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../../store";
@@ -238,6 +240,33 @@ export function Drawer() {
             icon: NewspaperIcon,
             permission: PERMISSION_CODES.manage_content,
           },
+          {
+            href: "/blog-categories?page=1",
+            label: t("SIDEBAR.BlogCategories"),
+            labelStr: "Blog Categories",
+            icon: TagIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+        ],
+      },
+      {
+        groupKey: "groupPlaces",
+        groupLabelStr: "Places",
+        items: [
+          {
+            href: "/countries?page=1",
+            label: t("SIDEBAR.Countries"),
+            labelStr: "Countries",
+            icon: GlobeAltIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/regions?page=1",
+            label: t("SIDEBAR.Regions"),
+            labelStr: "Regions",
+            icon: MapPinIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
         ],
       },
       {
@@ -259,17 +288,17 @@ export function Drawer() {
             permission: PERMISSION_CODES.manage_content,
           },
           {
-            href: "/regions?page=1",
-            label: t("SIDEBAR.Regions"),
-            labelStr: "Regions",
-            icon: MapPinIcon,
-            permission: PERMISSION_CODES.manage_content,
-          },
-          {
             href: "/contact-settings",
             label: t("SIDEBAR.ContactSettings"),
             labelStr: "Contact Settings",
             icon: PhoneIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/settings",
+            label: t("SIDEBAR.AppSettings"),
+            labelStr: "App Settings",
+            icon: Cog6ToothIcon,
             permission: PERMISSION_CODES.manage_content,
           },
         ],
@@ -316,6 +345,7 @@ export function Drawer() {
     if (groupKey === "groupSupport") return ChatBubbleLeftRightIcon;
     if (groupKey === "groupContent") return NewspaperIcon;
     if (groupKey === "groupCatalog" || groupKey === "groupGeneralSettings") return LanguageIcon;
+    if (groupKey === "groupPlaces") return GlobeAltIcon;
     return ChartBarIcon;
   };
 

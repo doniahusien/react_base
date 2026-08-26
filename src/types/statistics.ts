@@ -3,6 +3,11 @@ export interface StatisticsPeriod {
   to_date: string | null;
 }
 
+export interface OrdersChartPoint {
+  date: string;
+  count: number;
+}
+
 export interface DashboardStatistics {
   total_clients: number;
   total_lawyers: number;
@@ -11,5 +16,7 @@ export interface DashboardStatistics {
   total_subscription_revenue: number;
   active_orders: number;
   completed_orders: number;
+  premium_lawyers_count: number;
+  orders_chart: OrdersChartPoint[];
   period: StatisticsPeriod;
 }

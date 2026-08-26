@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Squares2X2Icon as LayoutDashboard,
@@ -9,12 +9,16 @@ import {
   CurrencyDollarIcon as Dollar,
   ClipboardDocumentListIcon as ClipboardList,
   CheckBadgeIcon as CheckBadge,
+  SparklesIcon as Sparkles,
   CalendarDaysIcon as Calendar,
   FunnelIcon as Funnel,
   XMarkIcon as X,
+  ChartBarIcon as ChartBar,
 } from "@heroicons/react/24/outline";
+import type { ApexOptions } from "apexcharts";
 import { PageHeader } from "../components/UI/PageHeader";
 import { Button } from "../components/UI/Button";
+import { ApexChart } from "../components/UI/ApexChart";
 import api from "../lib/axios";
 import { toast } from "../stores/toast";
 import type { DashboardStatistics } from "../types/statistics";
@@ -27,11 +31,20 @@ const EMPTY: DashboardStatistics = {
   total_subscription_revenue: 0,
   active_orders: 0,
   completed_orders: 0,
+  premium_lawyers_count: 0,
+  orders_chart: [],
   period: { from_date: null, to_date: null },
 };
 
 function fmt(v: number | undefined) {
   return Math.round(v ?? 0).toLocaleString();
+}
+
+function fmtMoney(v: number | undefined) {
+  return (v ?? 0).toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
 }
 
 function StatCard({
@@ -79,7 +92,7 @@ const SkeletonCard = () => (
 );
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [stats, setStats] = useState<DashboardStatistics>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [fromDate, setFromDate] = useState("");
@@ -93,7 +106,14 @@ export default function Home() {
         if (from) params.from_date = from;
         if (to) params.to_date = to;
         const res = await api.get("statistics", { params });
-        setStats(res.data?.data ?? EMPTY);
+        const data = res.data?.data ?? EMPTY;
+        setStats({
+          ...EMPTY,
+          ...data,
+          orders_chart: Array.isArray(data?.orders_chart)
+            ? data.orders_chart
+            : [],
+        });
       } catch (e: any) {
         toast.error(
           t("MESSAGES.failedToLoadStats"),
@@ -122,8 +142,65 @@ export default function Home() {
   };
 
   const hasFilter = !!(fromDate || toDate);
-  const periodFrom = stats.period?.from_date;
-  const periodTo = stats.period?.to_date;
+
+  const chartCategories = useMemo(
+    () =>
+      (stats.orders_chart ?? []).map((p) => {
+        const d = new Date(p.date);
+        if (Number.isNaN(d.getTime())) return p.date;
+        return d.toLocaleDateString(i18n.language === "ar" ? "ar" : "en", {
+          month: "short",
+          day: "numeric",
+        });
+      }),
+    [stats.orders_chart, i18n.language]
+  );
+
+  const chartSeries = useMemo(
+    () => [
+      {
+        name: t("ANALYTICS.orders"),
+        data: (stats.orders_chart ?? []).map((p) => p.count),
+      },
+    ],
+    [stats.orders_chart, t]
+  );
+
+  const chartOptions: ApexOptions = useMemo(
+    () => ({
+      chart: {
+        toolbar: { show: false },
+        zoom: { enabled: false },
+        fontFamily: "inherit",
+      },
+      stroke: { curve: "smooth", width: 3 },
+      dataLabels: { enabled: false },
+      markers: { size: 4, hover: { size: 6 } },
+      xaxis: {
+        categories: chartCategories,
+        labels: { style: { colors: "var(--color-muted-foreground)" } },
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+      },
+      yaxis: {
+        labels: {
+          style: { colors: "var(--color-muted-foreground)" },
+          formatter: (v) => String(Math.round(v)),
+        },
+        min: 0,
+        forceNiceScale: true,
+      },
+      grid: {
+        borderColor: "var(--color-border)",
+        strokeDashArray: 4,
+      },
+      tooltip: {
+        theme: "light",
+        y: { formatter: (v) => String(Math.round(v ?? 0)) },
+      },
+    }),
+    [chartCategories]
+  );
 
   return (
     <div className="space-y-6 pb-10">
@@ -195,61 +272,94 @@ export default function Home() {
             )}
           </div>
         </div>
-
-     {/*    {(periodFrom || periodTo) && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            {t("ANALYTICS.showingPeriod")}:{" "}
-            <span className="font-medium text-foreground">
-              {periodFrom || "—"} → {periodTo || "—"}
-            </span>
-          </p>
-        )} */}
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+          <div className="h-80 rounded-2xl border border-border bg-card p-5">
+            <div className="skeleton-item mb-4 h-4 w-40 rounded-full" />
+            <div className="skeleton-item h-64 w-full rounded-xl" />
+          </div>
+        </>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            icon={Users}
-            label={t("ANALYTICS.totalClients")}
-            value={fmt(stats.total_clients)}
-          />
-          <StatCard
-            icon={Scale}
-            label={t("ANALYTICS.totalLawyers")}
-            value={fmt(stats.total_lawyers)}
-          />
-          <StatCard
-            icon={Building}
-            label={t("ANALYTICS.totalLawFirms")}
-            value={fmt(stats.total_law_firms)}
-          />
-          <StatCard
-            icon={ShieldCheck}
-            label={t("ANALYTICS.pendingVerifications")}
-            value={fmt(stats.pending_verifications)}
-          />
-          <StatCard
-            icon={Dollar}
-            label={t("ANALYTICS.subscriptionRevenue")}
-            value={fmt(stats.total_subscription_revenue)}
-          />
-          <StatCard
-            icon={ClipboardList}
-            label={t("ANALYTICS.activeOrders")}
-            value={fmt(stats.active_orders)}
-          />
-          <StatCard
-            icon={CheckBadge}
-            label={t("ANALYTICS.completedOrders")}
-            value={fmt(stats.completed_orders)}
-          />
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard
+              icon={Users}
+              label={t("ANALYTICS.totalClients")}
+              value={fmt(stats.total_clients)}
+            />
+            <StatCard
+              icon={Scale}
+              label={t("ANALYTICS.totalLawyers")}
+              value={fmt(stats.total_lawyers)}
+            />
+            <StatCard
+              icon={Building}
+              label={t("ANALYTICS.totalLawFirms")}
+              value={fmt(stats.total_law_firms)}
+            />
+            <StatCard
+              icon={ShieldCheck}
+              label={t("ANALYTICS.pendingVerifications")}
+              value={fmt(stats.pending_verifications)}
+            />
+            <StatCard
+              icon={Dollar}
+              label={t("ANALYTICS.subscriptionRevenue")}
+              value={fmtMoney(stats.total_subscription_revenue)}
+            />
+            <StatCard
+              icon={ClipboardList}
+              label={t("ANALYTICS.activeOrders")}
+              value={fmt(stats.active_orders)}
+            />
+            <StatCard
+              icon={CheckBadge}
+              label={t("ANALYTICS.completedOrders")}
+              value={fmt(stats.completed_orders)}
+            />
+            <StatCard
+              icon={Sparkles}
+              label={t("ANALYTICS.premiumLawyers")}
+              value={fmt(stats.premium_lawyers_count)}
+            />
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <ChartBar width={14} height={14} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground">
+                  {t("ANALYTICS.ordersChart")}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {t("ANALYTICS.ordersChartDesc")}
+                </p>
+              </div>
+            </div>
+
+            {chartSeries[0].data.length === 0 ? (
+              <p className="py-16 text-center text-sm text-muted-foreground">
+                {t("ANALYTICS.noOrdersChart")}
+              </p>
+            ) : (
+              <ApexChart
+                type="area"
+                height={320}
+                options={chartOptions}
+                series={chartSeries}
+              />
+            )}
+          </div>
+        </>
       )}
     </div>
   );

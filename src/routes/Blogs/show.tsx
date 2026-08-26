@@ -7,7 +7,11 @@ import {
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Skeleton } from "../../components/UI/Skeleton";
-import { BlogForm, type BlogSubmitPayload } from "../../components/Shared/BlogForm";
+import {
+  BlogForm,
+  buildBlogFormData,
+  type BlogSubmitPayload,
+} from "../../components/Shared/BlogForm";
 import { Deleter } from "../../components/Shared/Deleter";
 import api from "../../lib/axios";
 import { toast } from "../../stores/toast";
@@ -65,10 +69,10 @@ export default function BlogShow() {
       ? blog.title_ar || blog.title_en || blog.title || `#${blog.id}`
       : blog.title_en || blog.title_ar || blog.title || `#${blog.id}`;
 
-  const onSubmit = async ({ imageFile: _file, ...payload }: BlogSubmitPayload) => {
+  const onSubmit = async (payload: BlogSubmitPayload) => {
     try {
       setSaving(true);
-      const res = await api.put(`blogs/${blog.id}`, payload);
+      const res = await api.put(`blogs/${blog.id}`, buildBlogFormData(payload));
       toast.success(t("MESSAGES.updatedSuccess"), res.data?.message);
       setBlog(res.data?.data ?? blog);
     } catch (e: any) {
@@ -99,7 +103,6 @@ export default function BlogShow() {
       />
       <BlogForm
         initial={blog}
-        blogId={blog.id}
         saving={saving}
         submitLabel={t("BUTTONS.save")}
         onCancel={() => navigate("/blogs?page=1")}

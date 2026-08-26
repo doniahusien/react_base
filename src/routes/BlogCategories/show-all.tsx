@@ -1,37 +1,33 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
-  NewspaperIcon as Newspaper,
+  TagIcon as Tag,
   MagnifyingGlassIcon as Search,
   EllipsisHorizontalIcon as MoreHorizontal,
   Squares2X2Icon as LayoutDashboard,
-  PlusIcon as Plus,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { UITable } from "../../components/UI/Table";
 import { ActionsMenu } from "../../components/Shared/ActionsMenu";
+import { Switcher } from "../../components/Shared/Switcher";
 import { PageHeader } from "../../components/UI/PageHeader";
-import { Button } from "../../components/UI/Button";
-import {
-  StatusBadge,
-  formatDate,
-} from "../../components/Shared/AccountHelpers";
+import { formatDate } from "../../components/Shared/AccountHelpers";
 import api from "../../lib/axios";
-import { mediaUrl } from "../../lib/mediaUrl";
 import { normalizeResponse } from "../../lib/normalizeResponse";
 import { toast } from "../../stores/toast";
 import { useAppStore } from "../../store";
-import type { Blog } from "../../types/blogs";
+import type { BlogCategory } from "../../types/blogCategories";
 import type { TableColumn } from "../../components/UI/ModifyColumns";
 import type { TableData } from "../../components/UI/Table/types";
 
-export default function BlogsShowAll() {
+const RESOURCE = "blog-categories";
+
+export default function BlogCategoriesShowAll() {
   const { t } = useTranslation();
   const { lang } = useAppStore();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [data, setData] = useState<TableData<Blog>>({ data: [] });
+  const [data, setData] = useState<TableData<BlogCategory>>({ data: [] });
   const [loading, setLoading] = useState(false);
   const [openMenu, setOpenMenu] = useState<{
     id: number;
@@ -40,11 +36,12 @@ export default function BlogsShowAll() {
 
   const columns: TableColumn[] = useMemo(
     () => [
-      { index: 0, field: "title", header: t("TITLES.title") },
-      { index: 1, field: "category", header: t("TITLES.blogCategory") },
-      { index: 2, field: "is_published", header: t("TITLES.status") },
-      { index: 3, field: "published_at", header: t("TITLES.publishedAt") },
-      { index: 4, field: "actions", header: t("TITLES.actions") },
+      { index: 0, field: "name", header: t("TITLES.name") },
+      { index: 1, field: "slug", header: t("TITLES.slug") },
+      { index: 2, field: "articles_count", header: t("TITLES.articlesCount") },
+      { index: 3, field: "is_active", header: t("TITLES.status") },
+      { index: 4, field: "created_at", header: t("TITLES.createdAt") },
+      { index: 5, field: "actions", header: t("TITLES.actions") },
     ],
     [t]
   );
@@ -55,16 +52,16 @@ export default function BlogsShowAll() {
         type: "text",
         key: "search",
         label: t("TITLES.search"),
-        placeholder: t("LABELS.searchBlogs"),
+        placeholder: t("LABELS.searchBlogCategories"),
         prependInputIcon: Search as any,
       },
       {
         type: "radio",
-        key: "is_published",
+        key: "is_active",
         label: t("TITLES.status"),
         options: [
-          { id: "1", label: t("STATUS.published") },
-          { id: "0", label: t("STATUS.draft") },
+          { id: "1", label: t("STATUS.active") },
+          { id: "0", label: t("STATUS.inactive") },
         ],
       },
     ],
@@ -73,87 +70,83 @@ export default function BlogsShowAll() {
 
   const page = searchParams.get("page") ?? "1";
   const search = searchParams.get("search") ?? "";
-  const isPublished = searchParams.get("is_published") ?? "";
+  const isActive = searchParams.get("is_active") ?? "";
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await api.get("blogs", {
+      const res = await api.get(RESOURCE, {
         params: {
           page,
           search: search || undefined,
-          is_published: isPublished !== "" ? isPublished : undefined,
+          is_active: isActive !== "" ? isActive : undefined,
           per_page: 15,
         },
       });
-      setData(normalizeResponse<Blog>(res.data));
+      setData(normalizeResponse<BlogCategory>(res.data));
     } catch (e: any) {
-      toast.error(t("MESSAGES.failedToLoadBlogs"), e?.response?.data?.message);
+      toast.error(
+        t("MESSAGES.failedToLoadBlogCategories"),
+        e?.response?.data?.message
+      );
       setData({ data: [] });
     } finally {
       setLoading(false);
     }
-  }, [page, search, isPublished, t]);
+  }, [page, search, isActive, t]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const blogTitle = (item: Blog) => {
-    if (lang === "ar") return item.title_ar || item.title_en || item.title || "—";
-    return item.title_en || item.title_ar || item.title || "—";
-  };
+  const displayName = (item: BlogCategory) =>
+    lang === "ar"
+      ? item.name_ar || item.name_en || item.name || "—"
+      : item.name_en || item.name_ar || item.name || "—";
 
-  const renderCell = (field: string, item: Blog) => {
+  const renderCell = (field: string, item: BlogCategory) => {
     switch (field) {
-      case "title": {
-        const img = mediaUrl(item.image_url);
+      case "name":
         return (
-          <div className="flex min-w-0 items-center gap-3">
-            {img ? (
-              <img
-                src={img}
-                alt=""
-                className="size-10 shrink-0 rounded-lg object-cover"
-              />
-            ) : (
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <Newspaper width={16} height={16} />
-              </div>
-            )}
-            <Link
-              to={`/blogs/${item.id}`}
-              className="truncate text-sm font-medium text-foreground hover:text-primary"
-            >
-              {blogTitle(item)}
-            </Link>
-          </div>
-        );
-      }
-      case "category":
-        return item.category ? (
           <Link
-            to={`/blog-categories/${item.category.id}`}
-            className="text-sm font-medium text-foreground hover:text-primary"
+            to={`/blog-categories/${item.id}`}
+            className="min-w-0 block hover:text-primary"
           >
-            {item.category.name || "—"}
+            <p className="truncate text-sm font-medium text-foreground hover:text-primary">
+              {displayName(item)}
+            </p>
           </Link>
-        ) : (
-          <span className="text-sm text-muted-foreground">—</span>
         );
-      case "is_published":
+      case "slug":
         return (
-          <StatusBadge
-            status={item.is_published ? "available" : "inactive"}
-            label={
-              item.is_published ? t("STATUS.published") : t("STATUS.draft")
-            }
+          <span className="text-sm font-medium tabular-nums text-muted-foreground" dir="ltr">
+            {item.slug || "—"}
+          </span>
+        );
+      case "articles_count":
+        return (
+          <span className="text-sm tabular-nums text-foreground">
+            {item.articles_count ?? "—"}
+          </span>
+        );
+      case "is_active":
+        return (
+          <Switcher
+            value={!!item.is_active}
+            url={`${RESOURCE}/${item.id}`}
+            method="PUT"
+            body={{
+              name_ar: item.name_ar,
+              name_en: item.name_en,
+              is_active: !item.is_active,
+            }}
+            onReload={fetchData}
           />
         );
-      case "published_at":
+      case "created_at":
         return (
           <span className="text-sm text-muted-foreground">
-            {formatDate(item.published_at)}
+            {formatDate(item.created_at)}
           </span>
         );
       case "actions":
@@ -177,8 +170,9 @@ export default function BlogsShowAll() {
               <ActionsMenu
                 anchorEl={openMenu.anchor}
                 data={item}
-                showUrl={`/blogs/${item.id}`}
-                deleteUrl={`blogs/${item.id}`}
+                showUrl={`/blog-categories/${item.id}`}
+                editUrl={`/blog-categories/${item.id}/edit`}
+                deleteUrl={`${RESOURCE}/${item.id}`}
                 onClose={() => setOpenMenu(null)}
                 onReload={() => {
                   setOpenMenu(null);
@@ -196,25 +190,21 @@ export default function BlogsShowAll() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="blogs"
-        subtitle="blogsDesc"
-        icon={Newspaper}
+        title="blogCategories"
+        subtitle="blogCategoriesDesc"
+        icon={Tag}
         total={data.meta?.total ?? data.data.length}
+        addHref="/blog-categories/create"
+        addLabel="blogCategory"
         path={[
           { label: "dashboard", href: "/", icon: LayoutDashboard },
-          { label: "blogs", icon: Newspaper },
+          { label: "blogCategories", icon: Tag },
         ]}
-        rightActions={
-          <Button type="button" onClick={() => navigate("/blogs/create")}>
-            <Plus width={16} height={16} />
-            {t("TITLES.add", { count: t("TITLES.blog") })}
-          </Button>
-        }
       />
       <UITable
         data={data}
         columns={columns}
-        title="blogs"
+        title="blogCategories"
         loading={loading}
         renderCell={renderCell}
         filters={<Filter items={filterItems} />}
