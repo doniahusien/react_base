@@ -62,12 +62,12 @@ export const brandPresets: Record<string, BrandTheme> = {
     brand600: '#d97706',
     description: 'Warm, welcoming',
   },
-  gray: {
+/*   gray: {
     name: 'Gray',
     brand500: '#6b7280',
     brand600: '#4b5563',
     description: 'Minimal, neutral',
-  },
+  }, */
 };
 
 /**

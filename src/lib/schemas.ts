@@ -50,6 +50,24 @@ export const schemas = {
       new_password_confirmation: fields.new_password_confirmation,
     })
   ),
+
+  subAdminCreate: z.object({
+    full_name: fields.full_name,
+    email: fields.email,
+    phone: z.string().max(20).optional().or(z.literal("")),
+    password: fields.password,
+    preferred_language: z.enum(["ar", "en"]).optional(),
+    permissions: z.array(z.string()).min(1),
+  }),
+
+  subAdminUpdate: z.object({
+    full_name: fields.full_name,
+    email: fields.email,
+    phone: z.string().max(20).optional().or(z.literal("")),
+    password: z.union([z.literal(""), fields.password]).optional(),
+    preferred_language: z.enum(["ar", "en"]).optional(),
+    permissions: z.array(z.string()).min(1),
+  }),
 };
 
 export { fields };

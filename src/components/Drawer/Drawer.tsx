@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ChartBarIcon,
@@ -24,10 +24,13 @@ import {
   BoltIcon,
   MoonIcon,
   LanguageIcon,
+  UserGroupIcon,
+  KeyIcon,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../../store";
 import { useAuthStore } from "../../stores/auth";
+import { filterNavGroups, canAccessPath, PERMISSION_CODES } from "../../lib/permissions";
 import type { NavGroup, NavItem } from "../../types/sidebar";
 import { getTextValue, isItemActive, makeKeyHint, getIsMac, getShortcutLabel } from "./utils";
 import { DrawerHeader } from "./DrawerHeader";
@@ -54,7 +57,7 @@ export function Drawer() {
     activeNavGroupKey,
     setActiveNavGroupKey,
   } = useAppStore();
-  const { logout, user } = useAuthStore();
+  const { logout, user, permissions } = useAuthStore();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -88,152 +91,215 @@ export function Drawer() {
     return () => window.removeEventListener("keydown", handler);
   }, [searchModalOpen]);
 
-  const groups: NavGroup[] = [
-    {
-      groupKey: "groupMain",
-      groupLabelStr: "Main",
-      items: [
-        {
-          href: "/",
-          label: t("SIDEBAR.Dashboard"),
-          labelStr: "Dashboard",
-          icon: ChartBarIcon,
-        },
-      ],
-    },
-    {
-      groupKey: "groupAccounts",
-      groupLabelStr: "Accounts",
-      items: [
-        {
-          href: "/clients?page=1",
-          label: t("SIDEBAR.Clients"),
-          labelStr: "Clients",
-          icon: UsersIcon,
-        },
-        {
-          href: "/lawyers?page=1",
-          label: t("SIDEBAR.Lawyers"),
-          labelStr: "Lawyers",
-          icon: ScaleIcon,
-        },
-        {
-          href: "/law-firms?page=1",
-          label: t("SIDEBAR.LawFirms"),
-          labelStr: "Law Firms",
-          icon: BuildingOffice2Icon,
-        },
-      ],
-    },
-    {
-      groupKey: "groupVerifications",
-      groupLabelStr: "Verifications",
-      items: [
-        {
-          href: "/verifications?page=1",
-          label: t("SIDEBAR.Verifications"),
-          labelStr: "Verifications",
-          icon: ShieldCheckIcon,
-        },
-        {
-          href: "/lawyer-deletion-requests?page=1",
-          label: t("SIDEBAR.DeletionRequests"),
-          labelStr: "Deletion Requests",
-          icon: TrashIcon,
-        },
-      ],
-    },
-    {
-      groupKey: "groupBilling",
-      groupLabelStr: "Billing",
-      items: [
-        {
-          href: "/payments?page=1",
-          label: t("SIDEBAR.Payments"),
-          labelStr: "Payments",
-          icon: BanknotesIcon,
-        },
-        {
-          href: "/subscription-plans?page=1",
-          label: t("SIDEBAR.SubscriptionPlans"),
-          labelStr: "Subscription Plans",
-          icon: RectangleStackIcon,
-        },
-        {
-          href: "/codes?page=1",
-          label: t("SIDEBAR.Codes"),
-          labelStr: "Codes",
-          icon: TicketIcon,
-        },
-      ],
-    },
-    {
-      groupKey: "groupSupport",
-      groupLabelStr: "Support",
-      items: [
-        {
-          href: "/complaints?page=1",
-          label: t("SIDEBAR.Complaints"),
-          labelStr: "Complaints",
-          icon: ExclamationTriangleIcon,
-        },
-        {
-          href: "/questions?page=1",
-          label: t("SIDEBAR.Questions"),
-          labelStr: "Questions",
-          icon: QuestionMarkCircleIcon,
-        },
-        {
-          href: "/contacts?page=1",
-          label: t("SIDEBAR.Contacts"),
-          labelStr: "Contacts",
-          icon: EnvelopeIcon,
-        },
-      ],
-    },
-    {
-      groupKey: "groupContent",
-      groupLabelStr: "Content",
-      items: [
-        {
-          href: "/blogs?page=1",
-          label: t("SIDEBAR.Blogs"),
-          labelStr: "Blogs",
-          icon: NewspaperIcon,
-        },
-      ],
-    },
-    {
-      groupKey: "groupGeneralSettings",
-      groupLabelStr: "General Settings",
-      items: [
-        {
-          href: "/languages?page=1",
-          label: t("SIDEBAR.Languages"),
-          labelStr: "Languages",
-          icon: LanguageIcon,
-        },
-        {
-          href: "/practice-areas?page=1",
-          label: t("SIDEBAR.PracticeAreas"),
-          labelStr: "Practice Areas",
-          icon: BookOpenIcon,
-        },
-        {
-          href: "/regions?page=1",
-          label: t("SIDEBAR.Regions"),
-          labelStr: "Regions",
-          icon: MapPinIcon,
-        },
-        {
-          href: "/contact-settings",
-          label: t("SIDEBAR.ContactSettings"),
-          labelStr: "Contact Settings",
-          icon: PhoneIcon,
-        },
-      ],
-    },
-  ];
+  const allGroups: NavGroup[] = useMemo(
+    () => [
+      {
+        groupKey: "groupMain",
+        groupLabelStr: "Main",
+        items: [
+          {
+            href: "/",
+            label: t("SIDEBAR.Dashboard"),
+            labelStr: "Dashboard",
+            icon: ChartBarIcon,
+            permission: null,
+          },
+        ],
+      },
+      {
+        groupKey: "groupAdmins",
+        groupLabelStr: "Admins",
+        items: [
+          {
+            href: "/sub-admins?page=1",
+            label: t("SIDEBAR.SubAdmins"),
+            labelStr: "Sub Admins",
+            icon: UserGroupIcon,
+            permission: PERMISSION_CODES.manage_admins,
+          },
+          {
+            href: "/permissions",
+            label: t("SIDEBAR.Permissions"),
+            labelStr: "Permissions",
+            icon: KeyIcon,
+            permission: PERMISSION_CODES.manage_admins,
+          },
+        ],
+      },
+      {
+        groupKey: "groupAccounts",
+        groupLabelStr: "Accounts",
+        items: [
+          {
+            href: "/clients?page=1",
+            label: t("SIDEBAR.Clients"),
+            labelStr: "Clients",
+            icon: UsersIcon,
+            permission: PERMISSION_CODES.manage_accounts,
+          },
+          {
+            href: "/lawyers?page=1",
+            label: t("SIDEBAR.Lawyers"),
+            labelStr: "Lawyers",
+            icon: ScaleIcon,
+            permission: PERMISSION_CODES.manage_accounts,
+          },
+          {
+            href: "/law-firms?page=1",
+            label: t("SIDEBAR.LawFirms"),
+            labelStr: "Law Firms",
+            icon: BuildingOffice2Icon,
+            permission: PERMISSION_CODES.manage_accounts,
+          },
+        ],
+      },
+      {
+        groupKey: "groupVerifications",
+        groupLabelStr: "Verifications",
+        items: [
+          {
+            href: "/verifications?page=1",
+            label: t("SIDEBAR.Verifications"),
+            labelStr: "Verifications",
+            icon: ShieldCheckIcon,
+            permission: PERMISSION_CODES.manage_verifications,
+          },
+          {
+            href: "/lawyer-deletion-requests?page=1",
+            label: t("SIDEBAR.DeletionRequests"),
+            labelStr: "Deletion Requests",
+            icon: TrashIcon,
+            permission: PERMISSION_CODES.manage_verifications,
+          },
+        ],
+      },
+      {
+        groupKey: "groupBilling",
+        groupLabelStr: "Billing",
+        items: [
+          {
+            href: "/payments?page=1",
+            label: t("SIDEBAR.Payments"),
+            labelStr: "Payments",
+            icon: BanknotesIcon,
+            permission: PERMISSION_CODES.manage_billing,
+          },
+          {
+            href: "/subscription-plans?page=1",
+            label: t("SIDEBAR.SubscriptionPlans"),
+            labelStr: "Subscription Plans",
+            icon: RectangleStackIcon,
+            permission: PERMISSION_CODES.manage_billing,
+          },
+          {
+            href: "/codes?page=1",
+            label: t("SIDEBAR.Codes"),
+            labelStr: "Codes",
+            icon: TicketIcon,
+            permission: PERMISSION_CODES.manage_billing,
+          },
+        ],
+      },
+      {
+        groupKey: "groupSupport",
+        groupLabelStr: "Support",
+        items: [
+          {
+            href: "/complaints?page=1",
+            label: t("SIDEBAR.Complaints"),
+            labelStr: "Complaints",
+            icon: ExclamationTriangleIcon,
+            permission: PERMISSION_CODES.manage_complaints,
+          },
+          {
+            href: "/questions?page=1",
+            label: t("SIDEBAR.Questions"),
+            labelStr: "Questions",
+            icon: QuestionMarkCircleIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/contacts?page=1",
+            label: t("SIDEBAR.Contacts"),
+            labelStr: "Contacts",
+            icon: EnvelopeIcon,
+            permission: PERMISSION_CODES.manage_complaints,
+          },
+        ],
+      },
+      {
+        groupKey: "groupContent",
+        groupLabelStr: "Content",
+        items: [
+          {
+            href: "/blogs?page=1",
+            label: t("SIDEBAR.Blogs"),
+            labelStr: "Blogs",
+            icon: NewspaperIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+        ],
+      },
+      {
+        groupKey: "groupGeneralSettings",
+        groupLabelStr: "General Settings",
+        items: [
+          {
+            href: "/languages?page=1",
+            label: t("SIDEBAR.Languages"),
+            labelStr: "Languages",
+            icon: LanguageIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/practice-areas?page=1",
+            label: t("SIDEBAR.PracticeAreas"),
+            labelStr: "Practice Areas",
+            icon: BookOpenIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/regions?page=1",
+            label: t("SIDEBAR.Regions"),
+            labelStr: "Regions",
+            icon: MapPinIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/contact-settings",
+            label: t("SIDEBAR.ContactSettings"),
+            labelStr: "Contact Settings",
+            icon: PhoneIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+        ],
+      },
+    ],
+    [t]
+  );
+
+  const groups = useMemo(
+    () => filterNavGroups(allGroups, permissions, user),
+    [allGroups, permissions, user]
+  );
+
+  const allowedPinnedItems = useMemo(
+    () =>
+      pinnedItemsV2.filter((p) => {
+        if (p?.type === "item" && p.href) {
+          return canAccessPath(
+            String(p.href).split("?")[0] || "/",
+            permissions,
+            user
+          );
+        }
+        if (p?.type === "group" && p.groupKey) {
+          return groups.some((g) => g.groupKey === p.groupKey);
+        }
+        return true;
+      }),
+    [pinnedItemsV2, permissions, user, groups]
+  );
 
   const collapsed = sidebarCollapsed;
   const mode = sidebarMode;
@@ -243,6 +309,7 @@ export function Drawer() {
   const mobileOpen = sidebarOpen;
 
   const groupIcon = (groupKey: string) => {
+    if (groupKey === "groupAdmins") return UserGroupIcon;
     if (groupKey === "groupAccounts") return UsersIcon;
     if (groupKey === "groupVerifications") return ShieldCheckIcon;
     if (groupKey === "groupBilling") return BanknotesIcon;
@@ -269,10 +336,15 @@ export function Drawer() {
     const matched = findGroupKeyForPath(pathname);
     if (matched && matched !== activeNavGroupKey) {
       setActiveNavGroupKey(matched);
+    } else if (
+      activeNavGroupKey &&
+      !groups.some((g) => g.groupKey === activeNavGroupKey)
+    ) {
+      setActiveNavGroupKey(groups[0]?.groupKey ?? null);
     } else if (!activeNavGroupKey && groups[0]) {
       setActiveNavGroupKey(groups[0].groupKey);
     }
-  }, [pathname, isTwoColumn]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pathname, isTwoColumn, groups]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeGroup = groups.find((g) => g.groupKey === activeNavGroupKey) ?? groups[0] ?? null;
 
@@ -435,7 +507,7 @@ export function Drawer() {
 
         <DrawerNavContent
           groups={groups}
-          pinnedItemsV2={pinnedItemsV2}
+          pinnedItemsV2={allowedPinnedItems}
           searchQuery={searchQuery}
           searchResults={searchResults}
           collapsed={collapsed}
@@ -482,7 +554,7 @@ export function Drawer() {
           openSubMenu={openSubMenu}
           setOpenSubMenu={setOpenSubMenu}
           togglePinItem={togglePinItem}
-          pinnedItemsV2={pinnedItemsV2}
+          pinnedItemsV2={allowedPinnedItems}
           locale={locale}
         />
       )}

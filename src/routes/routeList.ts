@@ -2,6 +2,11 @@ import { lazy } from "react";
 
 export const routes = [
   { path: "/", component: lazy(() => import("./index")) },
+  { path: "/sub-admins", component: lazy(() => import("./SubAdmins/show-all")) },
+  { path: "/sub-admins/create", component: lazy(() => import("./SubAdmins/create")) },
+  { path: "/sub-admins/:id/edit", component: lazy(() => import("./SubAdmins/edit")) },
+  { path: "/sub-admins/:id", component: lazy(() => import("./SubAdmins/show")) },
+  { path: "/permissions", component: lazy(() => import("./Permissions/index")) },
   { path: "/clients", component: lazy(() => import("./Clients/show-all")) },
   { path: "/clients/:id", component: lazy(() => import("./Clients/show")) },
   { path: "/lawyers", component: lazy(() => import("./Lawyers/show-all")) },

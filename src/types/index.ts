@@ -14,3 +14,4 @@ export type * from "./complaints";
 export type * from "./questions";
 export type * from "./lawyerDeletionRequests";
 export type * from "./contacts";
+export type * from "./permissions";

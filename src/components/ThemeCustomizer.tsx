@@ -292,9 +292,11 @@ export function ThemeCustomizer() {
                     </div>
                     <div>
                       <p className={`text-sm font-semibold ${active ? "text-primary" : "text-foreground"}`}>
-                        {preset.name}
+                        {t(`THEME_PRESET.${key}`, { defaultValue: preset.name })}
                       </p>
-                      <p className="text-xs text-muted-foreground">{preset.description}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t(`THEME_PRESET.${key}Desc`, { defaultValue: preset.description })}
+                      </p>
                     </div>
                   
                   </button>

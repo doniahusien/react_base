@@ -5,6 +5,8 @@ export interface NavItem {
   label: ReactNode;
   labelStr: string;
   icon: any;
+  /** Required permission code(s). null/undefined = any authenticated admin */
+  permission?: string | string[] | null;
   children?: Omit<NavItem, "children">[];
 }
 

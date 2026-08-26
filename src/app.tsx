@@ -5,6 +5,7 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
 import { Layout } from "./components/Layout";
 import { ToastContainer } from "./components/UI/Toast";
+import { PermissionGuard } from "./components/Shared/PermissionGuard";
 import { useAuthStore } from "./stores/auth";
 import { routes } from "./routes/routeList";
 import { PageLoadSkeleton } from "./components/UI/Skeleton";
@@ -25,7 +26,9 @@ function ProtectedLayout() {
   return (
     <Layout>
       <Suspense fallback={<PageLoadSkeleton />}>
-        <Outlet />
+        <PermissionGuard>
+          <Outlet />
+        </PermissionGuard>
       </Suspense>
     </Layout>
   );

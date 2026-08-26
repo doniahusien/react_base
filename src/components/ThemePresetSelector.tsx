@@ -229,10 +229,10 @@ export function ThemePresetSelector({
                     {/* Theme Info */}
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium ${isActive ? 'text-primary' : 'text-foreground'}`}>
-                        {theme.name}
+                        {t(`THEME_PRESET.${key}`, { defaultValue: theme.name })}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {theme.description}
+                        {t(`THEME_PRESET.${key}Desc`, { defaultValue: theme.description })}
                       </p>
                     </div>
                     
