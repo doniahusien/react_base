@@ -43,7 +43,7 @@ export function DrawerTwoColumnLayout({
       dir={locale === "ar" ? "rtl" : "ltr"}
       className={locale === "ar" ? "text-right" : "text-left"}
     >
-      <div className="drawer-shell fixed inset-y-0 inset-s-0 z-30 hidden w-74 overflow-hidden lg:flex">
+      <div className="drawer-shell fixed inset-y-0 inset-s-0 z-40 hidden w-74 overflow-hidden lg:flex">
         <div className="flex w-18 shrink-0 flex-col border-e border-border/60">
           <div className="flex justify-center px-2 py-4">
             <img

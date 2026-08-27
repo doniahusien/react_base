@@ -21,7 +21,7 @@ export function Header({ mode }: HeaderProps) {
 
   return (
     <header
-      className={`header-bar sticky top-0 z-[60] transition-all duration-500 ease-in-out ${
+      className={`header-bar sticky top-0 z-20 transition-all duration-500 ease-in-out ${
         mode === "horizontal" ? "" : " mx-0 md:mx-5 my-2 md:rounded-4xl"
       }`}
     >

@@ -14,6 +14,8 @@ import {
   RectangleStackIcon,
   TicketIcon,
   NewspaperIcon,
+  PhotoIcon,
+  SquaresPlusIcon,
   TagIcon,
   ChatBubbleLeftRightIcon,
   ExclamationTriangleIcon,
@@ -233,6 +235,27 @@ export function Drawer() {
         groupKey: "groupContent",
         groupLabelStr: "Content",
         items: [
+          {
+            href: "/blocks",
+            label: t("SIDEBAR.Blocks"),
+            labelStr: "Blocks & Shapes",
+            icon: SquaresPlusIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/pages",
+            label: t("SIDEBAR.Pages"),
+            labelStr: "Pages Content",
+            icon: RectangleStackIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/banners",
+            label: t("SIDEBAR.Banners"),
+            labelStr: "Sliders & Banners",
+            icon: PhotoIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
           {
             href: "/blogs?page=1",
             label: t("SIDEBAR.Blogs"),
@@ -592,7 +615,7 @@ export function Drawer() {
       {/* Standard Sidebar Layout */}
       {!isHorizontal && !isTwoColumn && (
         <div
-          className={`drawer-shell fixed inset-y-0 inset-s-0 z-30 hidden flex-col overflow-hidden transition-all duration-500 ease-in-out lg:flex ${
+          className={`drawer-shell fixed inset-y-0 inset-s-0 z-40 hidden flex-col overflow-hidden transition-all duration-500 ease-in-out lg:flex ${
             collapsed ? "w-18" : "w-64"
           }`}
         >
