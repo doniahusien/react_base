@@ -1,19 +1,22 @@
 import { useState, useId } from "react";
-import type { ReactNode, ComponentType } from "react";
+import type { ReactNode, ComponentType, ChangeEvent } from "react";
 import { EyeIcon as Eye, EyeSlashIcon as EyeOff } from "@heroicons/react/24/outline";
 
 interface BaseTextInputProps {
-  name: string;
+  name?: string;
   label?: ReactNode;
   placeholder?: string;
-  type?: "text" | "email" | "password" | "textarea" | "number";
-  value?: string | number;
+  type?: "text" | "email" | "password" | "textarea" | "number" | "url";
+  value?: string | number | null;
   onInput?: (value: string) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   error?: string;
   touched?: boolean;
   disabled?: boolean;
+  required?: boolean;
   prependInputIcon?: ComponentType<any>;
   appendInputIcon?: ComponentType<any>;
+  className?: string;
 }
 
 export function BaseTextInput({
@@ -23,18 +26,28 @@ export function BaseTextInput({
   type = "text",
   value = "",
   onInput,
+  onChange,
   error,
   touched = false,
   disabled = false,
+  required = false,
   prependInputIcon: PrependIcon,
   appendInputIcon: AppendIcon,
+  className,
 }: BaseTextInputProps) {
   const uid = useId();
-  const id = `${uid}-${name}`;
+  const id = name ? `${uid}-${name}` : uid;
   const [showPass, setShowPass] = useState(false);
   const [focused, setFocused] = useState(false);
   const hasError = touched && !!error;
   const inputType = type === "password" ? (showPass ? "text" : "password") : type;
+
+  const displayValue = value === null || value === undefined ? "" : String(value);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    onInput?.(e.target.value);
+    onChange?.(e);
+  };
 
   const inputCls = [
     "block w-full bg-transparent text-sm text-foreground outline-none transition-all duration-200",
@@ -64,17 +77,19 @@ export function BaseTextInput({
   ].join(" ");
 
   return (
-    <div className="space-y-1">
+    <div className={`space-y-1 ${className || ""}`}>
       {label && (
         <label htmlFor={id} className={labelCls}>
           {label}
+          {required && <span className="text-destructive ms-1">*</span>}
         </label>
       )}
       <div className={wrapperCls}>
         {PrependIcon && (
           <span className="pointer-events-none absolute inset-y-0 inset-s-0 flex w-11 items-center justify-center">
             <PrependIcon
-              width={15} height={15}
+              width={15}
+              height={15}
               className={hasError ? "text-destructive" : focused ? "text-primary" : "text-muted-foreground"}
             />
           </span>
@@ -85,8 +100,8 @@ export function BaseTextInput({
             id={id}
             name={name}
             placeholder={placeholder}
-            value={String(value)}
-            onChange={(e) => onInput?.(e.target.value)}
+            value={displayValue}
+            onChange={handleChange}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             disabled={disabled}
@@ -99,8 +114,8 @@ export function BaseTextInput({
             name={name}
             type={inputType as any}
             placeholder={placeholder}
-            value={String(value)}
-            onChange={(e) => onInput?.(e.target.value)}
+            value={displayValue}
+            onChange={handleChange}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             disabled={disabled}
@@ -111,7 +126,11 @@ export function BaseTextInput({
 
         {AppendIcon && type !== "password" && (
           <span className="pointer-events-none absolute inset-y-0 inset-e-0 flex w-11 items-center justify-center">
-            <AppendIcon width={15} height={15} className={hasError ? "text-destructive" : "text-muted-foreground"} />
+            <AppendIcon
+              width={15}
+              height={15}
+              className={hasError ? "text-destructive" : "text-muted-foreground"}
+            />
           </span>
         )}
 
