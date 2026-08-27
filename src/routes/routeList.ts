@@ -46,6 +46,10 @@ export const routes = [
   { path: "/questions/:id", component: lazy(() => import("./Questions/show")) },
   { path: "/contacts", component: lazy(() => import("./Contacts/show-all")) },
   { path: "/contacts/:id", component: lazy(() => import("./Contacts/show")) },
+  { path: "/banners", component: lazy(() => import("./Banners/show-all")) },
+  { path: "/blocks", component: lazy(() => import("./Blocks/show-all")) },
+  { path: "/pages", component: lazy(() => import("./Pages/show-all")) },
+  { path: "/pages/:id/builder", component: lazy(() => import("./Pages/builder")) },
   { path: "/profile", component: lazy(() => import("./Profile/show")) },
   { path: "/profile/edit", component: lazy(() => import("./Profile/edit")) },
 ];
