@@ -18,3 +18,5 @@ export type * from "./questions";
 export type * from "./lawyerDeletionRequests";
 export type * from "./contacts";
 export type * from "./permissions";
+export type * from "./pageBuilder";
+export type * from "./blocks";
