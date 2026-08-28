@@ -875,7 +875,7 @@ function GlobalSliderNotice({ lang }: { lang: "ar" | "en" }) {
           </h4>
         </div>
         <Link
-          to="/banners"
+          to="/sliders"
           target="_blank"
           className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline shrink-0"
         >

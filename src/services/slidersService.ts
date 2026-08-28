@@ -2,7 +2,7 @@ import api from "../lib/axios";
 import { normalizeResponse } from "../lib/normalizeResponse";
 import { sliderMockService } from "../mocks/bannerMock";
 import { USE_MOCK_PAGE_BUILDER } from "./apiMode";
-import type { SliderImage } from "../types/banners";
+import type { SliderImage } from "../types/sliders";
 
 const RESOURCE = "sliders";
 

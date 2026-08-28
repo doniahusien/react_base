@@ -1,4 +1,4 @@
-import type { SliderImage } from "../types/banners";
+import type { SliderImage } from "../types/sliders";
 
 /**
  * Global Slider Images pool.
