@@ -232,30 +232,36 @@ export function Drawer() {
         ],
       },
       {
-        groupKey: "groupContent",
-        groupLabelStr: "Content",
+        groupKey: "groupPageBuilder",
+        groupLabelStr: "Page Builder",
         items: [
           {
             href: "/blocks",
             label: t("SIDEBAR.Blocks"),
-            labelStr: "Blocks & Shapes",
+            labelStr: "Section Templates",
             icon: SquaresPlusIcon,
             permission: PERMISSION_CODES.manage_content,
           },
           {
             href: "/pages",
             label: t("SIDEBAR.Pages"),
-            labelStr: "Pages Content",
+            labelStr: "Website Pages",
             icon: RectangleStackIcon,
             permission: PERMISSION_CODES.manage_content,
           },
           {
-            href: "/banners",
-            label: t("SIDEBAR.Banners"),
-            labelStr: "Sliders & Banners",
+            href: "/sliders",
+            label: t("SIDEBAR.Sliders"),
+            labelStr: "Sliders",
             icon: PhotoIcon,
             permission: PERMISSION_CODES.manage_content,
           },
+        ],
+      },
+      {
+        groupKey: "groupContent",
+        groupLabelStr: "Content",
+        items: [
           {
             href: "/blogs?page=1",
             label: t("SIDEBAR.Blogs"),
@@ -366,6 +372,7 @@ export function Drawer() {
     if (groupKey === "groupVerifications") return ShieldCheckIcon;
     if (groupKey === "groupBilling") return BanknotesIcon;
     if (groupKey === "groupSupport") return ChatBubbleLeftRightIcon;
+    if (groupKey === "groupPageBuilder") return SquaresPlusIcon;
     if (groupKey === "groupContent") return NewspaperIcon;
     if (groupKey === "groupCatalog" || groupKey === "groupGeneralSettings") return LanguageIcon;
     if (groupKey === "groupPlaces") return GlobeAltIcon;
