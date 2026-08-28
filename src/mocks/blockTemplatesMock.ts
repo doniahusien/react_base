@@ -1,544 +1,24 @@
 import type { BlockTemplate } from "../types/blocks";
 
+// ============================================================================
+// CANONICAL BLOCK REGISTRY — single source of truth.
+//
+// Every block below is one reusable shape. A shape may be placed on any page
+// any number of times; page-specific meaning comes from its content, not from
+// its type. Do not add a new block for a page that reuses an existing shape.
+// ============================================================================
+
 export const INITIAL_BLOCK_TEMPLATES: BlockTemplate[] = [
-  // 1. Title + Desc + Image + Features (with Icons)
+  // 1 — Hero header (home page top, over the global slider)
   {
-    id: "title_desc_image_features",
-    name_ar: "عنوان + وصف + صورة + مميزات بأيقونات",
-    name_en: "Title + Desc + Image + Icon Features",
-    description_ar: "قسم نبذة مع صورة جانبية معتمدة وقائمة بنقاط قوة ومميزات مزودة بأيقونات مخصصة (مثل قسم قصة المنصة)",
-    description_en: "Story narrative section with portrait image, stats badge, and highlight feature list with custom icons",
-    category: "content_media",
-    icon: "BookOpen",
-    shape_tags: ["badge", "title", "description", "image", "stats_badge", "features_repeater", "icons"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم العلوي (Badge)", label_en: "Top Badge", type: "text" },
-      { key: "title", label_ar: "العنوان الرئيسي", label_en: "Main Title", type: "text", required: true },
-      { key: "description", label_ar: "نص الوصف التوضيحي", label_en: "Description", type: "textarea", required: true },
-      { key: "image", label_ar: "الصورة الجانبية", label_en: "Portrait Image", type: "image", default_value: "/images/about.webp" },
-      { key: "stats_label", label_ar: "نص شارة الاعتماد / الإحصائية", label_en: "Stats Badge Label", type: "text" },
-      {
-        key: "features",
-        label_ar: "قائمة المميزات ونقاط القوة",
-        label_en: "Features List",
-        type: "repeater",
-        item_label_ar: "ميزة",
-        item_label_en: "Feature",
-        item_fields: [
-          { key: "title", label_ar: "عنوان الميزة", label_en: "Title", type: "text", required: true },
-          { key: "description", label_ar: "شرح الميزة", label_en: "Description", type: "textarea" },
-          { key: "icon", label_ar: "الأيقونة", label_en: "Icon", type: "icon", default_value: "ShieldCheck" },
-        ],
-      },
-    ],
-    default_content: {
-      ar: {
-        badge: "قصتنا ومسيرتنا",
-        title: "رواد في الوساطة والتحول الرقمي القانوني",
-        description: "انطلقت منصة الوسيط للوساطة القانونية برؤية طموحة تهدف إلى تسهيل وصول الأفراد والشركات إلى نخبة المحامين المرخصين في المملكة العربية السعودية.",
-        image: "/images/about.webp",
-        stats_label: "منصة معتمدة وموثوقة",
-        features: [
-          { title: "حماية تامة للحقوق", description: "حفظ حقوق العميل والمحامي في حساب وسيط موثوق", icon: "ShieldCheck" },
-          { title: "نخبة المحامين المعتمدين", description: "التحقق المباشر من سريان تراخيص المحامين من وزارة العدل", icon: "Award" },
-        ],
-      },
-      en: {
-        badge: "Our Story",
-        title: "Pioneering Digital Legal Brokerage",
-        description: "Elwaseet was established to connect clients with licensed legal practitioners across Saudi Arabia with complete trust.",
-        image: "/images/about.webp",
-        stats_label: "Licensed & Verified Platform",
-        features: [
-          { title: "Full Escrow Protection", description: "Safeguarded payments until case resolution", icon: "ShieldCheck" },
-          { title: "Certified Lawyers", description: "Direct validation of legal bar licenses", icon: "Award" },
-        ],
-      },
-    },
-  },
-
-  // 2. Title + Desc + Image Only
-  {
-    id: "title_desc_image_only",
-    name_ar: "عنوان + وصف + صورة فقط",
-    name_en: "Title + Desc + Image Only",
-    description_ar: "بلوك محتوى بسيط ومباشر يحتوي على عنوان ووصف تفصيلي وصورة عريضة أو جانبية بدون أيقونات",
-    description_en: "Clean content block with heading, rich paragraph text, and featured image",
-    category: "content_media",
-    icon: "DocumentText",
-    shape_tags: ["badge", "title", "description", "image"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
-      { key: "title", label_ar: "العنوان الرئيسي", label_en: "Main Title", type: "text", required: true },
-      { key: "description", label_ar: "نص المقال أو المحتوى", label_en: "Body Content", type: "textarea", required: true },
-      { key: "image", label_ar: "رابط الصورة", label_en: "Image URL", type: "image", default_value: "/images/slider1.webp" },
-    ],
-    default_content: {
-      ar: {
-        badge: "عن المنصة",
-        title: "بناء مستقبل العدالة الرقمية",
-        description: "نسعى لتقديم تجربة متكاملة تمكّن كافة أطراف العملية القانونية من إنجاز المعاملات بأعلى درجات السهولة والسرعة.",
-        image: "/images/slider1.webp",
-      },
-      en: {
-        badge: "About Us",
-        title: "Building the Future of Digital Justice",
-        description: "We strive to deliver an all-in-one experience empowering clients and lawyers to collaborate effortlessly.",
-        image: "/images/slider1.webp",
-      },
-    },
-  },
-
-  // 3. Cards Grid with Icons & Images (Services Grid)
-  {
-    id: "cards_grid_with_icons_images",
-    name_ar: "شبكة بطاقات (كروت) بخلفيات وأيقونات",
-    name_en: "Cards Grid with Icons & Images",
-    description_ar: "شبكة بطاقات تفاعلية تتمدد عند التمرير، تحتوي كل بطاقة على أيقونة وصورة خلفية وعنوان ووصف يظهر عند التمرير (مثل خدمات المنصة)",
-    description_en: "Interactive expanding cards grid with background images, custom icons, titles, and hover descriptions",
-    category: "cards_grid",
-    icon: "Briefcase",
-    shape_tags: ["cards_repeater", "images", "icons"],
-    is_active: true,
-    fields: [
-      {
-        key: "services",
-        label_ar: "بطاقات الخدمات والكروت",
-        label_en: "Cards List",
-        type: "repeater",
-        item_label_ar: "بطاقة خدمة",
-        item_label_en: "Service Card",
-        item_fields: [
-          { key: "title", label_ar: "عنوان البطاقة", label_en: "Card Title", type: "text", required: true },
-          { key: "description", label_ar: "الوصف التوضيحي (يظهر عند التمرير)", label_en: "Description", type: "textarea" },
-          { key: "icon", label_ar: "أيقونة البطاقة", label_en: "Icon", type: "icon", default_value: "Scale" },
-          { key: "image", label_ar: "صورة خلفية البطاقة", label_en: "Card Background Image", type: "image", default_value: "/images/service1.webp" },
-        ],
-      },
-    ],
-    default_content: {
-      ar: {
-        services: [
-          { title: "تقديم طلب قانوني", description: "قدّم طلبك القانوني واستقبل عروض الأسعار من محامين معتمدين خلال ساعات.", icon: "Scale", image: "/images/service1.webp" },
-          { title: "الباقات القانونية", description: "تصفح باقات الخدمات القانونية المسعّرة مسبقاً من نخبة المحامين والمكاتب المعتمدة.", icon: "FileText", image: "/images/service2.webp" },
-          { title: "محامون معتمدون", description: "تضع باقات الخدمات القانونية المسعّرة مسبقاً من نخبة المحامين والمكاتب المعتمدة.", icon: "ShieldCheck", image: "/images/service3.webp" },
-          { title: "استشارات متخصصة", description: "جلسات استشارية قانونية مع نخبة من المستشارين المرخصين لحماية حقوقك ومصالحك.", icon: "Users", image: "/images/slider1.webp" },
-        ],
-      },
-      en: {
-        services: [
-          { title: "Submit Legal Request", description: "Post your legal inquiry and receive quotes from certified attorneys within hours.", icon: "Scale", image: "/images/service1.webp" },
-          { title: "Fixed Legal Packages", description: "Browse predefined advisory and contract drafting packages at transparent rates.", icon: "FileText", image: "/images/service2.webp" },
-          { title: "Certified Lawyers", description: "Engage directly with vetted and licensed practitioners across all legal specialties.", icon: "ShieldCheck", image: "/images/service3.webp" },
-          { title: "Specialized Consultations", description: "One-on-one advisory sessions with accredited attorneys to protect your legal interests.", icon: "Users", image: "/images/slider1.webp" },
-        ],
-      },
-    },
-  },
-
-  // 4. Workflow Steps Cards with Numbers & Icons
-  {
-    id: "steps_workflow_cards",
-    name_ar: "مسار خطوات مرقمة بأيقونات وشروحات",
-    name_en: "Numbered Workflow Steps with Icons",
-    description_ar: "عرض متسلسل لخطوات العمل مرقمة (01, 02, 03) مع أيقونة وعنوان وشرح مفصل وسهم توجيه (مثل قسم كيف نعمل)",
-    description_en: "Sequenced 4-step workflow cards with step numbers, custom icons, titles, and descriptions",
-    category: "workflow",
-    icon: "Clock",
-    shape_tags: ["badge", "title", "description", "steps_repeater", "step_numbers", "icons"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
-      { key: "title", label_ar: "عنوان القسم", label_en: "Section Title", type: "text", required: true },
-      { key: "description", label_ar: "الوصف التمهيدي", label_en: "Intro Description", type: "textarea" },
-      {
-        key: "steps",
-        label_ar: "خطوات مسار العمل",
-        label_en: "Workflow Steps",
-        type: "repeater",
-        item_label_ar: "خطوة",
-        item_label_en: "Step",
-        item_fields: [
-          { key: "step_number", label_ar: "رقم الخطوة (مثال: 01)", label_en: "Step Number (e.g. 01)", type: "text", default_value: "01", required: true },
-          { key: "title", label_ar: "عنوان الخطوة", label_en: "Step Title", type: "text", required: true },
-          { key: "description", label_ar: "شرح الخطوة", label_en: "Step Description", type: "textarea" },
-          { key: "icon", label_ar: "أيقونة الخطوة", label_en: "Icon", type: "icon", default_value: "PenLine" },
-        ],
-      },
-    ],
-    default_content: {
-      ar: {
-        badge: "خطوات العمل",
-        title: "كيف تعمل منصة الوسيط للوساطة القانونية",
-        description: "رحلة سهلة وسلسة تبدأ بتقديم طلبك وتنتهي بالحصول على أفضل تمثيل واستشارة قانونية.",
-        steps: [
-          { step_number: "01", title: "سجل حسابك وحدد نوع طلبك", description: "أنشئ حسابك وحدد تفاصيل القضية أو الاستشارة المطلوبة", icon: "Users" },
-          { step_number: "02", title: "استقبل عروض أسعار المحامين", description: "يتنافس نخبة من المحامين المرخصين بتقديم عروضهم", icon: "FileText" },
-          { step_number: "03", title: "اختر المحامي الأنسب", description: "راجع السير الذاتية والتقييمات واختر العرض المناسب", icon: "Award" },
-          { step_number: "04", title: "ابدأ العمل والتواصل الآمن", description: "تواصل مع محاميك بكل سرية واحترافية", icon: "MessageSquare" },
-        ],
-      },
-      en: {
-        badge: "Workflow",
-        title: "How Elwaseet Legal Brokerage Works",
-        description: "A seamless 4-step experience from initial inquiry to hiring your dedicated attorney.",
-        steps: [
-          { step_number: "01", title: "Create Account & Submit", description: "Sign up and describe your legal case", icon: "Users" },
-          { step_number: "02", title: "Receive Lawyer Quotes", description: "Licensed advocates submit tailored proposals", icon: "FileText" },
-          { step_number: "03", title: "Select Best Advocate", description: "Compare profiles, ratings, and budgets", icon: "Award" },
-          { step_number: "04", title: "Start Direct Collaboration", description: "Communicate in private encrypted channels", icon: "MessageSquare" },
-        ],
-      },
-    },
-  },
-
-  // 5. Dual Action Cards (Client & Lawyer CTA Paths)
-  {
-    id: "dual_action_cta_cards",
-    name_ar: "بطاقتي توجيه ثنائية (مسار العميل ومسار المحامي)",
-    name_en: "Dual Action Choice Cards (Client / Lawyer)",
-    description_ar: "بطاقتان كبيرتان لاختيار المسار المناسب (تقديم طلب للعملاء مقابل انضمام المحامين) مع أزرار وأيقونات وبادجات توضيحية",
-    description_en: "Two prominent conversion cards for clients and lawyers with distinct CTA buttons, icons, and waitlist notes",
-    category: "workflow",
-    icon: "UserGroup",
-    shape_tags: ["badge", "title", "subtitle", "dual_cards", "cta_buttons", "icons"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
-      { key: "title", label_ar: "العنوان الرئيسي", label_en: "Main Title", type: "text", required: true },
-      { key: "subtitle", label_ar: "العنوان الفرعي", label_en: "Subtitle", type: "text" },
-    ],
-    default_content: {
-      ar: {
-        badge: "ابدأ الآن",
-        title: "اختر المسار المناسب لك",
-        subtitle: "سواء كنت تبحث عن تمثيل قانوني أو كنت محامياً ترغب في توسيع قاعدة عملائك",
-        client_option: {
-          title: "تقديم طلب قانوني (للعملاء)",
-          description: "اطرح استشارتك أو قضيتك القانونية لتصل إلى مئات المحامين المعتمدين واستقبل عروضهم في وقت قياسي.",
-          cta_text: "تقديم طلب الآن",
-          cta_link: "/auth/sign-up/client/step-1",
-          icon: "PenLine",
-          note_text: "+500 محامٍ معتمد بانتظار خدمتك",
-        },
-        lawyer_option: {
-          title: "الانضمام كمحامٍ أو مكتب محاماة",
-          description: "انضم إلى شبكة المحامين الرائدة، واطلع على آلاف الطلبات القانونية يومياً وقدم عروضك مباشرة للعملاء.",
-          cta_text: "التسجيل كمحامٍ",
-          cta_link: "/auth/sign-up/lawyer/step-1",
-          icon: "Users",
-          note_text: "فرص عمل وتعاقدات يومية جديدة",
-        },
-      },
-      en: {
-        badge: "Get Started",
-        title: "Choose Your Path",
-        subtitle: "Whether you need professional legal representation or you are a certified lawyer seeking clients",
-        client_option: {
-          title: "Submit Legal Request (Clients)",
-          description: "Post your case to reach hundreds of licensed attorneys rapidly.",
-          cta_text: "Post Request Now",
-          cta_link: "/auth/sign-up/client/step-1",
-          icon: "PenLine",
-          note_text: "500+ Verified lawyers ready to assist",
-        },
-        lawyer_option: {
-          title: "Join as Lawyer or Law Firm",
-          description: "Access daily legal requests across the Kingdom and grow your practice.",
-          cta_text: "Register as Lawyer",
-          cta_link: "/auth/sign-up/lawyer/step-1",
-          icon: "Users",
-          note_text: "New daily opportunities and retainers",
-        },
-      },
-    },
-  },
-
-  // 6. Values & Pillars Cards with Tags and Icons
-  {
-    id: "values_pillars_cards",
-    name_ar: "بطاقات القيم والركائز مع وسوم وأيقونات",
-    name_en: "Core Values Cards with Tags & Icons",
-    description_ar: "أربع بطاقات للقيم المؤسسية (النزاهة، الجودة، السرية، الابتكار) مع أيقونة وشارة وسوم توضيحية وشرح موجز",
-    description_en: "4-column core values cards with badges, icons, title, and detailed principle statements",
-    category: "cards_grid",
-    icon: "ShieldCheck",
-    shape_tags: ["badge", "title", "subtitle", "values_repeater", "tags", "icons"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
-      { key: "title", label_ar: "عنوان القسم", label_en: "Title", type: "text", required: true },
-      { key: "subtitle", label_ar: "العنوان الفرعي", label_en: "Subtitle", type: "text" },
-      {
-        key: "values",
-        label_ar: "قائمة القيم والركائز",
-        label_en: "Values List",
-        type: "repeater",
-        item_label_ar: "قيمة",
-        item_label_en: "Value",
-        item_fields: [
-          { key: "title", label_ar: "اسم القيمة", label_en: "Title", type: "text", required: true },
-          { key: "description", label_ar: "شرح القيمة", label_en: "Description", type: "textarea" },
-          { key: "tag", label_ar: "الوسم الفرعي (Tag)", label_en: "Tag Badge", type: "text", default_value: "ركيزة أساسية" },
-          { key: "icon", label_ar: "رمز الأيقونة", label_en: "Icon", type: "icon", default_value: "Scale" },
-        ],
-      },
-    ],
-    default_content: {
-      ar: {
-        badge: "قيمنا",
-        title: "القيم والمبادئ التي توجه مسيرتنا",
-        subtitle: "نلتزم بركائز مهنية وأخلاقية صارمة تضمن حماية حقوق ومصالح جميع الأطراف.",
-        values: [
-          { title: "النزاهة والشفافية", description: "الالتزام بأعلى معايير الصدق والوضوح في التعاملات وتسعير الخدمات والوساطة.", tag: "نزاهة تامة", icon: "Scale" },
-          { title: "الجودة والاحترافية", description: "استقطاب المحامين المعتمدين لتقديم استشارات قانونية بأعلى درجات الإتقان.", tag: "معايير عليا", icon: "Award" },
-          { title: "السرية التامة", description: "تشفير وحماية كافة وثائق وبيانات القضايا وفق أعلى المعايير الأمنية.", tag: "تشفير كامل", icon: "Lock" },
-          { title: "الابتكار الرقمي", description: "تطوير حلول تقنية تسهل إجراءات الوساطة وإدارة الطلبات بذكاء وسرعة.", tag: "تقنية حديثة", icon: "Sparkles" },
-        ],
-      },
-      en: {
-        badge: "Our Values",
-        title: "Core Principles Guiding Our Journey",
-        subtitle: "We abide by rigorous professional and ethical standards safeguarding client rights.",
-        values: [
-          { title: "Integrity & Transparency", description: "Unwavering commitment to honesty and clear fee structures.", tag: "Integrity", icon: "Scale" },
-          { title: "Quality & Excellence", description: "Curating verified licensed advocates to deliver exemplary counsel.", tag: "Excellence", icon: "Award" },
-          { title: "Absolute Confidentiality", description: "Military-grade encryption protecting sensitive client dossiers.", tag: "Security", icon: "Lock" },
-          { title: "Digital Innovation", description: "Advancing legal-tech workflows for effortless dispute management.", tag: "Innovation", icon: "Sparkles" },
-        ],
-      },
-    },
-  },
-
-  // 7. Vision & Mission Statement with Quote & Pillars
-  {
-    id: "vision_mission_statement_pillars",
-    name_ar: "بيان الرؤية/الرسالة + اقتباس + ركائز بأيقونات",
-    name_en: "Vision/Mission Statement + Quote + Pillars",
-    description_ar: "قسم عريض بخلفية داكنة أو فاتحة يضم بيان الرؤية/الرسالة، اقتباساً مائلاً مميزاً، وبطاقات ركائز مزودة بأيقونات (مثل صفحة من نحن)",
-    description_en: "Rich statement section with quote highlight and side pillar cards with custom icons",
-    category: "quotes",
-    icon: "Sparkles",
-    shape_tags: ["badge", "title", "statement", "quote_footer", "pillars_repeater", "icons"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
-      { key: "title", label_ar: "عنوان الرؤية / الرسالة", label_en: "Title", type: "text", required: true },
-      { key: "statement", label_ar: "نص البيان الأساسي", label_en: "Main Statement", type: "textarea", required: true },
-      { key: "footer_quote", label_ar: "الاقتباس المميز أسفل البيان", label_en: "Footer Quote", type: "text" },
-      {
-        key: "pillars",
-        label_ar: "ركائز الرؤية / أهداف الرسالة",
-        label_en: "Pillars List",
-        type: "repeater",
-        item_label_ar: "ركيزة",
-        item_label_en: "Pillar",
-        item_fields: [
-          { key: "title", label_ar: "عنوان الركيزة", label_en: "Title", type: "text", required: true },
-          { key: "description", label_ar: "شرح الركيزة", label_en: "Description", type: "textarea" },
-          { key: "icon", label_ar: "الأيقونة", label_en: "Icon", type: "icon", default_value: "Sparkles" },
-        ],
-      },
-    ],
-    default_content: {
-      ar: {
-        badge: "رؤيتنا المستقبلية",
-        title: "بناء المنظومة القانونية الرقمية الأكثر موثوقية",
-        statement: "أن نكون المنصة الرقمية الرائدة والمفضلة في الشرق الأوسط للوساطة القانونية وحلول التقنية العدلية.",
-        footer_quote: "تمكين العدالة وسهولة الوصول للخدمات القانونية لكل فرد ومؤسسة.",
-        pillars: [
-          { title: "الريادة الرقمية", description: "أتمتة وتسهيل رحلة التقاضي والاستشارة القانونية بأحدث التقنيات السحابية.", icon: "Sparkles" },
-          { title: "التميز في الخدمة", description: "تجربة مستخدم استثنائية توفر الوقت والجهد وتضمن سرعة الاستجابة.", icon: "Award" },
-          { title: "المسؤولية المهنية", description: "المساهمة الفاعلة في رفع الوعي القانوني ودعم بيئة الاستثمار.", icon: "Heart" },
-        ],
-      },
-      en: {
-        badge: "Our Vision",
-        title: "Building the Most Trusted Digital Legal Ecosystem",
-        statement: "To be the premier digital legal brokerage and legal-tech hub across the Middle East.",
-        footer_quote: "Empowering justice and seamless legal accessibility for every individual and enterprise.",
-        pillars: [
-          { title: "Digital Leadership", description: "Automating legal advisory journeys through cutting-edge cloud tech.", icon: "Sparkles" },
-          { title: "Service Excellence", description: "Unrivaled user experience minimizing turnaround time.", icon: "Award" },
-          { title: "Professional Duty", description: "Promoting legal literacy and fostering a thriving investment climate.", icon: "Heart" },
-        ],
-      },
-    },
-  },
-
-  // 8. Contact Channels & Complaint Form
-  {
-    id: "contact_channels_info",
-    name_ar: "هيدر صفحة التواصل (مع الربط التلقائي ببيانات التواصل)",
-    name_en: "Contact Page Header & Dynamic Integration",
-    description_ar: "هيدر وبانر صفحة التواصل مع نصوص الترحيب، صورة الخلفية/السلايدر، والربط التلقائي ببيانات التواصل الرسمية (الهاتف، البريد، العنوان، ونموذج الشكاوى)",
-    description_en: "Contact page banner header with auto-integration to official Contact Settings (phone, email, address, complaints)",
-    category: "support",
-    icon: "Phone",
-    shape_tags: ["badge", "title", "description", "global_slider", "contact_settings_api", "complaint_form"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text", default_value: "تواصل معنا" },
-      { key: "title", label_ar: "عنوان صفحة التواصل", label_en: "Page Title", type: "text", required: true },
-      { key: "description", label_ar: "الوصف التمهيدي", label_en: "Subtitle Description", type: "textarea" },
-      { key: "complaint_title", label_ar: "عنوان نموذج الشكاوى والمقترحات", label_en: "Complaint Form Title", type: "text", default_value: "تقديم شكوى أو مقترح" },
-      { key: "complaint_subtitle", label_ar: "وصف نموذج الشكاوى", label_en: "Complaint Subtitle", type: "textarea" },
-    ],
-    default_content: {
-      ar: {
-        badge: "تواصل معنا",
-        title: "نحن هنا لمساعدتك والإجابة عن استفساراتك",
-        description: "فريق الدعم الفني وخدمة العملاء جاهز للرد على استفساراتك على مدار الساعة.",
-        complaint_title: "تقديم شكوى أو مقترح لمدير الجودة",
-        complaint_subtitle: "في حال واجهتك أي مشكلة يُرجى إرسال تفاصيل الشكوى مباشرة لمدير الجودة وسنعاود الاتصال بك.",
-      },
-      en: {
-        badge: "Contact Us",
-        title: "We Are Here to Assist Your Inquiries",
-        description: "Our legal support and customer success team is available 24/7.",
-        complaint_title: "Submit a Complaint or Suggestion",
-        complaint_subtitle: "If you encounter any issues, submit your concerns directly to Quality Management.",
-      },
-    },
-  },
-
-  // 9. FAQ Page Header & Dynamic Integration
-  {
-    id: "faq_accordion_categorized",
-    name_ar: "هيدر الأسئلة الشائعة (مع الربط التلقائي ببنك الأسئلة)",
-    name_en: "FAQ Page Header & Dynamic Questions Integration",
-    description_ar: "هيدر وبانر صفحة الأسئلة الشائعة مع نصوص العنوان، صورة الخلفية، ومصدر السلايدر، حيث يجلب الباك إند الأسئلة تلقائياً من بنك الأسئلة (/questions)",
-    description_en: "FAQ page banner header with auto-integration to dynamic backend Questions & Inquiries repository",
-    category: "support",
-    icon: "HelpCircle",
-    shape_tags: ["badge", "title", "description", "global_slider", "questions_api", "search_bar"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text", default_value: "الأسئلة الشائعة" },
-      { key: "title", label_ar: "عنوان صفحة الأسئلة", label_en: "Section Title", type: "text", required: true },
-      { key: "description", label_ar: "الوصف التوضيحي", label_en: "Description", type: "textarea" },
-      { key: "search_placeholder", label_ar: "نص حقل البحث في الأسئلة", label_en: "Search Placeholder", type: "text", default_value: "ابحث في الأسئلة الشائعة..." },
-    ],
-    default_content: {
-      ar: {
-        badge: "الأسئلة الشائعة",
-        title: "الإجابات على أكثر الأسئلة تكراراً",
-        description: "دليل شامل للإجابة على تساؤلات العملاء والمحامين حول تقديم الطلبات والرسوم والوساطة.",
-        search_placeholder: "ابحث في الأسئلة الشائعة...",
-      },
-      en: {
-        badge: "FAQs",
-        title: "Frequently Asked Questions",
-        description: "Comprehensive guide answering common questions about case requests, fees, and lawyer licensing.",
-        search_placeholder: "Search frequently asked questions...",
-      },
-    },
-  },
-
-  // 10. Blog Page Header & Dynamic Integration
-  {
-    id: "blog_page_header",
-    name_ar: "هيدر المدونة والمقالات (مع الربط التلقائي بالمقالات)",
-    name_en: "Blog Page Header & Dynamic Articles Integration",
-    description_ar: "هيدر وبانر صفحة المدونة القانونية مع نصوص التعريف وشارة المشتركين وصورة الخلفية، حيث يجلب الباك إند المقالات والتصنيفات تلقائياً من نظام المدونة (/blogs)",
-    description_en: "Legal blog page header with auto-integration to dynamic backend Blogs & Categories repository",
-    category: "content_media",
-    icon: "DocumentText",
-    shape_tags: ["badge", "title", "description", "global_slider", "blogs_api", "categories_filter"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text", default_value: "المدونة القانونية" },
-      { key: "title", label_ar: "عنوان صفحة المدونة", label_en: "Blog Title", type: "text", required: true },
-      { key: "description", label_ar: "الوصف التوضيحي للمدونة", label_en: "Description", type: "textarea" },
-      { key: "articles_heading", label_ar: "عنوان قسم المقالات", label_en: "Articles Section Heading", type: "text", default_value: "أحدث المقالات القانونية" },
-      { key: "subscribers_badge", label_ar: "شارة المشتركين", label_en: "Subscribers Badge Text", type: "text", default_value: "للمشتركين فقط" },
-    ],
-    default_content: {
-      ar: {
-        badge: "المدونة القانونية",
-        title: "المقالات والتحليلات القانونية",
-        description: "مقالات واستشارات قانونية متخصصة بقلم نخبة من المحامين والمستشارين المعتمدين.",
-        articles_heading: "أحدث المقالات القانونية",
-        subscribers_badge: "للمشتركين فقط",
-      },
-      en: {
-        badge: "Legal Blog",
-        title: "Legal Insights & Articles",
-        description: "Specialized legal analyses and thought leadership written by verified practitioners.",
-        articles_heading: "Latest Legal Articles",
-        subscribers_badge: "Subscribers Only",
-      },
-    },
-  },
-
-  // 10. Numbered Legal Terms & Clauses
-  {
-    id: "numbered_legal_clauses",
-    name_ar: "البنود والفقرات القانونية المرقمة (الشروط والأحكام)",
-    name_en: "Numbered Legal Articles & Clauses",
-    description_ar: "نصوص الشروط والأحكام، التعريفات، البنود القانونية، إخلاء المسؤولية مقسمة إلى بنود مرقمة وواضحة (مثل صفحة الشروط)",
-    description_en: "Structured numbered legal articles, policy clauses, disclaimers, and terms definitions",
-    category: "legal",
-    icon: "FileText",
-    shape_tags: ["badge", "title", "intro_heading", "intro_content", "clauses_repeater", "articles"],
-    is_active: true,
-    fields: [
-      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
-      { key: "title", label_ar: "عنوان الوثيقة القانونية", label_en: "Document Title", type: "text", required: true },
-      { key: "intro_title", label_ar: "عنوان المقدمة", label_en: "Intro Heading", type: "text" },
-      { key: "intro_content", label_ar: "نص المقدمة التمهيدي", label_en: "Intro Text", type: "textarea" },
-      {
-        key: "sections",
-        label_ar: "البنود والمواد القانونية",
-        label_en: "Legal Clauses",
-        type: "repeater",
-        item_label_ar: "مادة / بند",
-        item_label_en: "Clause",
-        item_fields: [
-          { key: "title", label_ar: "عنوان المادة أو البند", label_en: "Clause Title", type: "text", required: true },
-          { key: "lead", label_ar: "نص تمهيدي للبند", label_en: "Lead / Summary", type: "text" },
-          { key: "content", label_ar: "نص المادة الكامل والتفصيلي", label_en: "Clause Body", type: "textarea", required: true },
-        ],
-      },
-    ],
-    default_content: {
-      ar: {
-        badge: "وثيقة الشروط",
-        title: "الشروط والأحكام والاتفاقية القانونية",
-        intro_title: "مقدمة عامة وأهلية الاستخدام",
-        intro_content: "تنظم هذه الاتفاقية العلاقة القانونية بين منصة الوسيط ومستخدميها من عملاء ومحامين معتمدين.",
-        sections: [
-          { title: "المادة الأولى: التعريفات والمصطلحات", lead: "المفاهيم المعتمدة في هذه الاتفاقية", content: "تُقصد بكلمة (المنصة) منصة الوسيط للوساطة القانونية، ويُقصد بـ (العميل) كل شخص طبيعي أو اعتباري يطلب خدمة قانونية." },
-          { title: "المادة الثانية: طبيعة الخدمة والوساطة", lead: "دور المنصة كوسيط تقني وإداري", content: "تعمل المنصة كوسيط إلكتروني يربط طالبي الخدمات بالمحامين المرخصين دون التدخل المباشر في الرأي القانوني." },
-          { title: "المادة الثالثة: سرية وأمان البيانات", lead: "التزام كامل بحماية الخصوصية", content: "تلتزم المنصة بتشفير كافة المستندات والمعلومات المتبادلة وعدم إفشائها لأي طرف ثالث خارج نطاق القضية." },
-        ],
-      },
-      en: {
-        badge: "Terms & Conditions",
-        title: "Terms of Service & User Agreement",
-        intro_title: "General Introduction & Eligibility",
-        intro_content: "This agreement governs the contractual relationship between Elwaseet platform, clients, and verified advocates.",
-        sections: [
-          { title: "Article 1: Definitions & Interpretations", lead: "Key legal terms defined", content: "'Platform' refers to Elwaseet Legal Brokerage. 'Client' means any individual or corporate entity requesting counsel." },
-          { title: "Article 2: Nature of Brokerage Service", lead: "Technological intermediary role", content: "The platform functions as a certified digital gateway connecting clients with bar-licensed attorneys." },
-          { title: "Article 3: Confidentiality & Data Protection", lead: "Commitment to client privilege", content: "All client dossiers and communications remain encrypted under high-grade data protection protocols." },
-        ],
-      },
-    },
-  },
-
-  // 11. Main Hero Carousel Header (Linked to Global Slider)
-  {
-    id: "home_hero_header",
-    name_ar: "بانر الهيدر الرئيسي (Hero) المرتبط بالسلايدر العام",
+    id: "hero_header",
+    name_ar: "الهيدر الرئيسي (Hero) المرتبط بالسلايدر العام",
     name_en: "Main Hero Header (Linked to Global Slider)",
-    description_ar: "الهيدر الرئيسي للصفحة الأولى مع نصوص ثلاثية الأسطر، كلمة ملونة مميزة، أزرار توجيه، ومصدر السلايدر العام المدار في Banners CRUD",
-    description_en: "Top home hero header with multi-line title, highlight word, CTA action button, and auto-integrated global slider",
+    description_ar: "الهيدر الرئيسي مع عنوان ثلاثي الأسطر، كلمة مميزة بلون رئيسي، وصف، وزرّي توجيه. الصور تأتي من السلايدر العام",
+    description_en: "Top hero header with three-line title, highlighted word, description, and two CTA buttons. Images come from the global slider",
     category: "hero",
     icon: "Sparkles",
-    shape_tags: ["badge", "title_lines", "highlight_word", "description", "cta_button", "global_slider"],
+    shape_tags: ["badge", "title_lines", "highlight_word", "description", "cta_buttons", "global_slider"],
     is_active: true,
     fields: [
       { key: "badge", label_ar: "الوسم / البادج العلوي", label_en: "Top Badge", type: "text", default_value: "منصة مرخصة وموثوقة" },
@@ -576,9 +56,633 @@ export const INITIAL_BLOCK_TEMPLATES: BlockTemplate[] = [
       },
     },
   },
+
+  // 2 — Inner page header banner (any page except home)
+  {
+    id: "page_header_banner",
+    name_ar: "هيدر وبانر الصفحة الداخلية",
+    name_en: "Inner Page Header Banner",
+    description_ar: "نصوص هيدر الصفحات الداخلية (وسم، عنوان، وصف، زر اختياري) فوق سلايدر الصور العام",
+    description_en: "Inner page header texts (badge, title, description, optional CTA) rendered over the global slider",
+    category: "content_media",
+    icon: "Photo",
+    shape_tags: ["badge", "title", "description", "cta_button", "global_slider"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "عنوان الصفحة", label_en: "Page Title", type: "text", required: true },
+      { key: "description", label_ar: "الوصف التوضيحي", label_en: "Description", type: "textarea" },
+      { key: "cta_text", label_ar: "نص الزر (اختياري)", label_en: "Button Text (optional)", type: "text" },
+      { key: "cta_link", label_ar: "رابط الزر (اختياري)", label_en: "Button Link (optional)", type: "url" },
+    ],
+    default_content: {
+      ar: {
+        badge: "منصة الوسيط",
+        title: "الوساطة القانونية الرقمية",
+        description: "بوابتك الموثوقة للتواصل مع نخبة المحامين المعتمدين في المملكة العربية السعودية.",
+      },
+      en: {
+        badge: "Elwaseet Platform",
+        title: "Digital Legal Brokerage",
+        description: "Your trusted gateway to connect with verified lawyers across Saudi Arabia.",
+      },
+    },
+  },
+
+  // 3 — Title + description + image + icon features
+  {
+    id: "title_desc_image_features",
+    name_ar: "عنوان + وصف + صورة + مميزات بأيقونات",
+    name_en: "Title + Desc + Image + Icon Features",
+    description_ar: "قسم سردي مع صورة جانبية، شارة إحصائية، وقائمة مميزات مزودة بأيقونات (يُستخدم لقصة المنصة وما شابهها)",
+    description_en: "Narrative section with portrait image, stats badge, and icon feature list (used for the story section and similar)",
+    category: "content_media",
+    icon: "BookOpen",
+    shape_tags: ["badge", "title", "description", "image", "stats_badge", "features_repeater", "icons"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم العلوي (Badge)", label_en: "Top Badge", type: "text" },
+      { key: "title", label_ar: "العنوان الرئيسي", label_en: "Main Title", type: "text", required: true },
+      { key: "description", label_ar: "نص الوصف التوضيحي", label_en: "Description", type: "textarea", required: true },
+      { key: "image", label_ar: "الصورة الجانبية", label_en: "Portrait Image", type: "image", default_value: "/images/our_story.webp" },
+      { key: "stats_label", label_ar: "نص شارة الاعتماد / الإحصائية", label_en: "Stats Badge Label", type: "text" },
+      {
+        key: "features",
+        label_ar: "قائمة المميزات ونقاط القوة",
+        label_en: "Features List",
+        type: "repeater",
+        item_label_ar: "ميزة",
+        item_label_en: "Feature",
+        item_fields: [
+          { key: "title", label_ar: "عنوان الميزة", label_en: "Title", type: "text", required: true },
+          { key: "description", label_ar: "شرح الميزة", label_en: "Description", type: "textarea" },
+          { key: "icon", label_ar: "الأيقونة", label_en: "Icon", type: "icon", default_value: "ShieldCheck" },
+        ],
+      },
+    ],
+    default_content: {
+      ar: {
+        badge: "قصتنا ومسيرتنا",
+        title: "رواد في الوساطة والتحول الرقمي القانوني",
+        description: "انطلقت منصة الوسيط للوساطة القانونية برؤية طموحة تهدف إلى تسهيل وصول الأفراد والشركات إلى نخبة المحامين المرخصين في المملكة العربية السعودية، مع ضمان أعلى معايير الشفافية وسرية المعلومات.",
+        image: "/images/our_story.webp",
+        stats_label: "منصة معتمدة وموثوقة",
+        features: [
+          { id: "feat-1", title: "حماية تامة للحقوق", description: "حفظ حقوق العميل والمحامي في حساب وسيط موثوق", icon: "ShieldCheck" },
+          { id: "feat-2", title: "نخبة المحامين المعتمدين", description: "التحقق المباشر من سريان تراخيص المحامين من وزارة العدل", icon: "Award" },
+        ],
+      },
+      en: {
+        badge: "Our Story",
+        title: "Pioneering Digital Legal Brokerage",
+        description: "Elwaseet was established with a bold mission: making quality legal representation accessible and transparent for individuals and enterprises across Saudi Arabia, powered by secure legal-tech.",
+        image: "/images/our_story.webp",
+        stats_label: "Licensed & Verified Platform",
+        features: [
+          { id: "feat-1", title: "Full Escrow Protection", description: "Safeguarded payments until case resolution", icon: "ShieldCheck" },
+          { id: "feat-2", title: "Certified Lawyers", description: "Direct validation of legal bar licenses", icon: "Award" },
+        ],
+      },
+    },
+  },
+
+  // 4 — Title + description + image only
+  {
+    id: "title_desc_image_only",
+    name_ar: "عنوان + وصف + صورة فقط",
+    name_en: "Title + Desc + Image Only",
+    description_ar: "بلوك محتوى بسيط: عنوان، وصف تفصيلي، وصورة واحدة بدون أيقونات أو قوائم",
+    description_en: "Simple content block: heading, body text, and one image — no icons or lists",
+    category: "content_media",
+    icon: "DocumentText",
+    shape_tags: ["badge", "title", "description", "image"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "العنوان الرئيسي", label_en: "Main Title", type: "text", required: true },
+      { key: "description", label_ar: "نص المقال أو المحتوى", label_en: "Body Content", type: "textarea", required: true },
+      { key: "image", label_ar: "رابط الصورة", label_en: "Image URL", type: "image", default_value: "/images/slider1.webp" },
+    ],
+    default_content: {
+      ar: {
+        badge: "عن المنصة",
+        title: "بناء مستقبل العدالة الرقمية",
+        description: "نسعى لتقديم تجربة متكاملة تمكّن كافة أطراف العملية القانونية من إنجاز المعاملات بأعلى درجات السهولة والسرعة.",
+        image: "/images/slider1.webp",
+      },
+      en: {
+        badge: "About Us",
+        title: "Building the Future of Digital Justice",
+        description: "We strive to deliver an all-in-one experience empowering clients and lawyers to collaborate effortlessly.",
+        image: "/images/slider1.webp",
+      },
+    },
+  },
+
+  // 5 — Cards grid with icons and background images
+  {
+    id: "cards_grid_with_icons_images",
+    name_ar: "شبكة بطاقات (كروت) بخلفيات وأيقونات",
+    name_en: "Cards Grid with Icons & Images",
+    description_ar: "شبكة بطاقات تتمدد عند التمرير، كل بطاقة بأيقونة وصورة خلفية وعنوان ووصف (تُستخدم لخدمات المنصة وما شابهها)",
+    description_en: "Expanding cards grid; each card has an icon, background image, title, and hover description (used for services and similar)",
+    category: "cards_grid",
+    icon: "Briefcase",
+    shape_tags: ["cards_repeater", "images", "icons"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "عنوان القسم", label_en: "Section Title", type: "text" },
+      { key: "description", label_ar: "الوصف التمهيدي", label_en: "Intro Description", type: "textarea" },
+      {
+        key: "services",
+        label_ar: "بطاقات الخدمات والكروت",
+        label_en: "Cards List",
+        type: "repeater",
+        item_label_ar: "بطاقة",
+        item_label_en: "Card",
+        item_fields: [
+          { key: "title", label_ar: "عنوان البطاقة", label_en: "Card Title", type: "text", required: true },
+          { key: "description", label_ar: "الوصف التوضيحي (يظهر عند التمرير)", label_en: "Description", type: "textarea" },
+          { key: "icon", label_ar: "أيقونة البطاقة", label_en: "Icon", type: "icon", default_value: "Scale" },
+          { key: "image", label_ar: "صورة خلفية البطاقة", label_en: "Card Background Image", type: "image", default_value: "/images/service1.webp" },
+        ],
+      },
+    ],
+    default_content: {
+      ar: {
+        services: [
+          { id: "serv-1", title: "تقديم طلب قانوني", description: "قدّم طلبك القانوني واستقبل عروض الأسعار من محامين معتمدين خلال ساعات.", icon: "Scale", image: "/images/service1.webp" },
+          { id: "serv-2", title: "الباقات القانونية", description: "تصفح باقات الخدمات القانونية المسعّرة مسبقاً من نخبة المحامين والمكاتب المعتمدة.", icon: "FileText", image: "/images/service2.webp" },
+          { id: "serv-3", title: "محامون معتمدون", description: "تعامل مباشرة مع محامين مرخصين تم التحقق من تراخيصهم في كافة التخصصات.", icon: "ShieldCheck", image: "/images/service3.webp" },
+          { id: "serv-4", title: "استشارات متخصصة", description: "جلسات استشارية قانونية مع نخبة من المستشارين المرخصين لحماية حقوقك ومصالحك.", icon: "Users", image: "/images/slider1.webp" },
+        ],
+      },
+      en: {
+        services: [
+          { id: "serv-1", title: "Submit Legal Request", description: "Post your legal inquiry and receive quotes from certified attorneys within hours.", icon: "Scale", image: "/images/service1.webp" },
+          { id: "serv-2", title: "Fixed Legal Packages", description: "Browse predefined advisory and contract drafting packages at transparent rates.", icon: "FileText", image: "/images/service2.webp" },
+          { id: "serv-3", title: "Certified Lawyers", description: "Engage directly with vetted and licensed practitioners across all legal specialties.", icon: "ShieldCheck", image: "/images/service3.webp" },
+          { id: "serv-4", title: "Specialized Consultations", description: "One-on-one advisory sessions with accredited attorneys to protect your legal interests.", icon: "Users", image: "/images/slider1.webp" },
+        ],
+      },
+    },
+  },
+
+  // 6 — Numbered workflow steps
+  {
+    id: "steps_workflow_cards",
+    name_ar: "مسار خطوات مرقمة بأيقونات وشروحات",
+    name_en: "Numbered Workflow Steps with Icons",
+    description_ar: "عرض متسلسل لخطوات العمل مرقمة (01، 02، 03) مع أيقونة وعنوان وشرح لكل خطوة",
+    description_en: "Sequenced workflow steps with step numbers, icons, titles, and descriptions",
+    category: "workflow",
+    icon: "Clock",
+    shape_tags: ["badge", "title", "description", "steps_repeater", "step_numbers", "icons"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "عنوان القسم", label_en: "Section Title", type: "text", required: true },
+      { key: "description", label_ar: "الوصف التمهيدي", label_en: "Intro Description", type: "textarea" },
+      {
+        key: "steps",
+        label_ar: "خطوات مسار العمل",
+        label_en: "Workflow Steps",
+        type: "repeater",
+        item_label_ar: "خطوة",
+        item_label_en: "Step",
+        item_fields: [
+          { key: "step_number", label_ar: "رقم الخطوة (مثال: 01)", label_en: "Step Number (e.g. 01)", type: "text", default_value: "01", required: true },
+          { key: "title", label_ar: "عنوان الخطوة", label_en: "Step Title", type: "text", required: true },
+          { key: "description", label_ar: "شرح الخطوة", label_en: "Step Description", type: "textarea" },
+          { key: "icon", label_ar: "أيقونة الخطوة", label_en: "Icon", type: "icon", default_value: "PenLine" },
+        ],
+      },
+    ],
+    default_content: {
+      ar: {
+        badge: "خطوات العمل",
+        title: "كيف تعمل منصة الوسيط للوساطة القانونية",
+        description: "رحلة سهلة وسلسة تبدأ بتقديم طلبك وتنتهي بالحصول على أفضل تمثيل واستشارة قانونية.",
+        steps: [
+          { id: "step-1", step_number: "01", title: "سجل حسابك وحدد نوع طلبك", description: "أنشئ حسابك في دقائق وحدد تفاصيل القضية أو الاستشارة القانونية المطلوبة.", icon: "Users" },
+          { id: "step-2", step_number: "02", title: "استقبل عروض أسعار المحامين", description: "يتنافس نخبة من المحامين المرخصين بتقديم عروض أسعار وخطط عمل مخصصة.", icon: "FileText" },
+          { id: "step-3", step_number: "03", title: "اختر المحامي المناسب", description: "راجع السير الذاتية والتقييمات، واختر العرض المتوافق مع ميزانيتك.", icon: "Award" },
+          { id: "step-4", step_number: "04", title: "ابدأ العمل والتواصل الآمن", description: "باشر متابعة قضيتك وتواصل مباشرة مع محاميك بكل سرية واحترافية.", icon: "MessageSquare" },
+        ],
+      },
+      en: {
+        badge: "Workflow",
+        title: "How Elwaseet Legal Brokerage Works",
+        description: "A seamless experience from initial inquiry to hiring your dedicated attorney.",
+        steps: [
+          { id: "step-1", step_number: "01", title: "Create Account & Submit Request", description: "Sign up in minutes and describe your legal case or required consultation.", icon: "Users" },
+          { id: "step-2", step_number: "02", title: "Receive Tailored Proposals", description: "Licensed lawyers review your request and submit competitive cost proposals.", icon: "FileText" },
+          { id: "step-3", step_number: "03", title: "Select the Best Advocate", description: "Compare experience, ratings, and budgets to choose the optimal legal partner.", icon: "Award" },
+          { id: "step-4", step_number: "04", title: "Start Secure Collaboration", description: "Track milestones and communicate in encrypted workspace channels.", icon: "MessageSquare" },
+        ],
+      },
+    },
+  },
+
+  // 7 — Dual action CTA cards
+  {
+    id: "dual_action_cta_cards",
+    name_ar: "بطاقتا توجيه ثنائية (مسار العميل ومسار المحامي)",
+    name_en: "Dual Action Choice Cards (Client / Lawyer)",
+    description_ar: "بطاقتان كبيرتان لاختيار المسار المناسب، كل بطاقة بعنوان ووصف وأيقونة وزر وملاحظة سفلية",
+    description_en: "Two prominent choice cards, each with title, description, icon, CTA button, and a bottom note",
+    category: "workflow",
+    icon: "UserGroup",
+    shape_tags: ["badge", "title", "subtitle", "dual_cards", "cta_buttons", "icons"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "العنوان الرئيسي", label_en: "Main Title", type: "text", required: true },
+      { key: "subtitle", label_ar: "العنوان الفرعي", label_en: "Subtitle", type: "text" },
+      { key: "client_option.title", label_ar: "بطاقة العميل: العنوان", label_en: "Client Card: Title", type: "text", required: true },
+      { key: "client_option.description", label_ar: "بطاقة العميل: الوصف", label_en: "Client Card: Description", type: "textarea" },
+      { key: "client_option.icon", label_ar: "بطاقة العميل: الأيقونة", label_en: "Client Card: Icon", type: "icon", default_value: "PenLine" },
+      { key: "client_option.cta_text", label_ar: "بطاقة العميل: نص الزر", label_en: "Client Card: Button Text", type: "text" },
+      { key: "client_option.cta_link", label_ar: "بطاقة العميل: رابط الزر", label_en: "Client Card: Button Link", type: "url" },
+      { key: "client_option.note_text", label_ar: "بطاقة العميل: الملاحظة السفلية", label_en: "Client Card: Bottom Note", type: "text" },
+      { key: "lawyer_option.title", label_ar: "بطاقة المحامي: العنوان", label_en: "Lawyer Card: Title", type: "text", required: true },
+      { key: "lawyer_option.description", label_ar: "بطاقة المحامي: الوصف", label_en: "Lawyer Card: Description", type: "textarea" },
+      { key: "lawyer_option.icon", label_ar: "بطاقة المحامي: الأيقونة", label_en: "Lawyer Card: Icon", type: "icon", default_value: "Users" },
+      { key: "lawyer_option.cta_text", label_ar: "بطاقة المحامي: نص الزر", label_en: "Lawyer Card: Button Text", type: "text" },
+      { key: "lawyer_option.cta_link", label_ar: "بطاقة المحامي: رابط الزر", label_en: "Lawyer Card: Button Link", type: "url" },
+      { key: "lawyer_option.note_text", label_ar: "بطاقة المحامي: الملاحظة السفلية", label_en: "Lawyer Card: Bottom Note", type: "text" },
+    ],
+    default_content: {
+      ar: {
+        badge: "ابدأ الآن",
+        title: "اختر المسار المناسب لك",
+        subtitle: "سواء كنت تبحث عن تمثيل قانوني أو كنت محامياً ترغب في توسيع قاعدة عملائك",
+        client_option: {
+          title: "تقديم طلب قانوني (للعملاء)",
+          description: "اطرح استشارتك أو قضيتك القانونية لتصل إلى مئات المحامين المعتمدين واستقبل عروضهم في وقت قياسي.",
+          cta_text: "تقديم طلب الآن",
+          cta_link: "/auth/sign-up/client/step-1",
+          icon: "PenLine",
+          note_text: "+500 محامٍ معتمد بانتظار خدمتك",
+        },
+        lawyer_option: {
+          title: "الانضمام كمحامٍ أو مكتب محاماة",
+          description: "انضم إلى شبكة المحامين الرائدة، واطلع على آلاف الطلبات القانونية يومياً وقدم عروضك مباشرة للعملاء.",
+          cta_text: "التسجيل كمحامٍ",
+          cta_link: "/auth/sign-up/lawyer/step-1",
+          icon: "Users",
+          note_text: "فرص عمل وتعاقدات يومية جديدة",
+        },
+      },
+      en: {
+        badge: "Get Started",
+        title: "Choose Your Path",
+        subtitle: "Whether you need professional legal representation or you are a certified lawyer seeking clients",
+        client_option: {
+          title: "Submit Legal Request (Clients)",
+          description: "Post your case to reach hundreds of licensed attorneys and receive competitive proposals rapidly.",
+          cta_text: "Post Request Now",
+          cta_link: "/auth/sign-up/client/step-1",
+          icon: "PenLine",
+          note_text: "500+ Verified lawyers ready to assist",
+        },
+        lawyer_option: {
+          title: "Join as Lawyer or Law Firm",
+          description: "Join the leading network, access daily legal requests across the Kingdom and grow your practice.",
+          cta_text: "Register as Lawyer",
+          cta_link: "/auth/sign-up/lawyer/step-1",
+          icon: "Users",
+          note_text: "New daily opportunities and retainers",
+        },
+      },
+    },
+  },
+
+  // 8 — Values / pillars cards with tags
+  {
+    id: "values_pillars_cards",
+    name_ar: "بطاقات القيم والمبادئ مع وسوم وأيقونات",
+    name_en: "Core Values Cards with Tags & Icons",
+    description_ar: "شبكة بطاقات للقيم أو المبادئ، كل بطاقة بأيقونة وعنوان وشرح ووسم فرعي",
+    description_en: "Grid of values or principles; each card has an icon, title, description, and a small tag",
+    category: "cards_grid",
+    icon: "ShieldCheck",
+    shape_tags: ["badge", "title", "subtitle", "values_repeater", "tags", "icons"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "عنوان القسم", label_en: "Title", type: "text", required: true },
+      { key: "subtitle", label_ar: "العنوان الفرعي", label_en: "Subtitle", type: "text" },
+      {
+        key: "values",
+        label_ar: "قائمة القيم والمبادئ",
+        label_en: "Values List",
+        type: "repeater",
+        item_label_ar: "قيمة",
+        item_label_en: "Value",
+        item_fields: [
+          { key: "title", label_ar: "اسم القيمة", label_en: "Title", type: "text", required: true },
+          { key: "description", label_ar: "شرح القيمة", label_en: "Description", type: "textarea" },
+          { key: "tag", label_ar: "الوسم الفرعي (Tag)", label_en: "Tag Badge", type: "text" },
+          { key: "icon", label_ar: "رمز الأيقونة", label_en: "Icon", type: "icon", default_value: "Scale" },
+        ],
+      },
+    ],
+    default_content: {
+      ar: {
+        badge: "قيمنا",
+        title: "القيم والمبادئ التي توجه مسيرتنا",
+        subtitle: "نلتزم بركائز مهنية وأخلاقية صارمة تضمن حماية حقوق ومصالح جميع أطراف المنظومة القانونية.",
+        values: [
+          { id: "val-1", title: "النزاهة والشفافية", description: "الالتزام بأعلى معايير الصدق والوضوح في التعاملات وتسعير الخدمات والوساطة.", tag: "نزاهة تامة", icon: "Scale" },
+          { id: "val-2", title: "الجودة والاحترافية", description: "استقطاب المحامين المعتمدين لتقديم استشارات قانونية بأعلى درجات الإتقان.", tag: "معايير عليا", icon: "Award" },
+          { id: "val-3", title: "السرية التامة", description: "تشفير وحماية كافة وثائق وبيانات القضايا وفق أعلى المعايير الأمنية المعتمدة.", tag: "تشفير كامل", icon: "Lock" },
+          { id: "val-4", title: "الابتكار الرقمي", description: "تطوير حلول تقنية تسهل إجراءات الوساطة وإدارة الطلبات القانونية بذكاء وسرعة.", tag: "تقنية حديثة", icon: "Sparkles" },
+        ],
+      },
+      en: {
+        badge: "Our Values",
+        title: "Core Principles Guiding Our Journey",
+        subtitle: "We abide by rigorous professional and ethical standards safeguarding client rights and legal integrity.",
+        values: [
+          { id: "val-1", title: "Integrity & Transparency", description: "Unwavering commitment to honesty, clear fee structures, and unbiased brokerage.", tag: "Integrity", icon: "Scale" },
+          { id: "val-2", title: "Quality & Excellence", description: "Curating verified licensed advocates to deliver exemplary legal counsel.", tag: "Excellence", icon: "Award" },
+          { id: "val-3", title: "Absolute Confidentiality", description: "Enterprise-grade encryption protecting sensitive client dossiers.", tag: "Security", icon: "Lock" },
+          { id: "val-4", title: "Digital Innovation", description: "Continuously advancing legal-tech workflows for effortless dispute management.", tag: "Innovation", icon: "Sparkles" },
+        ],
+      },
+    },
+  },
+
+  // 9 — Statement + quote + pillars (serves Vision, Mission, and any similar statement section)
+  {
+    id: "statement_pillars_cards",
+    name_ar: "بيان (رؤية / رسالة) + اقتباس + بطاقات ركائز",
+    name_en: "Statement (Vision / Mission) + Quote + Pillar Cards",
+    description_ar: "قسم بيان نصي مع اقتباس مميز وبطاقات ركائز بأيقونات ووسوم. يُستخدم للرؤية والرسالة وأي قسم بيان مشابه — أضفه مرتين بمحتوى مختلف",
+    description_en: "Statement section with a highlighted quote and pillar cards with icons and tags. Use for Vision, Mission, or any similar statement — add it twice with different content",
+    category: "quotes",
+    icon: "Sparkles",
+    shape_tags: ["badge", "title", "statement", "quote_footer", "pillars_repeater", "tags", "icons"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "العنوان", label_en: "Title", type: "text", required: true },
+      { key: "statement", label_ar: "نص البيان الأساسي", label_en: "Main Statement", type: "textarea", required: true },
+      { key: "footer_quote", label_ar: "الاقتباس المميز أسفل البيان (اختياري)", label_en: "Footer Quote (optional)", type: "text" },
+      {
+        key: "pillars",
+        label_ar: "بطاقات الركائز أو الأهداف",
+        label_en: "Pillar Cards",
+        type: "repeater",
+        item_label_ar: "ركيزة",
+        item_label_en: "Pillar",
+        item_fields: [
+          { key: "title", label_ar: "عنوان الركيزة", label_en: "Title", type: "text", required: true },
+          { key: "description", label_ar: "شرح الركيزة", label_en: "Description", type: "textarea" },
+          { key: "tag", label_ar: "الوسم السفلي (Tag) — اختياري", label_en: "Bottom Tag (optional)", type: "text" },
+          { key: "icon", label_ar: "الأيقونة", label_en: "Icon", type: "icon", default_value: "Sparkles" },
+        ],
+      },
+    ],
+    default_content: {
+      ar: {
+        badge: "رؤيتنا",
+        title: "بناء المنظومة القانونية الرقمية الأكثر موثوقية",
+        statement: "أن نكون المنصة الرقمية الرائدة والمفضلة في الشرق الأوسط للوساطة القانونية وحلول التقنية العدلية.",
+        footer_quote: "تمكين العدالة وسهولة الوصول للخدمات القانونية لكل فرد ومؤسسة.",
+        pillars: [
+          { id: "pil-1", title: "الريادة الرقمية", description: "أتمتة وتسهيل رحلة التقاضي والاستشارة القانونية بأحدث التقنيات السحابية.", tag: "تقنية متقدمة", icon: "Sparkles" },
+          { id: "pil-2", title: "التميز في الخدمة", description: "تجربة مستخدم استثنائية توفر الوقت والجهد وتضمن سرعة الاستجابة لطلبات العملاء.", tag: "جودة عالية", icon: "Award" },
+          { id: "pil-3", title: "المسؤولية المهنية", description: "المساهمة الفاعلة في رفع الوعي القانوني ودعم بيئة ريادة الأعمال والاستثمار.", tag: "أثر مجتمعي", icon: "Heart" },
+        ],
+      },
+      en: {
+        badge: "Our Vision",
+        title: "Building the Most Trusted Digital Legal Ecosystem",
+        statement: "To be the premier digital legal brokerage and legal-tech hub across the Middle East.",
+        footer_quote: "Empowering justice and seamless legal accessibility for every individual and enterprise.",
+        pillars: [
+          { id: "pil-1", title: "Digital Leadership", description: "Automating legal advisory journeys through cutting-edge cloud infrastructure.", tag: "Advanced Tech", icon: "Sparkles" },
+          { id: "pil-2", title: "Service Excellence", description: "Unrivaled user experience minimizing turnaround time and optimizing client matches.", tag: "High Quality", icon: "Award" },
+          { id: "pil-3", title: "Professional Responsibility", description: "Promoting legal literacy and fostering a thriving investment climate.", tag: "Social Impact", icon: "Heart" },
+        ],
+      },
+    },
+  },
+
+  // 10 — Numbered legal clauses (terms, privacy, any policy document)
+  {
+    id: "numbered_legal_clauses",
+    name_ar: "البنود والفقرات القانونية المرقمة",
+    name_en: "Numbered Legal Articles & Clauses",
+    description_ar: "وثيقة قانونية مقسمة إلى بنود مرقمة (شروط وأحكام، سياسة خصوصية، إخلاء مسؤولية) مع مقدمة تمهيدية",
+    description_en: "Legal document split into numbered clauses (terms, privacy policy, disclaimers) with an intro section",
+    category: "legal",
+    icon: "FileText",
+    shape_tags: ["badge", "title", "intro_heading", "intro_content", "clauses_repeater"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
+      { key: "title", label_ar: "عنوان الوثيقة القانونية", label_en: "Document Title", type: "text", required: true },
+      { key: "intro_title", label_ar: "عنوان المقدمة", label_en: "Intro Heading", type: "text" },
+      { key: "intro_content", label_ar: "نص المقدمة التمهيدي", label_en: "Intro Text", type: "textarea" },
+      {
+        key: "sections",
+        label_ar: "البنود والمواد القانونية",
+        label_en: "Legal Clauses",
+        type: "repeater",
+        item_label_ar: "مادة / بند",
+        item_label_en: "Clause",
+        item_fields: [
+          { key: "title", label_ar: "عنوان المادة أو البند", label_en: "Clause Title", type: "text", required: true },
+          { key: "lead", label_ar: "نص تمهيدي للبند", label_en: "Lead / Summary", type: "text" },
+          { key: "content", label_ar: "نص المادة الكامل والتفصيلي", label_en: "Clause Body", type: "textarea", required: true },
+        ],
+      },
+    ],
+    default_content: {
+      ar: {
+        badge: "الشروط والأحكام",
+        title: "الشروط والأحكام وسياسة الاستخدام",
+        intro_title: "مقدمة وتعريفات أساسية",
+        intro_content: "تحكم هذه الشروط والأحكام استخدام منصة الوسيط للوساطة القانونية. يُرجى قراءة هذه الوثيقة بعناية قبل إنشاء حسابك أو استخدام أي من خدماتنا.",
+        sections: [
+          { id: "sec-1", title: "1. التعريفات والمصطلحات", lead: "يقصد بالكلمات والعبارات التالية المعاني الموضحة أمام كل منها:", content: "المنصة: منصة الوسيط للوساطة القانونية. المستخدم: أي شخص طبيعي أو اعتباري ينشئ حساباً. المحامي: المحامي المرخص نظاماً والمقيد بالمنصة." },
+          { id: "sec-2", title: "2. المسؤولية القانونية وطبيعة الوساطة", lead: "تعمل المنصة كوسيط تقني يربط بين العميل والمحامي المستقل.", content: "يتحمل المحامي المسؤولية المهنية المباشرة عن الاستشارات والمذكرات المقدمة، وتقتصر مسؤولية المنصة على تنظيم قنوات الوساطة وسداد الأتعاب المحمية." },
+          { id: "sec-3", title: "3. سرية البيانات وحماية الخصوصية", lead: "التزام كامل بحماية الخصوصية", content: "تلتزم المنصة بتشفير كافة بيانات القضايا والملفات المرفوعة، ولا يحق لأي طرف الاطلاع عليها سوى المحامي المختار لإنجاز العمل." },
+        ],
+      },
+      en: {
+        badge: "Terms of Service",
+        title: "Terms, Conditions & Usage Policy",
+        intro_title: "Introduction & Key Definitions",
+        intro_content: "These terms govern the use of the Elwaseet Legal Brokerage platform. Please read them thoroughly prior to registering or ordering services.",
+        sections: [
+          { id: "sec-1", title: "1. Definitions & Interpretation", lead: "The following terms shall have their designated meanings:", content: "Platform: Elwaseet Legal Brokerage. User: Any registered natural person or legal entity. Lawyer: Licensed attorney registered on the portal." },
+          { id: "sec-2", title: "2. Brokerage Role & Liability", lead: "The platform operates as a digital intermediary connecting clients with independent attorneys.", content: "The attorney bears full professional liability for counsel delivered, while the platform guarantees secure escrow payments." },
+          { id: "sec-3", title: "3. Confidentiality & Data Protection", lead: "Commitment to client privilege", content: "All uploaded dossiers and client messages are strictly encrypted and only accessible by the hired legal counsel." },
+        ],
+      },
+    },
+  },
+
+  // 11 — Contact page header (backend injects the actual contact channels)
+  {
+    id: "contact_channels_info",
+    name_ar: "هيدر صفحة التواصل (مع الربط ببيانات التواصل)",
+    name_en: "Contact Page Header & Dynamic Integration",
+    description_ar: "نصوص هيدر صفحة التواصل ونموذج الشكاوى. الهاتف والبريد والعنوان تأتي تلقائياً من إعدادات التواصل ولا تُحرر هنا",
+    description_en: "Contact page header texts and complaint form labels. Phone, email, and address are injected from Contact Settings and are not edited here",
+    category: "support",
+    icon: "Phone",
+    shape_tags: ["badge", "title", "description", "global_slider", "contact_settings_api", "complaint_form"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text", default_value: "تواصل معنا" },
+      { key: "title", label_ar: "عنوان صفحة التواصل", label_en: "Page Title", type: "text", required: true },
+      { key: "description", label_ar: "الوصف التمهيدي", label_en: "Subtitle Description", type: "textarea" },
+      { key: "complaint_title", label_ar: "عنوان نموذج الشكاوى والمقترحات", label_en: "Complaint Form Title", type: "text" },
+      { key: "complaint_subtitle", label_ar: "وصف نموذج الشكاوى", label_en: "Complaint Subtitle", type: "textarea" },
+    ],
+    default_content: {
+      ar: {
+        badge: "تواصل معنا",
+        title: "نحن هنا لمساعدتك والإجابة على استفساراتك",
+        description: "يسعد فريق الدعم بالرد على أسئلتكم ومساعدتكم في أي استفسار يخص الطلبات القانونية أو الانضمام للمنصة.",
+        data_source: "contact_settings",
+        complaint_title: "تقديم شكوى أو مقترح",
+        complaint_subtitle: "في حال واجهتك أي مشكلة أو كان لديك مقترح لتحسين خدماتنا، يُرجى إرسال تفاصيل الشكوى مباشرة لمدير الجودة.",
+      },
+      en: {
+        badge: "Contact Us",
+        title: "We Are Here to Assist & Answer Inquiries",
+        description: "Our dedicated support team is available to assist with case requests, lawyer registration, or any questions.",
+        data_source: "contact_settings",
+        complaint_title: "File a Complaint or Suggestion",
+        complaint_subtitle: "If you encounter any difficulty or have feedback, submit your report directly to our quality assurance desk.",
+      },
+    },
+  },
+
+  // 12 — FAQ page header (backend injects the questions)
+  {
+    id: "faq_accordion_categorized",
+    name_ar: "هيدر الأسئلة الشائعة (مع الربط ببنك الأسئلة)",
+    name_en: "FAQ Page Header & Dynamic Questions Integration",
+    description_ar: "نصوص هيدر صفحة الأسئلة الشائعة وحقل البحث. الأسئلة والأجوبة تأتي تلقائياً من بنك الأسئلة ولا تُحرر هنا",
+    description_en: "FAQ page header texts and search field. Questions and answers are injected from the Questions repository and are not edited here",
+    category: "support",
+    icon: "HelpCircle",
+    shape_tags: ["badge", "title", "description", "global_slider", "questions_api", "search_bar"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text", default_value: "الأسئلة الشائعة" },
+      { key: "title", label_ar: "عنوان صفحة الأسئلة", label_en: "Section Title", type: "text", required: true },
+      { key: "description", label_ar: "الوصف التوضيحي", label_en: "Description", type: "textarea" },
+      { key: "search_placeholder", label_ar: "نص حقل البحث في الأسئلة", label_en: "Search Placeholder", type: "text" },
+    ],
+    default_content: {
+      ar: {
+        badge: "الأسئلة الشائعة",
+        title: "الإجابات على أكثر الأسئلة تكراراً",
+        description: "دليل شامل للإجابة على جميع تساؤلات العملاء والمحامين حول تقديم الطلبات والرسوم وضمان الأتعاب.",
+        data_source: "questions_api",
+        search_placeholder: "ابحث في الأسئلة الشائعة...",
+      },
+      en: {
+        badge: "FAQ",
+        title: "Answers to Frequently Asked Questions",
+        description: "Everything you need to know about publishing legal inquiries, lawyer vetting, and protected escrow fees.",
+        data_source: "questions_api",
+        search_placeholder: "Search frequently asked questions...",
+      },
+    },
+  },
+
+  // 13 — Blog page header (backend injects the articles)
+  {
+    id: "blog_page_header",
+    name_ar: "هيدر المدونة والمقالات (مع الربط بالمقالات)",
+    name_en: "Blog Page Header & Dynamic Articles Integration",
+    description_ar: "نصوص هيدر صفحة المدونة وشارة المشتركين. المقالات والتصنيفات تأتي تلقائياً من نظام المدونة ولا تُحرر هنا",
+    description_en: "Blog page header texts and subscribers badge. Articles and categories are injected from the Blogs system and are not edited here",
+    category: "content_media",
+    icon: "DocumentText",
+    shape_tags: ["badge", "title", "description", "global_slider", "blogs_api", "categories_filter"],
+    is_active: true,
+    fields: [
+      { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text", default_value: "المدونة القانونية" },
+      { key: "title", label_ar: "عنوان صفحة المدونة", label_en: "Blog Title", type: "text", required: true },
+      { key: "description", label_ar: "الوصف التوضيحي للمدونة", label_en: "Description", type: "textarea" },
+      { key: "articles_heading", label_ar: "عنوان قسم المقالات", label_en: "Articles Section Heading", type: "text" },
+      { key: "subscribers_badge", label_ar: "شارة المشتركين", label_en: "Subscribers Badge Text", type: "text" },
+    ],
+    default_content: {
+      ar: {
+        badge: "المدونة القانونية",
+        title: "المقالات والتحليلات القانونية",
+        description: "مقالات واستشارات قانونية متخصصة بقلم نخبة من المحامين والمستشارين المعتمدين.",
+        data_source: "blogs_api",
+        articles_heading: "أحدث المقالات القانونية",
+        subscribers_badge: "للمشتركين فقط",
+      },
+      en: {
+        badge: "Legal Blog",
+        title: "Legal Insights & Articles",
+        description: "Specialized legal analyses and thought leadership written by verified practitioners.",
+        data_source: "blogs_api",
+        articles_heading: "Latest Legal Articles",
+        subscribers_badge: "Subscribers Only",
+      },
+    },
+  },
 ];
 
-const STORAGE_KEY = "elwaseet_block_templates_storage_v7";
+// ============================================================================
+// Legacy type migration.
+//
+// These names were duplicates of the shapes above. They are kept only so that
+// pages saved before the merge keep working. Never emit these names in new code.
+// ============================================================================
+
+export const LEGACY_BLOCK_TYPE_MAP: Record<string, string> = {
+  home_header: "hero_header",
+  home_hero_header: "hero_header",
+  hero_header_slider: "hero_header",
+  general_page_header: "page_header_banner",
+  about_our_story: "title_desc_image_features",
+  home_services: "cards_grid_with_icons_images",
+  how_to_work: "steps_workflow_cards",
+  how_to_get_service: "dual_action_cta_cards",
+  about_values: "values_pillars_cards",
+  about_vision: "statement_pillars_cards",
+  about_mission: "statement_pillars_cards",
+  vision_statement_pillars: "statement_pillars_cards",
+  mission_objectives_tags: "statement_pillars_cards",
+  vision_mission_statement_pillars: "statement_pillars_cards",
+  about_terms: "numbered_legal_clauses",
+  legal_terms_clauses: "numbered_legal_clauses",
+  contact_page: "contact_channels_info",
+  faq_accordion: "faq_accordion_categorized",
+  faq_accordion_items: "faq_accordion_categorized",
+  blog_page: "blog_page_header",
+};
+
+export function normalizeBlockType(type: string): string {
+  return LEGACY_BLOCK_TYPE_MAP[type] ?? type;
+}
+
+/** Fresh copy of a block's default bilingual content, keyed by canonical id. */
+export function getBlockDefaultContent(type: string): { ar: any; en: any } {
+  const canonical = normalizeBlockType(type);
+  const tpl = INITIAL_BLOCK_TEMPLATES.find((t) => t.id === canonical);
+  if (!tpl) return { ar: {}, en: {} };
+  return JSON.parse(JSON.stringify(tpl.default_content));
+}
+
+const STORAGE_KEY = "elwaseet_block_templates_storage_v8";
 
 function loadTemplates(): BlockTemplate[] {
   try {
@@ -621,7 +725,7 @@ export const blockTemplatesMockService = {
     return new Promise((resolve) => {
       setTimeout(() => {
         const templates = loadTemplates();
-        const found = templates.find((t) => t.id === id);
+        const found = templates.find((t) => t.id === normalizeBlockType(id));
         resolve(found ? JSON.parse(JSON.stringify(found)) : null);
       }, 150);
     });

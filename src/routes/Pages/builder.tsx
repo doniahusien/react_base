@@ -37,12 +37,12 @@ import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
 import { IconPicker, getIconComponent } from "../../components/Inputs/IconPicker";
 import { ImageInput } from "../../components/Inputs/ImageInput";
+import { pagesService } from "../../services/pagesService";
+import { blockTemplatesService } from "../../services/blockTemplatesService";
 import {
-  pageBuilderMockService,
-  BLOCK_METADATA,
-  createDefaultBlockContent,
-} from "../../mocks/pageBuilderMock";
-import { blockTemplatesMockService } from "../../mocks/blockTemplatesMock";
+  getBlockDefaultContent,
+  normalizeBlockType,
+} from "../../mocks/blockTemplatesMock";
 import { toast } from "../../stores/toast";
 import type {
   Page,
@@ -56,7 +56,8 @@ function getSectionMeta(
   templates: BlockTemplate[],
   lang: "ar" | "en"
 ) {
-  const tpl = templates.find((t) => t.id === type);
+  const canonical = normalizeBlockType(type);
+  const tpl = templates.find((t) => t.id === canonical);
   if (tpl) {
     return {
       name: lang === "ar" ? tpl.name_ar : tpl.name_en,
@@ -64,16 +65,6 @@ function getSectionMeta(
       icon: tpl.icon,
       category: tpl.category,
       shape_tags: tpl.shape_tags,
-    };
-  }
-  const meta = BLOCK_METADATA[type];
-  if (meta) {
-    return {
-      name: lang === "ar" ? meta.name_ar : meta.name_en,
-      description: lang === "ar" ? meta.description_ar : meta.description_en,
-      icon: meta.icon,
-      category: meta.category,
-      shape_tags: [],
     };
   }
   return {
@@ -203,7 +194,7 @@ export default function PageContentManagerWorkspace() {
 
   const fetchBlockTemplates = useCallback(async () => {
     try {
-      const tpls = await blockTemplatesMockService.getTemplates();
+      const tpls = await blockTemplatesService.list();
       setBlockTemplates(tpls);
     } catch (e) {
       console.error("Failed to load block templates", e);
@@ -218,8 +209,8 @@ export default function PageContentManagerWorkspace() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    pageBuilderMockService
-      .getPageById(Number(id))
+    pagesService
+      .get(Number(id))
       .then((data) => {
         if (data) {
           setPage(data);
@@ -267,7 +258,6 @@ export default function PageContentManagerWorkspace() {
     const duplicated: PageSection = {
       ...JSON.parse(JSON.stringify(sec)),
       id: newId,
-      sort_order: sections.length,
     };
     setSections((prev) => [...prev, duplicated]);
     setSelectedSectionId(newId);
@@ -306,12 +296,12 @@ export default function PageContentManagerWorkspace() {
     let defaultContent: any;
 
     if (typeof templateOrType === "string") {
-      blockType = templateOrType;
-      const foundTpl = blockTemplates.find((t) => t.id === templateOrType);
+      blockType = normalizeBlockType(templateOrType);
+      const foundTpl = blockTemplates.find((t) => t.id === blockType);
       if (foundTpl && foundTpl.default_content) {
         defaultContent = JSON.parse(JSON.stringify(foundTpl.default_content));
       } else {
-        defaultContent = createDefaultBlockContent(templateOrType);
+        defaultContent = getBlockDefaultContent(blockType);
       }
     } else {
       blockType = templateOrType.id;
@@ -324,7 +314,6 @@ export default function PageContentManagerWorkspace() {
       id: newId,
       page_id: page.id,
       type: blockType,
-      sort_order: sections.length,
       is_active: true,
       content: defaultContent,
     };
@@ -367,7 +356,7 @@ export default function PageContentManagerWorkspace() {
     if (!page) return;
     setSaving(true);
     try {
-      await pageBuilderMockService.savePageSections(page.id, sections);
+      await pagesService.saveSections(page.id, sections);
       setHasUnsavedChanges(false);
       toast.success(
         currentLang === "ar"
@@ -925,8 +914,7 @@ function BlockSpecificContentForm({
 
   switch (section.type) {
     // 1. Home Header (Hero Carousel)
-    case "home_header":
-    case "hero_header_slider": {
+    case "hero_header": {
       return (
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -999,7 +987,6 @@ function BlockSpecificContentForm({
     }
 
     // 2. Home Services Grid (Expanding Cards)
-    case "home_services":
     case "cards_grid_with_icons_images": {
       const services = content.services || [];
       return (
@@ -1142,7 +1129,6 @@ function BlockSpecificContentForm({
     }
 
     // 3. How To Work (Steps)
-    case "how_to_work":
     case "steps_workflow_cards": {
       const steps = content.steps || [];
       return (
@@ -1291,7 +1277,6 @@ function BlockSpecificContentForm({
     }
 
     // 4. How To Get Service (Dual Option Cards)
-    case "how_to_get_service":
     case "dual_action_cta_cards": {
       const clientOpt = content.client_option || {};
       const lawyerOpt = content.lawyer_option || {};
@@ -1506,7 +1491,6 @@ function BlockSpecificContentForm({
     }
 
     // 5. About Our Story / Title Desc Image Features
-    case "about_our_story":
     case "title_desc_image_features": {
       const features = content.features || [];
       return (
@@ -1703,7 +1687,6 @@ function BlockSpecificContentForm({
     }
 
     // 6. About Values
-    case "about_values":
     case "values_pillars_cards": {
       const values = content.values || [];
       return (
@@ -1829,8 +1812,7 @@ function BlockSpecificContentForm({
     }
 
     // 7. About Vision
-    case "about_vision":
-    case "vision_statement_pillars": {
+    case "statement_pillars_cards": {
       const pillars = content.pillars || [];
       return (
         <div className="space-y-5">
@@ -1841,7 +1823,7 @@ function BlockSpecificContentForm({
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان الرؤية" : "Vision Heading"}
+              label={lang === "ar" ? "العنوان (رؤية / رسالة / بيان)" : "Heading (Vision / Mission / Statement)"}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -1849,7 +1831,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "بيان الرؤية الأساسي (Statement)" : "Vision Statement"}
+              {lang === "ar" ? "نص البيان الأساسي (Statement)" : "Main Statement"}
             </label>
             <textarea
               rows={3}
@@ -1860,7 +1842,7 @@ function BlockSpecificContentForm({
           </div>
 
           <BaseTextInput
-            label={lang === "ar" ? "الاقتباس السفلي (Quoted Footer)" : "Footer Quote"}
+            label={lang === "ar" ? "الاقتباس السفلي (اختياري)" : "Footer Quote (optional)"}
             value={content.footer_quote || ""}
             onChange={(e) => onChange((prev) => ({ ...prev, footer_quote: e.target.value }))}
           />
@@ -1869,7 +1851,7 @@ function BlockSpecificContentForm({
           <div className="space-y-3 pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "ركائز الرؤية الاستراتيجية" : "Vision Pillars"} ({pillars.length})
+                {lang === "ar" ? "بطاقات الركائز أو الأهداف" : "Pillar / Objective Cards"} ({pillars.length})
               </label>
               <button
                 type="button"
@@ -1879,10 +1861,11 @@ function BlockSpecificContentForm({
                     pillars: [
                       ...(prev.pillars || []),
                       {
-                        id: `vis-${Date.now()}`,
+                        id: `pil-${Date.now()}`,
                         title: lang === "ar" ? "ركيزة جديدة" : "New Pillar",
                         description: "",
-                        icon: "RocketLaunchIcon",
+                        tag: "",
+                        icon: "Sparkles",
                       },
                     ],
                   }))
@@ -1916,7 +1899,7 @@ function BlockSpecificContentForm({
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <BaseTextInput
                     label={lang === "ar" ? "عنوان الركيزة" : "Pillar Title"}
                     value={pil.title || ""}
@@ -1924,6 +1907,17 @@ function BlockSpecificContentForm({
                       onChange((prev) => {
                         const arr = [...(prev.pillars || [])];
                         arr[idx] = { ...arr[idx], title: e.target.value };
+                        return { ...prev, pillars: arr };
+                      })
+                    }
+                  />
+                  <BaseTextInput
+                    label={lang === "ar" ? "الوسم السفلي (اختياري)" : "Bottom Tag (optional)"}
+                    value={pil.tag || ""}
+                    onChange={(e) =>
+                      onChange((prev) => {
+                        const arr = [...(prev.pillars || [])];
+                        arr[idx] = { ...arr[idx], tag: e.target.value };
                         return { ...prev, pillars: arr };
                       })
                     }
@@ -1966,153 +1960,8 @@ function BlockSpecificContentForm({
       );
     }
 
-    // 8. About Mission
-    case "about_mission":
-    case "mission_objectives_tags": {
-      const pillars = content.pillars || [];
-      return (
-        <div className="space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Section Badge"}
-              value={content.badge || ""}
-              onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
-          />
-          <BaseTextInput
-              label={lang === "ar" ? "عنوان الرسالة" : "Mission Heading"}
-              value={content.title || ""}
-              onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "بيان الرسالة الرئيسي" : "Mission Statement"}
-            </label>
-            <textarea
-              rows={3}
-              value={content.statement || ""}
-              onChange={(e) => onChange((prev) => ({ ...prev, statement: e.target.value }))}
-              className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
-            />
-          </div>
-
-          {/* Pillars Repeater with Tags */}
-          <div className="space-y-3 pt-3 border-t border-border">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "بطاقات أهداف وركائز الرسالة" : "Mission Cards with Tags"} ({pillars.length})
-              </label>
-              <button
-                type="button"
-                onClick={() =>
-                  onChange((prev) => ({
-                    ...prev,
-                    pillars: [
-                      ...(prev.pillars || []),
-                      {
-                        id: `mis-${Date.now()}`,
-                        title: lang === "ar" ? "هدف جديد" : "New Objective",
-                        description: "",
-                        tag: lang === "ar" ? "مميز" : "Featured",
-                        icon: "UsersIcon",
-                      },
-                    ],
-                  }))
-                }
-                className="text-xs font-bold text-primary hover:underline"
-              >
-                + {lang === "ar" ? "إضافة هدف" : "Add Mission Card"}
-              </button>
-            </div>
-
-            {pillars.map((pil: any, idx: number) => (
-              <div
-                key={pil.id || idx}
-                className="p-4 rounded-xl border border-border bg-muted/20 space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-primary">
-                    {lang === "ar" ? `البطاقة #${idx + 1}` : `Card #${idx + 1}`}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onChange((prev) => ({
-                        ...prev,
-                        pillars: (prev.pillars || []).filter((_: any, i: number) => i !== idx),
-                      }))
-                    }
-                    className="text-muted-foreground hover:text-rose-500 text-xs"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <BaseTextInput
-                    label={lang === "ar" ? "عنوان الهدف" : "Title"}
-                    value={pil.title || ""}
-                  onChange={(e) =>
-                    onChange((prev) => {
-                        const arr = [...(prev.pillars || [])];
-                        arr[idx] = { ...arr[idx], title: e.target.value };
-                        return { ...prev, pillars: arr };
-                    })
-                  }
-                />
-                  <BaseTextInput
-                    label={lang === "ar" ? "الوسم السفلي (Tag)" : "Bottom Tag Badge"}
-                    value={pil.tag || ""}
-                    onChange={(e) =>
-                      onChange((prev) => {
-                        const arr = [...(prev.pillars || [])];
-                        arr[idx] = { ...arr[idx], tag: e.target.value };
-                        return { ...prev, pillars: arr };
-                      })
-                    }
-                  />
-                  <IconPicker
-                    label={lang === "ar" ? "أيقونة الهدف (رمز أو صورة)" : "Mission Icon"}
-                    value={pil.icon || "Users"}
-                    onChange={(iconVal) =>
-                      onChange((prev) => {
-                        const arr = [...(prev.pillars || [])];
-                        arr[idx] = { ...arr[idx], icon: iconVal };
-                        return { ...prev, pillars: arr };
-                      })
-                    }
-                    currentLang={lang}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "الوصف" : "Description"}
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={pil.description || ""}
-                    onChange={(e) =>
-                      onChange((prev) => {
-                        const arr = [...(prev.pillars || [])];
-                        arr[idx] = { ...arr[idx], description: e.target.value };
-                        return { ...prev, pillars: arr };
-                      })
-                    }
-                    className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    // 9. About Terms & Legal Clauses
-    case "about_terms":
-    case "legal_terms_clauses": {
+    // 9. Legal Clauses
+    case "numbered_legal_clauses": {
       const sections = content.sections || [];
       return (
         <div className="space-y-5">
@@ -2243,7 +2092,6 @@ function BlockSpecificContentForm({
     }
 
     // 10. Contact Page & Channels (Header, Banner & Dynamic Backend Integration)
-    case "contact_page":
     case "contact_channels_info": {
       return (
         <div className="space-y-5">
@@ -2321,8 +2169,6 @@ function BlockSpecificContentForm({
     }
 
     // 11. FAQ Accordion & Questions (Header, Banner & Dynamic Backend Questions)
-    case "faq_accordion":
-    case "faq_accordion_items":
     case "faq_accordion_categorized": {
   return (
         <div className="space-y-5">
@@ -2394,7 +2240,6 @@ function BlockSpecificContentForm({
     }
 
     // 12. Blog Page Header & Dynamic Articles Integration
-    case "blog_page":
     case "blog_page_header": {
       return (
         <div className="space-y-5">
@@ -2471,8 +2316,7 @@ function BlockSpecificContentForm({
     }
 
     // 13. General Page Hero Banner Header
-    case "page_header_banner":
-    case "general_page_header": {
+    case "page_header_banner": {
       return (
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

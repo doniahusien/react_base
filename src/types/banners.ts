@@ -10,12 +10,13 @@ export interface LocalizedText {
  * across the website. The backend returns them as a plain array of images
  * (`sliders`) with EVERY page response — pages themselves never store images,
  * they only store the header/banner texts.
+ *
+ * Images are returned in the order they were added (ascending id).
  */
 export interface SliderImage {
   id: number;
   image: string;
   alt?: LocalizedText;
-  sort_order: number;
   is_active: boolean;
   created_at?: string;
   updated_at?: string;

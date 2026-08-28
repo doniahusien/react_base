@@ -21,7 +21,7 @@ import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
 import { IconPicker, getIconComponent } from "../../components/Inputs/IconPicker";
-import { blockTemplatesMockService } from "../../mocks/blockTemplatesMock";
+import { blockTemplatesService } from "../../services/blockTemplatesService";
 import { toast } from "../../stores/toast";
 import type { BlockTemplate, BlockCategory, FieldDefinition, FieldInputType } from "../../types/blocks";
 
@@ -67,7 +67,7 @@ export default function BlocksShowAll() {
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await blockTemplatesMockService.getTemplates();
+      const data = await blockTemplatesService.list();
       setTemplates(data);
     } catch (e) {
       toast.error("Failed to load block templates");
@@ -181,7 +181,7 @@ export default function BlocksShowAll() {
         fields: formData.fields,
       };
 
-      await blockTemplatesMockService.saveTemplate(payload);
+      await blockTemplatesService.save(payload, !editingTemplate);
       toast.success(
         editingTemplate
           ? currentLang === "ar" ? "تم تحديث قالب البلوك بنجاح" : "Block template updated"
@@ -197,7 +197,7 @@ export default function BlocksShowAll() {
   };
 
   const handleToggleStatus = async (tpl: BlockTemplate) => {
-    const newStatus = await blockTemplatesMockService.toggleTemplateStatus(tpl.id);
+    const newStatus = await blockTemplatesService.toggleStatus(tpl.id);
     setTemplates((prev) =>
       prev.map((t) => (t.id === tpl.id ? { ...t, is_active: newStatus } : t))
     );
@@ -218,7 +218,7 @@ export default function BlocksShowAll() {
     )
       return;
 
-    await blockTemplatesMockService.deleteTemplate(tpl.id);
+    await blockTemplatesService.remove(tpl.id);
     toast.success(currentLang === "ar" ? "تم حذف القالب" : "Template deleted");
     fetchTemplates();
   };

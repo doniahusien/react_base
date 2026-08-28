@@ -8,32 +8,14 @@ import {
   EyeSlashIcon,
   ArrowPathIcon,
   XMarkIcon,
-  Bars3Icon,
   SparklesIcon,
   ArrowUpTrayIcon,
   LinkIcon,
 } from "@heroicons/react/24/outline";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  rectSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
-import { sliderMockService } from "../../mocks/bannerMock";
+import { slidersService } from "../../services/slidersService";
 import { toast } from "../../stores/toast";
 import type { SliderImage } from "../../types/banners";
 
@@ -50,9 +32,9 @@ const SITE_PRESET_IMAGES = [
 ];
 
 // ==========================================
-// Sortable Slider Image Card
+// Slider Image Card
 // ==========================================
-interface SortableSlideCardProps {
+interface SlideCardProps {
   slide: SliderImage;
   index: number;
   currentLang: "ar" | "en";
@@ -60,27 +42,15 @@ interface SortableSlideCardProps {
   onToggleStatus: () => void;
 }
 
-function SortableSlideCard({
+function SlideCard({
   slide,
   index,
   currentLang,
   onDelete,
   onToggleStatus,
-}: SortableSlideCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: slide.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 50 : 1,
-  };
-
+}: SlideCardProps) {
   return (
     <div
-      ref={setNodeRef}
-      style={style}
       className={`group relative overflow-hidden rounded-2xl border bg-card shadow-2xs transition-all ${
         slide.is_active
           ? "border-border/80 hover:border-primary/40 hover:shadow-xs"
@@ -100,11 +70,6 @@ function SortableSlideCard({
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
 
-        {/* Order badge */}
-        <span className="absolute top-2 start-2 rounded-lg bg-black/70 px-2 py-0.5 font-mono text-[11px] font-bold text-white backdrop-blur-xs">
-          #{index + 1}
-        </span>
-
         {/* Status */}
         <span
           className={`absolute top-2 end-2 rounded-lg px-2 py-0.5 text-[10px] font-bold backdrop-blur-xs ${
@@ -117,16 +82,6 @@ function SortableSlideCard({
             ? currentLang === "ar" ? "ظاهرة" : "Visible"
             : currentLang === "ar" ? "مخفية" : "Hidden"}
         </span>
-
-        {/* Drag handle */}
-        <button
-          {...attributes}
-          {...listeners}
-          className="absolute bottom-2 start-2 cursor-grab active:cursor-grabbing rounded-lg bg-black/60 p-1.5 text-white/90 backdrop-blur-xs hover:bg-black/80"
-          title={currentLang === "ar" ? "اسحب لإعادة الترتيب" : "Drag to reorder"}
-        >
-          <Bars3Icon className="h-4 w-4" />
-        </button>
 
         {/* Actions */}
         <div className="absolute bottom-2 end-2 flex items-center gap-1">
@@ -183,15 +138,10 @@ export default function SlidersShowAll() {
   const [urlInput, setUrlInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
-
   const fetchSliders = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await sliderMockService.getSliders();
+      const data = await slidersService.list();
       setSlides(data);
     } catch (e) {
       toast.error("Failed to load slider images");
@@ -208,25 +158,6 @@ export default function SlidersShowAll() {
     () => slides.filter((s) => s.is_active).length,
     [slides]
   );
-
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = slides.findIndex((s) => s.id === active.id);
-    const newIndex = slides.findIndex((s) => s.id === over.id);
-    const updated = arrayMove(slides, oldIndex, newIndex).map((s, idx) => ({
-      ...s,
-      sort_order: idx,
-    }));
-    setSlides(updated);
-    await sliderMockService.reorderSliders(
-      updated.map((s) => ({ id: s.id, sort_order: s.sort_order }))
-    );
-    toast.success(
-      currentLang === "ar" ? "تم تحديث ترتيب صور السلايدر" : "Slider order updated"
-    );
-  };
 
   const handleOpenAdd = () => {
     setStagedImages([]);
@@ -271,7 +202,7 @@ export default function SlidersShowAll() {
     }
     setSaving(true);
     try {
-      await sliderMockService.addSliders(stagedImages);
+      await slidersService.add(stagedImages);
       toast.success(
         currentLang === "ar"
           ? `تمت إضافة ${stagedImages.length} صورة إلى السلايدر`
@@ -287,7 +218,7 @@ export default function SlidersShowAll() {
   };
 
   const handleToggleStatus = async (slide: SliderImage) => {
-    await sliderMockService.toggleSliderStatus(slide.id);
+    await slidersService.toggleStatus(slide.id);
     setSlides((prev) =>
       prev.map((s) => (s.id === slide.id ? { ...s, is_active: !s.is_active } : s))
     );
@@ -302,7 +233,7 @@ export default function SlidersShowAll() {
       )
     )
       return;
-    await sliderMockService.deleteSlider(slide.id);
+    await slidersService.remove(slide.id);
     toast.success(currentLang === "ar" ? "تم حذف الصورة" : "Image deleted");
     fetchSliders();
   };
@@ -385,29 +316,18 @@ export default function SlidersShowAll() {
           </Button>
         </div>
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={slides.map((s) => s.id)}
-            strategy={rectSortingStrategy}
-          >
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {slides.map((slide, index) => (
-                <SortableSlideCard
-                  key={slide.id}
-                  slide={slide}
-                  index={index}
-                  currentLang={currentLang}
-                  onDelete={() => handleDelete(slide)}
-                  onToggleStatus={() => handleToggleStatus(slide)}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {slides.map((slide, index) => (
+            <SlideCard
+              key={slide.id}
+              slide={slide}
+              index={index}
+              currentLang={currentLang}
+              onDelete={() => handleDelete(slide)}
+              onToggleStatus={() => handleToggleStatus(slide)}
+            />
+          ))}
+        </div>
       )}
 
       {/* Add Images Modal */}

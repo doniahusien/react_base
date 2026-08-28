@@ -23,7 +23,7 @@ import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
-import { pageBuilderMockService } from "../../mocks/pageBuilderMock";
+import { pagesService } from "../../services/pagesService";
 import { toast } from "../../stores/toast";
 import type { Page, PageType } from "../../types/pageBuilder";
 
@@ -73,7 +73,7 @@ export default function PagesShowAll() {
   const fetchPages = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await pageBuilderMockService.getPages();
+      const data = await pagesService.list();
       setPages(data);
     } catch (err) {
       toast.error(t("ERRORS.fetch_failed", { defaultValue: "Failed to load pages" }));
@@ -163,7 +163,7 @@ export default function PagesShowAll() {
         payload.id = editingPage.id;
       }
 
-      await pageBuilderMockService.savePage(payload);
+      await pagesService.save(payload);
       toast.success(
         editingPage
           ? currentLang === "ar"
@@ -183,7 +183,7 @@ export default function PagesShowAll() {
   };
 
   const handleToggleStatus = async (page: Page) => {
-    const newStatus = await pageBuilderMockService.togglePageStatus(page.id);
+    const newStatus = await pagesService.toggleStatus(page.id);
     setPages((prev) =>
       prev.map((p) => (p.id === page.id ? { ...p, is_published: newStatus } : p))
     );
@@ -215,7 +215,7 @@ export default function PagesShowAll() {
 
     if (!window.confirm(confirmMsg)) return;
 
-    await pageBuilderMockService.deletePage(page.id);
+    await pagesService.remove(page.id);
     toast.success(
       currentLang === "ar" ? "تم حذف الصفحة بنجاح" : "Page deleted successfully"
     );

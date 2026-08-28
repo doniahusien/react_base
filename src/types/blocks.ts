@@ -41,7 +41,7 @@ export type BlockCategory =
   | "legal";
 
 export interface BlockTemplate {
-  id: string; // unique slug / identifier (e.g., "title_desc_image_icon", "cards_grid", "faq_accordion")
+  id: string; // canonical block id (e.g. "hero_header", "cards_grid_with_icons_images")
   name_ar: string;
   name_en: string;
   description_ar: string;
