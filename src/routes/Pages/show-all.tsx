@@ -23,6 +23,8 @@ import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
+import { BaseFilesInput } from "../../components/Inputs/BaseFilesInput";
+import type { FileOutputItem } from "../../components/Inputs/BaseFilesInput";
 import { pagesService } from "../../services/pagesService";
 import { toast } from "../../stores/toast";
 import type { Page, PageType } from "../../types/pageBuilder";
@@ -127,11 +129,7 @@ export default function PagesShowAll() {
   const handleSavePage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.slug.trim() || !formData.title_ar.trim()) {
-      toast.error(
-        currentLang === "ar"
-          ? "يرجى كتابة مسار الصفحة والعنوان بالعربية"
-          : "Please enter slug and Arabic title"
-      );
+      toast.error(t("PAGES.pleaseEnterSlugAndTitle"));
       return;
     }
 
@@ -166,12 +164,8 @@ export default function PagesShowAll() {
       await pagesService.save(payload);
       toast.success(
         editingPage
-          ? currentLang === "ar"
-            ? "تم تحديث بيانات الصفحة بنجاح"
-            : "Page updated successfully"
-          : currentLang === "ar"
-          ? "تم إنشاء الصفحة بنجاح"
-          : "Page created successfully"
+          ? t("PAGES.pageUpdatedSuccess")
+          : t("PAGES.pageCreatedSuccess")
       );
       setIsModalOpen(false);
       fetchPages();
@@ -188,37 +182,23 @@ export default function PagesShowAll() {
       prev.map((p) => (p.id === page.id ? { ...p, is_published: newStatus } : p))
     );
     toast.success(
-      currentLang === "ar"
-        ? newStatus
-          ? "تم نشر الصفحة"
-          : "تم تحويل الصفحة إلى مسودة"
-        : newStatus
-        ? "Page published"
-        : "Page moved to draft"
+      newStatus ? t("PAGES.pagePublished") : t("PAGES.pageMovedToDraft")
     );
   };
 
   const handleDeletePage = async (page: Page) => {
     if (page.type === "system") {
-      toast.error(
-        currentLang === "ar"
-          ? "لا يمكن حذف الصفحات الأساسية للنظام"
-          : "System pages cannot be deleted"
-      );
+      toast.error(t("PAGES.systemPageCannotDelete"));
       return;
     }
 
-    const confirmMsg =
-      currentLang === "ar"
-        ? `هل أنت متأكد من حذف صفحة "${page.title.ar}"؟`
-        : `Are you sure you want to delete "${page.title.en}"?`;
+    const pageTitle = currentLang === "ar" ? page.title.ar : page.title.en;
+    const confirmMsg = `${t("PAGES.confirmDeletePage")} "${pageTitle}"?`;
 
     if (!window.confirm(confirmMsg)) return;
 
     await pagesService.remove(page.id);
-    toast.success(
-      currentLang === "ar" ? "تم حذف الصفحة بنجاح" : "Page deleted successfully"
-    );
+    toast.success(t("PAGES.pageDeletedSuccess"));
     fetchPages();
   };
 
@@ -234,11 +214,19 @@ export default function PagesShowAll() {
     });
   }, [pages, searchQuery, filterType]);
 
-  const typeLabels: Record<PageType, { ar: string; en: string; badge: string }> = {
-    system: { ar: "أساسية للنظام", en: "System Core", badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
-    landing: { ar: "صفحة هبوط", en: "Landing Page", badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300" },
-    custom: { ar: "مخصصة", en: "Custom", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-    policy: { ar: "شروط وسياسات", en: "Policy / Legal", badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  const typeLabels: Record<PageType, { badge: string }> = {
+    system: { badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
+    custom: { badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+    policy: { badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  };
+
+  const getTypeLabel = (type: PageType): string => {
+    const labels: Record<PageType, string> = {
+      system: t("PAGES.badgeSystemCore"),
+      custom: t("PAGES.badgeCustom"),
+      policy: t("PAGES.badgePolicyLegal"),
+    };
+    return labels[type] || type;
   };
 
   return (
@@ -267,11 +255,7 @@ export default function PagesShowAll() {
           <MagnifyingGlassIcon className="absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground start-3" />
           <input
             type="text"
-            placeholder={
-              currentLang === "ar"
-                ? "ابحث باسم الصفحة أو الرابط..."
-                : "Search page title or slug..."
-            }
+            placeholder={t("PAGES.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg border border-border bg-background py-2 pe-3 ps-9 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -281,11 +265,10 @@ export default function PagesShowAll() {
         {/* Filter Tabs */}
         <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
           {[
-            { key: "all", label_ar: "الكل", label_en: "All" },
-            { key: "system", label_ar: "أساسية", label_en: "System" },
-            { key: "landing", label_ar: "صفحات هبوط", label_en: "Landing" },
-            { key: "policy", label_ar: "سياسات", label_en: "Policies" },
-            { key: "custom", label_ar: "مخصصة", label_en: "Custom" },
+            { key: "all", label: t("PAGES.all") },
+            { key: "system", label: t("PAGES.system") },
+            { key: "policy", label: t("PAGES.policies") },
+            { key: "custom", label: t("PAGES.custom") },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -296,7 +279,7 @@ export default function PagesShowAll() {
                   : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
-              {currentLang === "ar" ? tab.label_ar : tab.label_en}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -316,12 +299,10 @@ export default function PagesShowAll() {
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-12 text-center bg-card">
           <DocumentTextIcon className="h-12 w-12 text-muted-foreground/60 mb-3" />
           <h3 className="text-base font-semibold">
-            {currentLang === "ar" ? "لا توجد صفحات مطابقة" : "No matching pages found"}
+            {t("PAGES.noMatchingPages")}
           </h3>
           <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-            {currentLang === "ar"
-              ? "جرّب تغيير كلمات البحث أو أنشئ صفحة جديدة لبدء التصميم."
-              : "Try altering search terms or create a new dynamic page."}
+            {t("PAGES.noMatchingPagesDesc")}
           </p>
         </div>
       ) : (
@@ -340,9 +321,7 @@ export default function PagesShowAll() {
                         typeLabels[page.type]?.badge || "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {currentLang === "ar"
-                        ? typeLabels[page.type]?.ar
-                        : typeLabels[page.type]?.en}
+                      {getTypeLabel(page.type)}
                     </span>
                     <h3 className="text-lg font-bold text-foreground line-clamp-1">
                       {currentLang === "ar" ? page.title.ar : page.title.en}
@@ -353,12 +332,8 @@ export default function PagesShowAll() {
                     onClick={() => handleToggleStatus(page)}
                     title={
                       page.is_published
-                        ? currentLang === "ar"
-                          ? "الصفحة منشورة (انقر للتعطيل)"
-                          : "Published (Click to unpublish)"
-                        : currentLang === "ar"
-                        ? "مسودة (انقر للنشر)"
-                        : "Draft (Click to publish)"
+                        ? t("PAGES.publishedClickToUnpublish")
+                        : t("PAGES.draftClickToPublish")
                     }
                     className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${
                       page.is_published
@@ -369,12 +344,12 @@ export default function PagesShowAll() {
                     {page.is_published ? (
                       <>
                         <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        {currentLang === "ar" ? "منشور" : "Published"}
+                        {t("PAGES.published")}
                       </>
                     ) : (
                       <>
                         <span className="size-1.5 rounded-full bg-zinc-400" />
-                        {currentLang === "ar" ? "مسودة" : "Draft"}
+                        {t("PAGES.draft")}
                       </>
                     )}
                   </button>
@@ -385,11 +360,6 @@ export default function PagesShowAll() {
                   <GlobeAltIcon className="h-3.5 w-3.5 text-primary" />
                   <span>/{page.slug}</span>
                 </div>
-
-                {/* Subtitle / Language hint */}
-                <p className="text-xs text-muted-foreground line-clamp-1 mb-4">
-                  {currentLang === "ar" ? `EN: ${page.title.en}` : `AR: ${page.title.ar}`}
-                </p>
               </div>
 
               {/* Footer Meta & Actions */}
@@ -399,27 +369,18 @@ export default function PagesShowAll() {
                   <span className="font-semibold text-foreground">
                     {page.sections?.length ?? page.sections_count ?? 0}
                   </span>
-                  <span>{currentLang === "ar" ? "أقسام/بلوكات" : "Blocks"}</span>
+                  <span>{t("PAGES.blocks")}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => handleOpenEdit(page)}
-                    title={currentLang === "ar" ? "تعديل بيانات وSEO الصفحة" : "Edit SEO & Info"}
+                    title={t("PAGES.editSeoInfo")}
                     className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </button>
 
-                  {page.type !== "system" && (
-                    <button
-                      onClick={() => handleDeletePage(page)}
-                      title={currentLang === "ar" ? "حذف الصفحة" : "Delete Page"}
-                      className="p-1.5 rounded-lg border border-border hover:bg-red-50 dark:hover:bg-red-950/30 text-muted-foreground hover:text-red-600 transition-colors"
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </button>
-                  )}
 
                   <Button
                     size="sm"
@@ -427,7 +388,7 @@ export default function PagesShowAll() {
                     className="gap-1.5 text-xs font-semibold"
                   >
                     <WrenchScrewdriverIcon className="h-3.5 w-3.5" />
-                    {currentLang === "ar" ? "إدارة المحتوى والأقسام" : "Manage Content"}
+                    {t("PAGES.manageContent")}
                   </Button>
                 </div>
               </div>
@@ -439,18 +400,15 @@ export default function PagesShowAll() {
       {/* Create / Edit Page Settings Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-border pb-4">
+          <div className="flex flex-col w-full max-w-xl max-h-[90vh] rounded-2xl border border-border bg-card shadow-2xl">
+            {/* Fixed Header */}
+            <div className="flex items-center justify-between border-b border-border px-6 py-4 shrink-0">
               <div className="flex items-center gap-2">
                 <RectangleStackIcon className="h-6 w-6 text-primary" />
                 <h2 className="text-lg font-bold">
                   {editingPage
-                    ? currentLang === "ar"
-                      ? "إعدادات وبيانات الصفحة"
-                      : "Page Settings & SEO"
-                    : currentLang === "ar"
-                    ? "إنشاء صفحة جديدة"
-                    : "Create New Page"}
+                    ? t("PAGES.pageSettings")
+                    : t("PAGES.createNewPage")}
                 </h2>
               </div>
               <button
@@ -462,7 +420,7 @@ export default function PagesShowAll() {
             </div>
 
             {/* Modal Navigation Tabs */}
-            <div className="flex items-center gap-2 border-b border-border pb-2">
+            <div className="flex items-center gap-2 border-b border-border px-6 py-3 shrink-0">
               <button
                 type="button"
                 onClick={() => setModalTab("general")}
@@ -472,7 +430,7 @@ export default function PagesShowAll() {
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                {currentLang === "ar" ? "البيانات الأساسية" : "General Info"}
+                {t("PAGES.generalInfo")}
               </button>
               <button
                 type="button"
@@ -483,178 +441,180 @@ export default function PagesShowAll() {
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                {currentLang === "ar" ? "محركات البحث (SEO)" : "SEO & Meta"}
+                {t("PAGES.seoMeta")}
               </button>
             </div>
 
-            <form onSubmit={handleSavePage} className="space-y-4">
-              {modalTab === "general" ? (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <BaseTextInput
-                      name="title_ar"
-                      label={currentLang === "ar" ? "عنوان الصفحة (بالعربية) *" : "Title (Arabic) *"}
-                      value={formData.title_ar}
-                      onInput={(val) =>
-                        setFormData((prev) => ({ ...prev, title_ar: val }))
-                      }
-                      placeholder="مثال: من نحن"
-                    />
-                    <BaseTextInput
-                      name="title_en"
-                      label={currentLang === "ar" ? "عنوان الصفحة (بالإنجليزية)" : "Title (English)"}
-                      value={formData.title_en}
-                      onInput={(val) =>
-                        setFormData((prev) => ({ ...prev, title_en: val }))
-                      }
-                      placeholder="e.g. About Us"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <BaseTextInput
-                      name="slug"
-                      label={currentLang === "ar" ? "رابط الصفحة (Slug) *" : "Page Slug *"}
-                      value={formData.slug}
-                      onInput={(val) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          slug: val.toLowerCase().replace(/\s+/g, "-"),
-                        }))
-                      }
-                      placeholder="e.g. black-friday-2026"
-                    />
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-foreground">
-                        {currentLang === "ar" ? "نوع الصفحة" : "Page Type"}
-                      </label>
-                      <select
-                        value={formData.type}
-                        onChange={(e) =>
-                          setFormData((prev) => ({ ...prev, type: e.target.value as PageType }))
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              <form onSubmit={handleSavePage} className="space-y-4" id="page-form">
+                {modalTab === "general" ? (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <BaseTextInput
+                        name="title_ar"
+                        label={t("PAGES.titleArabicRequired")}
+                        value={formData.title_ar}
+                        onInput={(val) =>
+                          setFormData((prev) => ({ ...prev, title_ar: val }))
                         }
-                        className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
-                      >
-                        <option value="custom">{currentLang === "ar" ? "مخصصة" : "Custom"}</option>
-                        <option value="landing">{currentLang === "ar" ? "صفحة هبوط" : "Landing"}</option>
-                        <option value="policy">{currentLang === "ar" ? "سياسات وشروط" : "Policy / Legal"}</option>
-                        <option value="system">{currentLang === "ar" ? "أساسية للنظام" : "System Core"}</option>
-                      </select>
+                        placeholder={t("PAGES.titleArabicPlaceholder")}
+                      />
+                      <BaseTextInput
+                        name="title_en"
+                        label={t("PAGES.titleEnglish")}
+                        value={formData.title_en}
+                        onInput={(val) =>
+                          setFormData((prev) => ({ ...prev, title_en: val }))
+                        }
+                        placeholder={t("PAGES.titleEnglishPlaceholder")}
+                      />
                     </div>
-                  </div>
 
-                  <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/20">
-                    <div>
-                      <p className="text-sm font-semibold">
-                        {currentLang === "ar" ? "حالة النشر" : "Publish Status"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {currentLang === "ar"
-                          ? "هل تظهر الصفحة لزوار الموقع الآن؟"
-                          : "Make this page publicly accessible on website"}
-                      </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <BaseTextInput
+                        name="slug"
+                        label={t("PAGES.pageSlugRequired")}
+                        value={formData.slug}
+                        onInput={(val) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            slug: val.toLowerCase().replace(/\s+/g, "-"),
+                          }))
+                        }
+                        placeholder={t("PAGES.pageSlugPlaceholder")}
+                      />
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-foreground">
+                          {t("PAGES.pageType")}
+                        </label>
+                        <select
+                          value={formData.type}
+                          onChange={(e) =>
+                            setFormData((prev) => ({ ...prev, type: e.target.value as PageType }))
+                          }
+                          className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
+                        >
+                          <option value="custom">{t("PAGES.typeCustom")}</option>
+                          <option value="landing">{t("PAGES.typeLanding")}</option>
+                          <option value="policy">{t("PAGES.typePolicy")}</option>
+                          <option value="system">{t("PAGES.typeSystem")}</option>
+                        </select>
+                      </div>
                     </div>
-                    <BaseSwitchInput
-                      name="is_published"
-                      value={formData.is_published}
-                      onChange={(checked) =>
-                        setFormData((prev) => ({ ...prev, is_published: checked }))
-                      }
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <BaseTextInput
-                      name="meta_title_ar"
-                      label={currentLang === "ar" ? "عنوان Meta (بالعربية)" : "Meta Title (Arabic)"}
-                      value={formData.meta_title_ar}
-                      onInput={(val) =>
-                        setFormData((prev) => ({ ...prev, meta_title_ar: val }))
-                      }
-                      placeholder="عنوان يظهر في نتائج بحث جوجل"
-                    />
-                    <BaseTextInput
-                      name="meta_title_en"
-                      label={currentLang === "ar" ? "عنوان Meta (بالإنجليزية)" : "Meta Title (English)"}
-                      value={formData.meta_title_en}
-                      onInput={(val) =>
-                        setFormData((prev) => ({ ...prev, meta_title_en: val }))
-                      }
-                      placeholder="Page title in Google search"
-                    />
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <BaseTextInput
-                      name="meta_description_ar"
-                      label={currentLang === "ar" ? "وصف Meta (بالعربية)" : "Meta Description (Arabic)"}
-                      value={formData.meta_description_ar}
-                      onInput={(val) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          meta_description_ar: val,
-                        }))
-                      }
-                      placeholder="وصف مختصر لمحتوى الصفحة"
+                    <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/20">
+                      <div>
+                        <p className="text-sm font-semibold">
+                          {t("PAGES.publishStatus")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("PAGES.publishStatusDesc")}
+                        </p>
+                      </div>
+                      <BaseSwitchInput
+                        name="is_published"
+                        value={formData.is_published}
+                        onChange={(checked) =>
+                          setFormData((prev) => ({ ...prev, is_published: checked }))
+                        }
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <BaseTextInput
+                        name="meta_title_ar"
+                        label={t("PAGES.metaTitleArabic")}
+                        value={formData.meta_title_ar}
+                        onInput={(val) =>
+                          setFormData((prev) => ({ ...prev, meta_title_ar: val }))
+                        }
+                        placeholder={t("PAGES.metaTitleArabicPlaceholder")}
+                      />
+                      <BaseTextInput
+                        name="meta_title_en"
+                        label={t("PAGES.metaTitleEnglish")}
+                        value={formData.meta_title_en}
+                        onInput={(val) =>
+                          setFormData((prev) => ({ ...prev, meta_title_en: val }))
+                        }
+                        placeholder={t("PAGES.metaTitleEnglishPlaceholder")}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <BaseTextInput
+                        name="meta_description_ar"
+                        label={t("PAGES.metaDescriptionArabic")}
+                        value={formData.meta_description_ar}
+                        onInput={(val) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            meta_description_ar: val,
+                          }))
+                        }
+                        placeholder={t("PAGES.metaDescriptionArabicPlaceholder")}
+                      />
+                      <BaseTextInput
+                        name="meta_description_en"
+                        label={t("PAGES.metaDescriptionEnglish")}
+                        value={formData.meta_description_en}
+                        onInput={(val) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            meta_description_en: val,
+                          }))
+                        }
+                        placeholder={t("PAGES.metaDescriptionEnglishPlaceholder")}
+                      />
+                    </div>
+
+                    <BaseFilesInput
+                      name="og_image"
+                      label={t("PAGES.ogImage")}
+                      multiple={false}
+                      accept="image/*"
+                      attachment={false}
+                      value={formData.og_image ? { media: formData.og_image } : null}
+                      onChange={(val) => {
+                        const file = val as FileOutputItem | null;
+                        setFormData((prev) => ({ 
+                          ...prev, 
+                          og_image: file?.str || "" 
+                        }));
+                      }}
                     />
+
                     <BaseTextInput
-                      name="meta_description_en"
-                      label={currentLang === "ar" ? "وصف Meta (بالإنجليزية)" : "Meta Description (English)"}
-                      value={formData.meta_description_en}
+                      name="keywords"
+                      label={t("PAGES.keywords")}
+                      value={formData.keywords}
                       onInput={(val) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          meta_description_en: val,
-                        }))
+                        setFormData((prev) => ({ ...prev, keywords: val }))
                       }
-                      placeholder="Short summary for search results"
+                      placeholder={t("PAGES.keywordsPlaceholder")}
                     />
-                  </div>
+                  </>
+                )}
+              </form>
+            </div>
 
-                  <BaseTextInput
-                    name="og_image"
-                    label={currentLang === "ar" ? "رابط صورة المشاركة (OG Image)" : "Social Share Image (OG Image)"}
-                    value={formData.og_image}
-                    onInput={(val) =>
-                      setFormData((prev) => ({ ...prev, og_image: val }))
-                    }
-                    placeholder="/images/og-share.jpg or https://..."
-                  />
-
-                  <BaseTextInput
-                    name="keywords"
-                    label={currentLang === "ar" ? "الكلمات المفتاحية (Keywords)" : "Keywords (Comma separated)"}
-                    value={formData.keywords}
-                    onInput={(val) =>
-                      setFormData((prev) => ({ ...prev, keywords: val }))
-                    }
-                    placeholder="gold, silver, bullion, investment"
-                  />
-                </>
-              )}
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  {currentLang === "ar" ? "إلغاء" : "Cancel"}
-                </Button>
-                <Button type="submit" disabled={saving}>
-                  {saving
-                    ? currentLang === "ar"
-                      ? "جاري الحفظ..."
-                      : "Saving..."
-                    : currentLang === "ar"
-                    ? "حفظ الصفحة"
-                    : "Save Page"}
-                </Button>
-              </div>
-            </form>
+            {/* Fixed Footer */}
+            <div className="flex items-center justify-end gap-3 border-t border-border px-6 py-4 shrink-0">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+              >
+                {t("PAGES.cancel")}
+              </Button>
+              <Button type="submit" form="page-form" disabled={saving}>
+                {saving ? t("PAGES.saving") : t("PAGES.savePage")}
+              </Button>
+            </div>
           </div>
         </div>
       )}
