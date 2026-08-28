@@ -3,32 +3,30 @@ import { useTranslation } from "react-i18next";
 import {
   PhotoIcon,
   PlusIcon,
-  TrashIcon,
   EyeIcon,
   EyeSlashIcon,
-  ArrowPathIcon,
   XMarkIcon,
-  SparklesIcon,
   ArrowUpTrayIcon,
   LinkIcon,
 } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
+import { Deleter } from "../../components/Shared/Deleter";
 import { slidersService } from "../../services/slidersService";
 import { toast } from "../../stores/toast";
 import type { SliderImage } from "../../types/banners";
 
 const SITE_PRESET_IMAGES = [
-  "/images/slider1.webp",
-  "/images/slider2.webp",
-  "/images/slider3.webp",
-  "/images/slider4.webp",
-  "/images/slider5.webp",
-  "/images/slider6.webp",
-  "/images/slider7.webp",
-  "/images/header1.webp",
-  "/images/about.webp",
+  "/images/images/slider1.webp",
+  "/images/images/slider2.webp",
+  "/images/images/slider3.webp",
+  "/images/images/slider4.webp",
+  "/images/images/slider5.webp",
+  "/images/images/slider6.webp",
+  "/images/images/slider7.webp",
+  "/images/images/header1.webp",
+  "/images/images/about.webp",
 ];
 
 // ==========================================
@@ -38,17 +36,19 @@ interface SlideCardProps {
   slide: SliderImage;
   index: number;
   currentLang: "ar" | "en";
-  onDelete: () => void;
   onToggleStatus: () => void;
+  onDeleteSuccess: () => void;
 }
 
 function SlideCard({
   slide,
   index,
   currentLang,
-  onDelete,
   onToggleStatus,
+  onDeleteSuccess,
 }: SlideCardProps) {
+  const { t } = useTranslation();
+  
   return (
     <div
       className={`group relative overflow-hidden rounded-2xl border bg-card shadow-2xs transition-all ${
@@ -79,8 +79,8 @@ function SlideCard({
           }`}
         >
           {slide.is_active
-            ? currentLang === "ar" ? "ظاهرة" : "Visible"
-            : currentLang === "ar" ? "مخفية" : "Hidden"}
+            ? t("TITLES.visible")
+            : t("TITLES.hidden")}
         </span>
 
         {/* Actions */}
@@ -89,7 +89,7 @@ function SlideCard({
             type="button"
             onClick={onToggleStatus}
             className="rounded-lg bg-black/60 p-1.5 text-white/90 backdrop-blur-xs hover:bg-black/80"
-            title={slide.is_active ? "Hide" : "Show"}
+            title={slide.is_active ? t("TITLES.hidden") : t("TITLES.visible")}
           >
             {slide.is_active ? (
               <EyeIcon className="h-4 w-4" />
@@ -97,27 +97,14 @@ function SlideCard({
               <EyeSlashIcon className="h-4 w-4" />
             )}
           </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="rounded-lg bg-black/60 p-1.5 text-rose-300 backdrop-blur-xs hover:bg-rose-600 hover:text-white"
-            title={currentLang === "ar" ? "حذف الصورة" : "Delete image"}
-          >
-            <TrashIcon className="h-4 w-4" />
-          </button>
+          <div className="">
+            <Deleter
+              url={`/sliders/${slide.id}`}
+              onReload={onDeleteSuccess}
+              text=""
+            />
+          </div>
         </div>
-      </div>
-
-      {/* Path */}
-      <div className="px-3 py-2">
-        <p
-          className="truncate font-mono text-[10px] text-muted-foreground"
-          title={slide.image}
-        >
-          {slide.image.startsWith("data:")
-            ? currentLang === "ar" ? "صورة مرفوعة محلياً" : "Uploaded image"
-            : slide.image}
-        </p>
       </div>
     </div>
   );
@@ -127,7 +114,7 @@ function SlideCard({
 // Sliders (Global Images Pool) CRUD
 // ==========================================
 export default function SlidersShowAll() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLang = (i18n.language?.startsWith("ar") ? "ar" : "en") as "ar" | "en";
 
   const [slides, setSlides] = useState<SliderImage[]>([]);
@@ -144,11 +131,11 @@ export default function SlidersShowAll() {
       const data = await slidersService.list();
       setSlides(data);
     } catch (e) {
-      toast.error("Failed to load slider images");
+      toast.error(t("LABELS.failedToLoadSliderImages"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchSliders();
@@ -184,34 +171,22 @@ export default function SlidersShowAll() {
     setStagedImages((prev) => (prev.includes(src) ? prev : [...prev, src]));
   };
 
-  const handleAddUrl = () => {
-    const val = urlInput.trim();
-    if (!val) return;
-    handleStagePreset(val);
-    setUrlInput("");
-  };
 
   const handleSaveStaged = async () => {
     if (stagedImages.length === 0) {
-      toast.error(
-        currentLang === "ar"
-          ? "يرجى اختيار أو رفع صورة واحدة على الأقل"
-          : "Please select or upload at least one image"
-      );
+      toast.error(t("LABELS.selectAtLeastOne"));
       return;
     }
     setSaving(true);
     try {
       await slidersService.add(stagedImages);
       toast.success(
-        currentLang === "ar"
-          ? `تمت إضافة ${stagedImages.length} صورة إلى السلايدر`
-          : `${stagedImages.length} image(s) added to the slider`
+        t("LABELS.imagesAddedToSlider", { count: stagedImages.length })
       );
       setIsModalOpen(false);
       fetchSliders();
     } catch {
-      toast.error("Error saving slider images");
+      toast.error(t("LABELS.errorSavingSliderImages"));
     } finally {
       setSaving(false);
     }
@@ -224,20 +199,6 @@ export default function SlidersShowAll() {
     );
   };
 
-  const handleDelete = async (slide: SliderImage) => {
-    if (
-      !confirm(
-        currentLang === "ar"
-          ? "هل أنت متأكد من حذف هذه الصورة من السلايدر؟"
-          : "Are you sure you want to delete this slider image?"
-      )
-    )
-      return;
-    await slidersService.remove(slide.id);
-    toast.success(currentLang === "ar" ? "تم حذف الصورة" : "Image deleted");
-    fetchSliders();
-  };
-
   return (
     <div className="space-y-4">
       <PageHeader
@@ -247,47 +208,12 @@ export default function SlidersShowAll() {
         total={slides.length}
         path={["dashboard", "banners"]}
         rightActions={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={fetchSliders} className="gap-1.5">
-              <ArrowPathIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">
-                {currentLang === "ar" ? "تحديث" : "Refresh"}
-              </span>
-            </Button>
-            <Button size="sm" onClick={handleOpenAdd} className="gap-1.5">
-              <PlusIcon className="h-4 w-4" />
-              <span>{currentLang === "ar" ? "إضافة صور للسلايدر" : "Add Slider Images"}</span>
-            </Button>
-          </div>
+          <Button size="sm" onClick={handleOpenAdd} className="gap-1.5">
+            <PlusIcon className="h-4 w-4" />
+            <span>{t("LABELS.addImages")}</span>
+          </Button>
         }
       />
-
-      {/* Explanation banner */}
-      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
-        <div className="flex items-start gap-3">
-          <SparklesIcon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-          <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">
-              {currentLang === "ar"
-                ? "مكتبة صور السلايدر العامة لكل صفحات الموقع"
-                : "Global slider images library for all website pages"}
-            </h3>
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              {currentLang === "ar"
-                ? "هذه الصور فقط هي ما يتم عرضه في السلايدر خلف الهيدر أو البانر في جميع صفحات الموقع. يقوم الباك إند بإرجاعها كمصفوفة صور (sliders) مع استجابة كل صفحة، بينما تتحكم أنت في نصوص الهيدر لكل صفحة من إدارة الصفحات."
-                : "These images are the only source for the carousel behind every page header/banner. The backend returns them as an images array (`sliders`) with every page response, while each page manages only its own header texts."}
-            </p>
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] font-bold">
-              <span className="rounded-lg bg-card px-2 py-1 text-foreground border border-border">
-                {currentLang === "ar" ? "إجمالي الصور" : "Total images"}: {slides.length}
-              </span>
-              <span className="rounded-lg bg-emerald-500/10 px-2 py-1 text-emerald-600 dark:text-emerald-400">
-                {currentLang === "ar" ? "ظاهرة في الموقع" : "Visible on site"}: {activeCount}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Gallery */}
       {loading ? (
@@ -303,16 +229,14 @@ export default function SlidersShowAll() {
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/10 p-12 text-center">
           <PhotoIcon className="mb-3 h-12 w-12 text-muted-foreground/40" />
           <h3 className="text-sm font-bold text-foreground">
-            {currentLang === "ar" ? "لا توجد صور في السلايدر بعد" : "No slider images yet"}
+            {t("LABELS.noSliderImages")}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {currentLang === "ar"
-              ? "أضف صور السلايدر ليتم عرضها خلف هيدر جميع صفحات الموقع"
-              : "Add images to be displayed behind every page header on the website"}
+            {t("LABELS.addSliderImagesDesc")}
           </p>
           <Button size="sm" onClick={handleOpenAdd} className="mt-4 gap-1.5">
             <PlusIcon className="h-4 w-4" />
-            {currentLang === "ar" ? "إضافة صور للسلايدر" : "Add Slider Images"}
+            {t("LABELS.addSliderImages")}
           </Button>
         </div>
       ) : (
@@ -323,8 +247,8 @@ export default function SlidersShowAll() {
               slide={slide}
               index={index}
               currentLang={currentLang}
-              onDelete={() => handleDelete(slide)}
               onToggleStatus={() => handleToggleStatus(slide)}
+              onDeleteSuccess={fetchSliders}
             />
           ))}
         </div>
@@ -343,9 +267,7 @@ export default function SlidersShowAll() {
               <div className="flex items-center gap-2.5">
                 <PhotoIcon className="h-5 w-5 text-primary" />
                 <h2 className="text-sm font-bold text-foreground">
-                  {currentLang === "ar"
-                    ? "إضافة صور إلى سلايدر الموقع"
-                    : "Add images to the website slider"}
+                  {t("LABELS.addImagesToSlider")}
                 </h2>
               </div>
               <button
@@ -368,9 +290,7 @@ export default function SlidersShowAll() {
                 >
                   <ArrowUpTrayIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
                   <span className="text-xs font-bold text-foreground">
-                    {currentLang === "ar"
-                      ? "اضغط لرفع صور من جهازك (يمكن اختيار أكثر من صورة)"
-                      : "Click to upload images from your device (multiple allowed)"}
+                    {t("LABELS.uploadFromDevice")}
                   </span>
                   <span className="mt-0.5 text-[11px] text-muted-foreground">
                     PNG, JPG, WEBP
@@ -386,29 +306,13 @@ export default function SlidersShowAll() {
                 />
               </div>
 
-              {/* Add by URL */}
-              <div className="flex items-end gap-2">
-                <BaseTextInput
-                  className="flex-1"
-                  label={currentLang === "ar" ? "أو أضف عبر رابط الصورة" : "Or add via image URL"}
-                  placeholder="/images/slider1.webp"
-                  value={urlInput}
-                  onInput={(v) => setUrlInput(v)}
-                  prependInputIcon={LinkIcon}
-                />
-                <Button type="button" variant="outline" onClick={handleAddUrl} className="h-11">
-                  {currentLang === "ar" ? "إضافة" : "Add"}
-                </Button>
-              </div>
-
+        
               {/* Site presets */}
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <label className="text-xs font-bold text-foreground">
-                  {currentLang === "ar"
-                    ? "اختيار سريع من صور الموقع الجاهزة"
-                    : "Quick pick from built-in site images"}
+                  {t("LABELS.quickPickImages")}
                 </label>
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                <div className="grid grid-cols-3 mt-2! gap-2 sm:grid-cols-5">
                   {SITE_PRESET_IMAGES.map((img) => {
                     const selected = stagedImages.includes(img);
                     return (
@@ -422,7 +326,15 @@ export default function SlidersShowAll() {
                             : "border-border hover:border-primary/50"
                         }`}
                       >
-                        <img src={img} alt={img} className="h-full w-full object-cover" />
+                        <img 
+                          src={img} 
+                          alt={img} 
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "https://placehold.co/400x225/f1f5f9/64748b?text=Image+Preview";
+                          }}
+                        />
                         {selected && (
                           <span className="absolute inset-0 flex items-center justify-center bg-primary/40 text-[10px] font-bold text-white">
                             ✓
@@ -437,14 +349,11 @@ export default function SlidersShowAll() {
               {/* Staged list */}
               <div className="space-y-2 border-t border-border pt-4">
                 <label className="text-xs font-bold text-foreground">
-                  {currentLang === "ar" ? "الصور الجاهزة للإضافة" : "Images ready to add"} (
-                  {stagedImages.length})
+                  {t("LABELS.imagesReadyToAdd")} ({stagedImages.length})
                 </label>
                 {stagedImages.length === 0 ? (
                   <p className="text-[11px] text-muted-foreground">
-                    {currentLang === "ar"
-                      ? "لم تختر أي صور بعد."
-                      : "No images selected yet."}
+                    {t("LABELS.noImagesSelected")}
                   </p>
                 ) : (
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
@@ -453,7 +362,15 @@ export default function SlidersShowAll() {
                         key={`${img}-${idx}`}
                         className="relative aspect-16/9 overflow-hidden rounded-xl border border-border"
                       >
-                        <img src={img} alt="" className="h-full w-full object-cover" />
+                        <img 
+                          src={img} 
+                          alt="" 
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "https://placehold.co/400x225/f1f5f9/64748b?text=Image+Preview";
+                          }}
+                        />
                         <button
                           type="button"
                           onClick={() =>
@@ -473,14 +390,12 @@ export default function SlidersShowAll() {
             {/* Modal Footer */}
             <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-4">
               <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-                {currentLang === "ar" ? "إلغاء" : "Cancel"}
+                {t("BUTTONS.cancel")}
               </Button>
               <Button onClick={handleSaveStaged} disabled={saving}>
                 {saving
-                  ? currentLang === "ar" ? "جاري الحفظ..." : "Saving..."
-                  : currentLang === "ar"
-                  ? `حفظ (${stagedImages.length})`
-                  : `Save (${stagedImages.length})`}
+                  ? t("BUTTONS.saving")
+                  : `${t("BUTTONS.save")} (${stagedImages.length})`}
               </Button>
             </div>
           </div>
