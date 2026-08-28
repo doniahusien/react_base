@@ -206,73 +206,78 @@ export default function Home() {
     <div className="space-y-6 pb-10">
       <PageHeader
         title="dashboard"
-        subtitle={t("ANALYTICS.description")}
+        subtitle={
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <span>{t("ANALYTICS.description")}</span>
+            <div className="flex items-center gap-2 text-xs">
+              <Funnel className="size-3.5" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">
+                {t("ANALYTICS.filterByDate")}
+              </span>
+            </div>
+          </div>
+        }
         translateSubtitle={false}
         icon={LayoutDashboard}
         path={[{ label: "dashboard", icon: LayoutDashboard }]}
-      />
+        rightActions={
+          <div className="flex flex-col w-full gap-2 sm:flex-row sm:w-auto sm:items-end">
+            <label className="flex min-w-0 flex-col gap-1.5 sm:max-w-40">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                {t("ANALYTICS.fromDate")}
+              </span>
+              <div className="relative">
+                <Calendar className="pointer-events-none absolute start-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="h-9 w-full rounded-lg border border-border bg-background/80 pe-2 ps-9 text-xs text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+            </label>
 
-      <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-        <div className="mb-4 flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Funnel width={14} height={14} />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-foreground">
-              {t("ANALYTICS.filterByDate")}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t("ANALYTICS.filterByDateDesc")}
-            </p>
-          </div>
-        </div>
+            <label className="flex min-w-0 flex-col gap-1.5 sm:max-w-40">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                {t("ANALYTICS.toDate")}
+              </span>
+              <div className="relative">
+                <Calendar className="pointer-events-none absolute start-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="date"
+                  value={toDate}
+                  min={fromDate || undefined}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="h-9 w-full rounded-lg border border-border bg-background/80 pe-2 ps-9 text-xs text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+            </label>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-          <label className="flex min-w-0 flex-1 flex-col gap-1.5 sm:max-w-55">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t("ANALYTICS.fromDate")}
-            </span>
-            <div className="relative">
-              <Calendar className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="h-10 w-full rounded-xl border border-border bg-background pe-3 ps-9 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-          </label>
-
-          <label className="flex min-w-0 flex-1 flex-col gap-1.5 sm:max-w-55">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t("ANALYTICS.toDate")}
-            </span>
-            <div className="relative">
-              <Calendar className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="date"
-                value={toDate}
-                min={fromDate || undefined}
-                onChange={(e) => setToDate(e.target.value)}
-                className="h-10 w-full rounded-xl border border-border bg-background pe-3 ps-9 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-          </label>
-
-          <div className="flex items-center gap-2">
-            <Button type="button" onClick={applyFilter} loading={loading}>
-              <Funnel width={14} height={14} />
-              {t("BUTTONS.apply")}
-            </Button>
-            {hasFilter && (
-              <Button type="button" variant="secondary" onClick={clearFilter}>
-                <X width={14} height={14} />
-                {t("BUTTONS.clear")}
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                onClick={applyFilter}
+                loading={loading}
+                className="h-9 px-3 text-xs"
+              >
+                <Funnel width={12} height={12} />
+                {t("BUTTONS.apply")}
               </Button>
-            )}
+              {hasFilter && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={clearFilter}
+                  className="h-9 px-3 text-xs"
+                >
+                  <X width={12} height={12} />
+                  {t("BUTTONS.clear")}
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {loading ? (
         <>
