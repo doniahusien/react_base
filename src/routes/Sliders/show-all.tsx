@@ -15,7 +15,7 @@ import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { Deleter } from "../../components/Shared/Deleter";
 import { slidersService } from "../../services/slidersService";
 import { toast } from "../../stores/toast";
-import type { SliderImage } from "../../types/banners";
+import type { SliderImage } from "../../types/sliders";
 
 const SITE_PRESET_IMAGES = [
   "/images/images/slider1.webp",
@@ -202,11 +202,11 @@ export default function SlidersShowAll() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="banners"
-        subtitle="bannersDesc"
+        title="sliders"
+        subtitle="slidersDesc"
         icon={PhotoIcon}
         total={slides.length}
-        path={["dashboard", "banners"]}
+        path={["dashboard", "sliders"]}
         rightActions={
           <Button size="sm" onClick={handleOpenAdd} className="gap-1.5">
             <PlusIcon className="h-4 w-4" />
