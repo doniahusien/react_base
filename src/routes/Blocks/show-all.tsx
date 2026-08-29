@@ -69,12 +69,12 @@ export default function BlocksShowAll() {
     try {
       const data = await blockTemplatesService.list();
       setTemplates(data);
-    } catch (e) {
-      toast.error("Failed to load block templates");
+    } catch {
+      toast.error(t("MESSAGES.failedToLoadBlocks"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchTemplates();
@@ -153,11 +153,7 @@ export default function BlocksShowAll() {
   const handleSaveTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name_ar.trim() || !formData.id.trim()) {
-      toast.error(
-        currentLang === "ar"
-          ? "يرجى كتابة اسم البلوك والمعرف الفريد"
-          : "Please provide block template name and unique ID"
-      );
+      toast.error(t("MESSAGES.blockNameAndIdRequired"));
       return;
     }
 
@@ -184,13 +180,13 @@ export default function BlocksShowAll() {
       await blockTemplatesService.save(payload, !editingTemplate);
       toast.success(
         editingTemplate
-          ? currentLang === "ar" ? "تم تحديث قالب البلوك بنجاح" : "Block template updated"
-          : currentLang === "ar" ? "تم إنشاء قالب البلوك بنجاح" : "Block template created"
+          ? t("MESSAGES.blockTemplateUpdated")
+          : t("MESSAGES.blockTemplateCreated")
       );
       setIsModalOpen(false);
       fetchTemplates();
-    } catch (err) {
-      toast.error("Error saving block template");
+    } catch {
+      toast.error(t("MESSAGES.blockTemplateSaveFailed"));
     } finally {
       setSaving(false);
     }
@@ -202,24 +198,22 @@ export default function BlocksShowAll() {
       prev.map((t) => (t.id === tpl.id ? { ...t, is_active: newStatus } : t))
     );
     toast.success(
-      currentLang === "ar"
-        ? newStatus ? "تم تفعيل البلوك" : "تم تعطيل البلوك"
-        : newStatus ? "Block enabled" : "Block disabled"
+      newStatus ? t("MESSAGES.blockEnabled") : t("MESSAGES.blockDisabled")
     );
   };
 
   const handleDeleteTemplate = async (tpl: BlockTemplate) => {
     if (
       !window.confirm(
-        currentLang === "ar"
-          ? `هل أنت متأكد من حذف قالب "${tpl.name_ar}"؟`
-          : `Delete block template "${tpl.name_en}"?`
+        t("MESSAGES.confirmDeleteBlockTemplate", {
+          name: currentLang === "ar" ? tpl.name_ar : tpl.name_en,
+        })
       )
     )
       return;
 
     await blockTemplatesService.remove(tpl.id);
-    toast.success(currentLang === "ar" ? "تم حذف القالب" : "Template deleted");
+    toast.success(t("MESSAGES.blockTemplateDeleted"));
     fetchTemplates();
   };
 
@@ -261,11 +255,7 @@ export default function BlocksShowAll() {
           <MagnifyingGlassIcon className="absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground start-3" />
           <input
             type="text"
-            placeholder={
-              currentLang === "ar"
-                ? "ابحث باسم البلوك أو محتواه..."
-                : "Search block name or shape tags..."
-            }
+            placeholder={t("LABELS.searchBlocks")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-xl border border-border bg-background py-2 pe-3 ps-9 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -274,14 +264,14 @@ export default function BlocksShowAll() {
 
         {/* Category Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-          {[
-            { key: "all", ar: "الكل", en: "All" },
-            { key: "content_media", ar: "محتوى وصور", en: "Content & Media" },
-            { key: "cards_grid", ar: "كروت وشبكات", en: "Cards Grid" },
-            { key: "workflow", ar: "خطوات ومسارات", en: "Workflow" },
-            { key: "quotes", ar: "رؤية ورسالة", en: "Vision & Quotes" },
-            { key: "support", ar: "دعم وتواصل", en: "Support" },
-            { key: "legal", ar: "قانوني وشروط", en: "Legal" },
+{[ 
+            { key: "all", label: "TITLES.all" },
+            { key: "content_media", label: "TITLES.blockCatContentMedia" },
+            { key: "cards_grid", label: "TITLES.blockCatCardsGrid" },
+            { key: "workflow", label: "TITLES.blockCatWorkflow" },
+            { key: "quotes", label: "TITLES.blockCatQuotes" },
+            { key: "support", label: "TITLES.blockCatSupport" },
+            { key: "legal", label: "TITLES.blockCatLegal" },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -292,7 +282,7 @@ export default function BlocksShowAll() {
                   : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
-              {currentLang === "ar" ? tab.ar : tab.en}
+              {t(tab.label)}
             </button>
           ))}
         </div>
@@ -312,16 +302,14 @@ export default function BlocksShowAll() {
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-12 text-center bg-card">
           <SquaresPlusIcon className="h-12 w-12 text-muted-foreground/50 mb-3" />
           <h3 className="text-base font-bold text-foreground">
-            {currentLang === "ar" ? "لا توجد قوالب بلوكات مطابقة" : "No block templates found"}
+            {t("LABELS.noBlockTemplates")}
           </h3>
           <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-            {currentLang === "ar"
-              ? "أنشئ قالباً جديداً يحدد تركيبة الحقول والأشكال التي تحتاجها في صفحات الموقع."
-              : "Create a new block template specifying input shapes and sections for your pages."}
+            {t("LABELS.noBlockTemplatesDesc")}
           </p>
           <Button onClick={handleOpenCreate} className="mt-4 gap-2 text-xs">
             <PlusIcon className="h-4 w-4" />
-            {currentLang === "ar" ? "إنشاء قالب الآن" : "Create Template"}
+            {t("LABELS.createTemplate")}
           </Button>
         </div>
       ) : (
@@ -365,12 +353,12 @@ export default function BlocksShowAll() {
                       {tpl.is_active ? (
                         <>
                           <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          {currentLang === "ar" ? "متاح بالصفحات" : "Available"}
+                          {t("STATUS.available")}
                         </>
                       ) : (
                         <>
                           <span className="size-1.5 rounded-full bg-zinc-400" />
-                          {currentLang === "ar" ? "معطل" : "Disabled"}
+                          {t("STATUS.disabled")}
                         </>
                       )}
                     </button>
@@ -401,8 +389,7 @@ export default function BlocksShowAll() {
                   {/* Fields Count Indicator */}
                   <div className="text-[11px] font-bold text-muted-foreground pt-1 border-t border-border/50 flex items-center justify-between">
                     <span>
-                      {currentLang === "ar" ? "عدد الحقول المدخلة:" : "Input fields:"}{" "}
-                      <strong className="text-foreground">{tpl.fields?.length || 0}</strong>
+                      {t("TITLES.inputFieldsCount", { count: tpl.fields?.length || 0 })}
                     </span>
                     <span className="font-mono text-[10px] text-muted-foreground">
                       {tpl.fields?.map((f) => f.type).join(" • ")}
@@ -419,14 +406,14 @@ export default function BlocksShowAll() {
                     className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
                   >
                     <PencilSquareIcon className="h-3.5 w-3.5" />
-                    {currentLang === "ar" ? "تعديل الهيكل" : "Edit Shape"}
+                    {t("LABELS.editShape")}
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => handleDeleteTemplate(tpl)}
                     className="p-2 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                    title={currentLang === "ar" ? "حذف" : "Delete"}
+                    title={t("BUTTONS.delete")}
                   >
                     <TrashIcon className="h-3.5 w-3.5" />
                   </Button>
@@ -449,13 +436,11 @@ export default function BlocksShowAll() {
                 <div>
                   <h2 className="text-lg font-bold">
                     {editingTemplate
-                      ? currentLang === "ar" ? "تعديل هيكل وقالب البلوك" : "Edit Block Template Shape"
-                      : currentLang === "ar" ? "إنشاء قالب بلوك جديد" : "Create New Block Template"}
+                      ? t("LABELS.editBlockTemplate")
+                      : t("LABELS.createBlockTemplate")}
                   </h2>
                   <p className="text-xs text-muted-foreground">
-                    {currentLang === "ar"
-                      ? "حدد الحقول والمدخلات (نصوص، صور، أيقونات، كروت تكرارية) لتظهر في مدير الصفحات"
-                      : "Define the input fields (texts, images, icons, repeaters) available in the page builder"}
+                    {t("LABELS.blockTemplateModalDesc")}
                   </p>
                 </div>
               </div>
@@ -471,32 +456,32 @@ export default function BlocksShowAll() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <BaseTextInput
                   name="name_ar"
-                  label={currentLang === "ar" ? "اسم القالب (بالعربية) *" : "Template Name (Arabic) *"}
+                  label={t("LABELS.blockTemplateNameArabic")}
                   value={formData.name_ar}
                   onInput={(val) => setFormData((prev) => ({ ...prev, name_ar: val }))}
-                  placeholder="مثال: عنوان + وصف + صورة + مميزات بأيقونات"
+                  placeholder={t("LABELS.blockTemplateNameArabicPlaceholder")}
                 />
                 <BaseTextInput
                   name="name_en"
-                  label={currentLang === "ar" ? "اسم القالب (بالإنجليزية)" : "Template Name (English)"}
+                  label={t("LABELS.blockTemplateNameEnglish")}
                   value={formData.name_en}
                   onInput={(val) => setFormData((prev) => ({ ...prev, name_en: val }))}
-                  placeholder="e.g. Title + Desc + Image + Icon Features"
+                  placeholder={t("LABELS.blockTemplateNameEnglishPlaceholder")}
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <BaseTextInput
                   name="id"
-                  label={currentLang === "ar" ? "المعرف الفريد (Block Type Slug) *" : "Block Type Slug *"}
+                  label={t("LABELS.blockTypeSlug")}
                   value={formData.id}
                   onInput={(val) => setFormData((prev) => ({ ...prev, id: val }))}
-                  placeholder="e.g. title_desc_image_icon"
+                  placeholder={t("LABELS.blockTypeSlugPlaceholder")}
                   disabled={!!editingTemplate}
                 />
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-foreground">
-                    {currentLang === "ar" ? "تصنيف البلوك" : "Category"}
+                    {t("TITLES.category")}
                   </label>
                   <select
                     value={formData.category}
@@ -505,36 +490,36 @@ export default function BlocksShowAll() {
                     }
                     className="w-full rounded-xl border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
                   >
-                    <option value="content_media">{currentLang === "ar" ? "محتوى وصور (Content & Media)" : "Content & Media"}</option>
-                    <option value="cards_grid">{currentLang === "ar" ? "شبكة كروت (Cards Grid)" : "Cards Grid"}</option>
-                    <option value="workflow">{currentLang === "ar" ? "خطوات ومسارات (Workflow Steps)" : "Workflow Steps"}</option>
-                    <option value="quotes">{currentLang === "ar" ? "رؤية ورسالة واقتباسات (Quotes & Vision)" : "Quotes & Vision"}</option>
-                    <option value="support">{currentLang === "ar" ? "دعم وتواصل وأسئلة (Support & FAQs)" : "Support & FAQs"}</option>
-                    <option value="legal">{currentLang === "ar" ? "شروط وبنود قانونية (Legal Clauses)" : "Legal Clauses"}</option>
-                    <option value="hero">{currentLang === "ar" ? "هيدر رئيسي (Hero Header)" : "Hero Header"}</option>
+                    <option value="content_media">{t("TITLES.blockCatContentMedia")}</option>
+                    <option value="cards_grid">{t("TITLES.blockCatCardsGrid")}</option>
+                    <option value="workflow">{t("TITLES.blockCatWorkflow")}</option>
+                    <option value="quotes">{t("TITLES.blockCatQuotes")}</option>
+                    <option value="support">{t("TITLES.blockCatSupport")}</option>
+                    <option value="legal">{t("TITLES.blockCatLegal")}</option>
+                    <option value="hero">{t("TITLES.blockCatHero")}</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <IconPicker
-                  label={currentLang === "ar" ? "أيقونة تمييز القالب" : "Template Badge Icon"}
+                  label={t("LABELS.blockTemplateIcon")}
                   value={formData.icon}
                   onChange={(iconKey) => setFormData((prev) => ({ ...prev, icon: iconKey }))}
                   currentLang={currentLang}
                 />
                 <BaseTextInput
                   name="shape_tags_str"
-                  label={currentLang === "ar" ? "وسوم عناصر الشكل (مفصولة بفاصلة)" : "Shape Element Tags (Comma separated)"}
+                  label={t("LABELS.blockShapeTags")}
                   value={formData.shape_tags_str}
                   onInput={(val) => setFormData((prev) => ({ ...prev, shape_tags_str: val }))}
-                  placeholder="title, description, image, icon, cards"
+                  placeholder={t("LABELS.blockShapeTagsPlaceholder")}
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-foreground">
-                  {currentLang === "ar" ? "شرح وتوضيح شكل البلوك" : "Description & Layout Notes"}
+                  {t("LABELS.blockDescription")}
                 </label>
                 <textarea
                   rows={2}
@@ -542,11 +527,7 @@ export default function BlocksShowAll() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, description_ar: e.target.value }))
                   }
-                  placeholder={
-                    currentLang === "ar"
-                      ? "وضح الغرض من هذا البلوك وأين يستخدم في واجهة الموقع..."
-                      : "Explain block purpose and structure..."
-                  }
+                  placeholder={t("LABELS.blockDescriptionPlaceholder")}
                   className="w-full rounded-xl border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
                 />
               </div>
@@ -556,12 +537,10 @@ export default function BlocksShowAll() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-xs font-bold text-foreground">
-                      {currentLang === "ar" ? "حقول ومدخلات هذا البلوك (Fields Schema)" : "Block Input Fields Schema"}
+                      {t("LABELS.blockFieldsSchema")}
                     </h4>
                     <p className="text-[11px] text-muted-foreground">
-                      {currentLang === "ar"
-                        ? "هذه الحقول هي التي سيقوم المحرر بتعبئة نصوصها وصورها عند إضافة هذا البلوك في أي صفحة."
-                        : "These inputs will be rendered in the page editor when adding this block."}
+                      {t("LABELS.blockFieldsSchemaDesc")}
                     </p>
                   </div>
                   <Button
@@ -572,7 +551,7 @@ export default function BlocksShowAll() {
                     className="gap-1.5 text-xs font-bold text-primary"
                   >
                     <PlusIcon className="h-3.5 w-3.5" />
-                    {currentLang === "ar" ? "إضافة حقل" : "Add Field"}
+                    {t("LABELS.addField")}
                   </Button>
                 </div>
 
@@ -606,12 +585,12 @@ export default function BlocksShowAll() {
                         }
                         className="w-28 rounded-lg border border-border bg-background p-1.5 text-xs font-semibold"
                       >
-                        <option value="text">نص (Text)</option>
-                        <option value="textarea">نص طويل (Textarea)</option>
-                        <option value="image">صورة (Image)</option>
-                        <option value="icon">أيقونة (Icon)</option>
-                        <option value="url">رابط (URL)</option>
-                        <option value="repeater">تكرار كروت (Repeater)</option>
+                        <option value="text">{t("LABELS.fieldTypeText")}</option>
+                        <option value="textarea">{t("LABELS.fieldTypeTextarea")}</option>
+                        <option value="image">{t("LABELS.fieldTypeImage")}</option>
+                        <option value="icon">{t("LABELS.fieldTypeIcon")}</option>
+                        <option value="url">{t("LABELS.fieldTypeUrl")}</option>
+                        <option value="repeater">{t("LABELS.fieldTypeRepeater")}</option>
                       </select>
                       <button
                         type="button"
@@ -631,12 +610,10 @@ export default function BlocksShowAll() {
                   variant="outline"
                   onClick={() => setIsModalOpen(false)}
                 >
-                  {currentLang === "ar" ? "إلغاء" : "Cancel"}
+                  {t("BUTTONS.cancel")}
                 </Button>
                 <Button type="submit" disabled={saving}>
-                  {saving
-                    ? currentLang === "ar" ? "جاري الحفظ..." : "Saving..."
-                    : currentLang === "ar" ? "حفظ القالب" : "Save Template"}
+                  {saving ? t("BUTTONS.saving") : t("LABELS.saveBlockTemplate")}
                 </Button>
               </div>
             </form>
