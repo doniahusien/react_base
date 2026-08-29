@@ -100,6 +100,7 @@ function SectionItem({
   currentLang,
   templates,
 }: SectionItemProps) {
+  const { t } = useTranslation();
   const meta = getSectionMeta(section.type, templates, currentLang);
   const IconComp = getIconComponent(meta.icon);
 
@@ -135,7 +136,7 @@ function SectionItem({
         {/* Visibility */}
         <button
           onClick={onToggleActive}
-          title={section.is_active ? "Visible on website" : "Hidden"}
+          title={section.is_active ? t("TITLES.visible") : t("TITLES.hidden")}
           className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted"
         >
           {section.is_active ? (
@@ -148,7 +149,7 @@ function SectionItem({
         {/* Duplicate */}
         <button
           onClick={onDuplicate}
-          title="Duplicate section"
+          title={t("TITLES.duplicateSection")}
           className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted"
         >
           <DocumentDuplicateIcon className="h-4 w-4" />
@@ -157,7 +158,7 @@ function SectionItem({
         {/* Delete */}
         <button
           onClick={onDelete}
-          title="Delete section"
+          title={t("TITLES.deleteSection")}
           className="p-1 rounded text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
         >
           <TrashIcon className="h-4 w-4" />
@@ -184,7 +185,7 @@ export default function PageContentManagerWorkspace() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Content Language Tab for Form editing
-  const [contentLang, setContentLang] = useState<"ar" | "en">("ar");
+  const [contentLang, setContentLang] = useState<"ar" | "en">(currentLang);
 
   // Add Block Modal
   const [isAddBlockOpen, setIsAddBlockOpen] = useState(false);
@@ -220,7 +221,7 @@ export default function PageContentManagerWorkspace() {
             setSelectedSectionId(secs[0].id);
           }
         } else {
-          toast.error("Page not found");
+          toast.error(t("MESSAGES.pageNotFound"));
           navigate("/pages");
         }
       })
@@ -262,19 +263,12 @@ export default function PageContentManagerWorkspace() {
     setSections((prev) => [...prev, duplicated]);
     setSelectedSectionId(newId);
     setHasUnsavedChanges(true);
-    toast.success(
-      currentLang === "ar" ? "تم تكرار القسم بنجاح" : "Section duplicated"
-    );
+    toast.success(t("MESSAGES.sectionDuplicated"));
   };
 
   // Delete Section
   const handleDeleteSection = (secId: string) => {
-    if (
-      !window.confirm(
-        currentLang === "ar" ? "هل أنت متأكد من حذف هذا القسم من الصفحة؟" : "Delete this section?"
-      )
-    )
-      return;
+    if (!window.confirm(t("MESSAGES.confirmDeleteSection"))) return;
 
     setSections((prev) => {
       const next = prev.filter((s) => s.id !== secId);
@@ -284,7 +278,7 @@ export default function PageContentManagerWorkspace() {
       return next;
     });
     setHasUnsavedChanges(true);
-    toast.success(currentLang === "ar" ? "تم حذف القسم" : "Section removed");
+    toast.success(t("MESSAGES.sectionRemoved"));
   };
 
   // Add Block to Page
@@ -322,9 +316,7 @@ export default function PageContentManagerWorkspace() {
     setSelectedSectionId(newId);
     setIsAddBlockOpen(false);
     setHasUnsavedChanges(true);
-    toast.success(
-      currentLang === "ar" ? "تمت إضافة البلوك إلى الصفحة" : "Block added to page"
-    );
+    toast.success(t("MESSAGES.blockAdded"));
   };
 
   // Update Selected Section Content
@@ -358,13 +350,9 @@ export default function PageContentManagerWorkspace() {
     try {
       await pagesService.saveSections(page.id, sections);
       setHasUnsavedChanges(false);
-      toast.success(
-        currentLang === "ar"
-          ? "تم حفظ وتحديث محتوى الصفحة بنجاح!"
-          : "Page content saved successfully!"
-      );
+      toast.success(t("MESSAGES.pageSaved"));
     } catch (e) {
-      toast.error("Error saving page");
+      toast.error(t("MESSAGES.errorSavingPage"));
     } finally {
       setSaving(false);
     }
@@ -396,7 +384,7 @@ export default function PageContentManagerWorkspace() {
         <div className="flex flex-col items-center gap-3">
           <ArrowPathIcon className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm font-semibold text-muted-foreground">
-            {currentLang === "ar" ? "جاري تحميل محتوى الصفحة..." : "Loading page content..."}
+            {t("TITLES.loadingPageContent")}
           </p>
         </div>
       </div>
@@ -418,8 +406,7 @@ export default function PageContentManagerWorkspace() {
             </span>
             <span>•</span>
             <span>
-              {sections.length}{" "}
-              {currentLang === "ar" ? "أقسام معرفة في هذه الصفحة" : "sections configured"}
+              {sections.length} {t("TITLES.sectionsConfigured")}
               </span>
             </div>
         }
@@ -439,7 +426,7 @@ export default function PageContentManagerWorkspace() {
           {hasUnsavedChanges && (
               <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-900 animate-pulse">
                 <span className="size-1.5 rounded-full bg-amber-500" />
-              {currentLang === "ar" ? "تغييرات غير محفوظة" : "Unsaved changes"}
+              {t("TITLES.unsavedChanges")}
             </span>
           )}
 
@@ -449,7 +436,7 @@ export default function PageContentManagerWorkspace() {
             className="gap-1.5 text-xs"
           >
             <PlusIcon className="h-4 w-4" />
-              {currentLang === "ar" ? "إضافة قسم" : "Add Section"}
+              {t("BUTTONS.addSection")}
           </Button>
 
           <Button
@@ -462,13 +449,7 @@ export default function PageContentManagerWorkspace() {
             ) : (
               <CheckIcon className="h-4 w-4" />
             )}
-            {saving
-              ? currentLang === "ar"
-                ? "جاري الحفظ..."
-                : "Saving..."
-              : currentLang === "ar"
-              ? "حفظ التغييرات"
-              : "Save Changes"}
+            {saving ? t("BUTTONS.saving") : t("BUTTONS.saveChanges")}
           </Button>
         </div>
         }
@@ -486,7 +467,7 @@ export default function PageContentManagerWorkspace() {
             <div className="flex items-center gap-2">
               <RectangleStackIcon className="h-4 w-4 text-primary" />
               <h2 className="text-xs font-bold text-foreground uppercase tracking-wider">
-                {currentLang === "ar" ? "أقسام الصفحة" : "Page Sections"}
+                {t("TITLES.pageSections")}
               </h2>
             </div>
             <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">
@@ -500,12 +481,10 @@ export default function PageContentManagerWorkspace() {
               <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
                 <SquaresPlusIcon className="h-10 w-10 mb-2 text-muted-foreground/50" />
                 <p className="text-xs font-bold text-foreground">
-                  {currentLang === "ar" ? "لا توجد أقسام في الصفحة" : "No sections yet"}
+                  {t("TITLES.noSectionsYet")}
                 </p>
                 <p className="text-[11px] text-muted-foreground mt-1">
-                  {currentLang === "ar"
-                    ? "أضف أقساماً لتنظيم محتوى هذه الصفحة"
-                    : "Add modular blocks to build page content"}
+                  {t("LABELS.noSectionsDesc")}
                 </p>
                 <Button
                   size="sm"
@@ -513,8 +492,8 @@ export default function PageContentManagerWorkspace() {
                   onClick={() => setIsAddBlockOpen(true)}
                   className="mt-3 text-xs"
                 >
-                  {currentLang === "ar" ? "إضافة أول قسم" : "Add First Section"}
-                </Button>
+{t("BUTTONS.addFirstSection")}
+                  </Button>
               </div>
             ) : (
               sections.map((section) => (
@@ -541,7 +520,7 @@ export default function PageContentManagerWorkspace() {
               className="w-full gap-2 text-xs border-dashed hover:border-primary font-semibold"
             >
               <PlusIcon className="h-4 w-4 text-primary" />
-              {currentLang === "ar" ? "إضافة قسم جديد" : "Add New Section"}
+              {t("BUTTONS.addNewSection")}
             </Button>
           </div>
         </aside>
@@ -581,12 +560,8 @@ export default function PageContentManagerWorkspace() {
                                 }`}
                               />
                               {selectedSection.is_active
-                                ? currentLang === "ar"
-                                  ? "مفعل في الموقع"
-                                  : "Active on website"
-                                : currentLang === "ar"
-                                ? "معطل / مخفي"
-                                : "Disabled / Hidden"}
+                                ? t("TITLES.activeOnWebsite")
+                                : t("TITLES.disabledHidden")}
               </span>
             </div>
 
@@ -612,12 +587,12 @@ export default function PageContentManagerWorkspace() {
                       {selectedSection.is_active ? (
                             <>
                               <EyeSlashIcon className="h-4 w-4 text-muted-foreground" />
-                              {currentLang === "ar" ? "إخفاء القسم" : "Hide Section"}
+                              {t("BUTTONS.hideSection")}
                             </>
                           ) : (
                             <>
                               <EyeIcon className="h-4 w-4 text-emerald-600" />
-                              {currentLang === "ar" ? "تفعيل القسم" : "Show Section"}
+                              {t("BUTTONS.showSection")}
                             </>
                           )}
                         </Button>
@@ -628,7 +603,7 @@ export default function PageContentManagerWorkspace() {
                           className="text-xs gap-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                     >
                       <TrashIcon className="h-4 w-4" />
-                          {currentLang === "ar" ? "حذف" : "Delete"}
+                          {t("BUTTONS.delete")}
                         </Button>
                   </div>
                 </div>
@@ -637,7 +612,7 @@ export default function PageContentManagerWorkspace() {
                     <div className="flex items-center justify-between bg-muted/30 p-2 rounded-xl border border-border">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-foreground ps-2">
-                          {currentLang === "ar" ? "تعديل نصوص الحقول باللغة:" : "Edit content fields in:"}
+                          {t("TITLES.editContentFieldsIn")}
                         </span>
               </div>
                       <div className="flex items-center gap-1.5">
@@ -650,7 +625,7 @@ export default function PageContentManagerWorkspace() {
                               : "text-muted-foreground hover:bg-muted hover:text-foreground"
                           }`}
                         >
-                          العربية (Arabic)
+                          {t("TITLES.languageArabic")}
                 </button>
                 <button
                   type="button"
@@ -661,7 +636,7 @@ export default function PageContentManagerWorkspace() {
                               : "text-muted-foreground hover:bg-muted hover:text-foreground"
                           }`}
                         >
-                          English (الإنجليزية)
+                          {t("TITLES.languageEnglish")}
                 </button>
               </div>
                       </div>
@@ -684,12 +659,10 @@ export default function PageContentManagerWorkspace() {
             <div className="rounded-2xl border border-border bg-card p-12 text-center text-muted-foreground shadow-xs flex flex-col items-center justify-center">
               <AdjustmentsHorizontalIcon className="h-12 w-12 mb-3 opacity-40 text-primary" />
               <h3 className="text-base font-bold text-foreground">
-                {currentLang === "ar" ? "حدد قسماً لإدارة وتعديل محتواه" : "Select a section to manage its content"}
+                {t("TITLES.selectSectionToManage")}
               </h3>
               <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                {currentLang === "ar"
-                  ? "انقر على أي قسم من القائمة الجانبية لتعديل نصوصه وصوره وعناصره."
-                  : "Click any section from the left sidebar to edit texts, images and repeated items."}
+                {t("LABELS.selectSectionToManageDesc")}
               </p>
             </div>
           )}
@@ -705,22 +678,20 @@ export default function PageContentManagerWorkspace() {
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold">
-                    {currentLang === "ar" ? "مكتبة قوالب وبلوكات المنصة" : "Platform Block Shapes & Templates"}
-                </h2>
+<h2 className="text-lg font-bold">
+                    {t("TITLES.blocksLibraryTitle")}
+                  </h2>
                   <Link
                     to="/blocks"
                     target="_blank"
                     className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline bg-primary/10 px-2 py-0.5 rounded-md"
                   >
-                    <span>{currentLang === "ar" ? "إدارة قوالب البلوكات" : "Manage Blocks CRUD"}</span>
+                    <span>{t("BUTTONS.manageBlocks")}</span>
                     <ArrowTopRightOnSquareIcon className="h-3 w-3" />
                   </Link>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {currentLang === "ar"
-                    ? "اختر شكل وهيكل البلوك الذي تريده (نصوص، صور، أيقونات، بطاقات، خطوات) لإضافته وتعبئة محتواه"
-                    : "Choose the block shape/template (title, desc, image, icon, cards) to add and fill with content"}
+                  {t("LABELS.blocksLibraryDesc")}
                 </p>
               </div>
               <button
@@ -735,7 +706,7 @@ export default function PageContentManagerWorkspace() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <input
                 type="text"
-                placeholder={currentLang === "ar" ? "ابحث عن قالب بلوك بالاسم أو الوسم أو الحقول..." : "Search block templates by name, tags, or fields..."}
+                placeholder={t("LABELS.searchBlockTemplates")}
                 value={blockSearch}
                 onChange={(e) => setBlockSearch(e.target.value)}
                 className="w-full sm:w-80 rounded-xl border border-border bg-background px-3 py-2 text-xs focus:border-primary focus:outline-none"
@@ -743,14 +714,14 @@ export default function PageContentManagerWorkspace() {
 
               <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pb-1">
                 {[
-                  { key: "all", label_ar: "الكل", label_en: "All" },
-                  { key: "content_media", label_ar: "محتوى وصور", label_en: "Content & Media" },
-                  { key: "cards_grid", label_ar: "شبكة كروت", label_en: "Cards Grid" },
-                  { key: "workflow", label_ar: "خطوات ومسارات", label_en: "Workflow" },
-                  { key: "quotes", label_ar: "رؤية ورسالة", label_en: "Quotes & Vision" },
-                  { key: "support", label_ar: "دعم وتواصل", label_en: "Support & FAQs" },
-                  { key: "legal", label_ar: "شروط وبنود", label_en: "Legal" },
-                  { key: "hero", label_ar: "هيدر رئيسي", label_en: "Hero Header" },
+                  { key: "all", tKey: "TITLES.all" },
+                  { key: "content_media", tKey: "TITLES.blockCatContentMedia" },
+                  { key: "cards_grid", tKey: "TITLES.blockCatCardsGrid" },
+                  { key: "workflow", tKey: "TITLES.blockCatWorkflow" },
+                  { key: "quotes", tKey: "TITLES.blockCatQuotes" },
+                  { key: "support", tKey: "TITLES.blockCatSupport" },
+                  { key: "legal", tKey: "TITLES.blockCatLegal" },
+                  { key: "hero", tKey: "TITLES.blockCatHero" },
                 ].map((cat) => (
                   <button
                     key={cat.key}
@@ -762,7 +733,7 @@ export default function PageContentManagerWorkspace() {
                         : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
-                    {currentLang === "ar" ? cat.label_ar : cat.label_en}
+                    {t(cat.tKey)}
                   </button>
                 ))}
               </div>
@@ -774,7 +745,7 @@ export default function PageContentManagerWorkspace() {
                 <div className="sm:col-span-2 flex flex-col items-center justify-center p-10 text-center text-muted-foreground bg-muted/10 rounded-2xl border border-dashed border-border">
                   <SparklesIcon className="h-10 w-10 mb-2 opacity-40 text-primary" />
                   <p className="text-xs font-bold text-foreground">
-                    {currentLang === "ar" ? "لا توجد قوالب بلوكات مطابقة للبحث" : "No matching block templates found"}
+                    {t("LABELS.noMatchingBlockTemplates")}
                   </p>
                 </div>
               ) : (
@@ -799,7 +770,7 @@ export default function PageContentManagerWorkspace() {
                         </div>
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
                           <span className="size-1.5 rounded-full bg-emerald-500" />
-                          {currentLang === "ar" ? "متاح للإدراج" : "Available"}
+                          {t("STATUS.available")}
                       </span>
                     </div>
 
@@ -833,9 +804,7 @@ export default function PageContentManagerWorkspace() {
                       {/* Footer fields summary */}
                       <div className="flex items-center justify-between pt-2 border-t border-border/60 text-[10px] text-muted-foreground mt-auto w-full">
                         <span>
-                          {currentLang === "ar"
-                            ? `عدد الحقول: ${tpl.fields.length}`
-                            : `Input fields: ${tpl.fields.length}`}
+                          {t("TITLES.inputFieldsCount", { count: tpl.fields.length })}
                         </span>
                         <span className="font-mono truncate max-w-[150px]">
                           {tpl.fields.map((f) => f.type).join(" • ")}
@@ -849,7 +818,7 @@ export default function PageContentManagerWorkspace() {
 
             <div className="flex justify-end pt-3 border-t border-border">
               <Button variant="outline" onClick={() => setIsAddBlockOpen(false)}>
-                {currentLang === "ar" ? "إغلاق" : "Close"}
+                {t("BUTTONS.close")}
               </Button>
             </div>
           </div>
@@ -863,15 +832,14 @@ export default function PageContentManagerWorkspace() {
 // GLOBAL SLIDER NOTICE (shared by all header / banner blocks)
 // ============================================================================
 function GlobalSliderNotice({ lang }: { lang: "ar" | "en" }) {
+  const { i18n } = useTranslation();
   return (
     <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <PhotoIcon className="h-5 w-5 text-primary" />
           <h4 className="text-xs font-bold text-foreground">
-            {lang === "ar"
-              ? "صور السلايدر تُدار من مكتبة السلايدر العامة"
-              : "Slider images come from the global slider library"}
+            {i18n.t("TITLES.sliderGlobalTitle", { lng: lang })}
           </h4>
         </div>
         <Link
@@ -879,14 +847,12 @@ function GlobalSliderNotice({ lang }: { lang: "ar" | "en" }) {
           target="_blank"
           className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline shrink-0"
         >
-          <span>{lang === "ar" ? "إدارة صور السلايدر" : "Manage Slider Images"}</span>
+          <span>{i18n.t("BUTTONS.manageSliderImages", { lng: lang })}</span>
           <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
         </Link>
       </div>
       <p className="text-xs text-muted-foreground leading-relaxed">
-        {lang === "ar"
-          ? "هنا تتحكم في نصوص الهيدر/البانر لهذه الصفحة فقط. أما الصور فيرجعها الباك إند تلقائياً كمصفوفة صور (sliders) مع استجابة كل صفحة من مكتبة صور السلايدر العامة."
-          : "Here you only manage this page's header/banner texts. Images are returned automatically by the backend as a `sliders` images array with every page response, from the global slider library."}
+        {i18n.t("LABELS.sliderGlobalDesc", { lng: lang })}
       </p>
     </div>
   );
@@ -910,6 +876,15 @@ function BlockSpecificContentForm({
   currentUiLang,
   templates = [],
 }: BlockSpecificContentFormProps) {
+  const { t, i18n } = useTranslation();
+  const ct = (key: string, opts?: Record<string, any>) => {
+    const translated = i18n.t(key, { lng: currentUiLang, ...opts });
+    return key.startsWith("FIELDS.")
+      ? `${translated} (${lang.toUpperCase()})`
+      : translated;
+  };
+  const contentT = (key: string, opts?: Record<string, any>) =>
+    i18n.t(key, { lng: lang, ...opts });
   const content = section.content[lang] || {};
 
   switch (section.type) {
@@ -919,12 +894,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم / البادج العلوي (Badge)" : "Top Badge Text"}
+              label={ct("FIELDS.topBadge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "سطر العنوان الأول" : "Title Line 1"}
+              label={ct("FIELDS.titleLine1")}
               value={content.title_line1 || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title_line1: e.target.value }))}
             />
@@ -932,12 +907,12 @@ function BlockSpecificContentForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "سطر العنوان الثاني" : "Title Line 2"}
+              label={ct("FIELDS.titleLine2")}
               value={content.title_line2 || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title_line2: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "الكلمة المميزة بلون رئيسي (Highlight)" : "Highlighted Text"}
+              label={ct("FIELDS.highlightText")}
               value={content.title_highlight || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title_highlight: e.target.value }))}
             />
@@ -945,7 +920,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "الوصف التوضيحي الرئيسي" : "Main Description"}
+              {ct("FIELDS.mainDescription")}
             </label>
             <textarea
               rows={3}
@@ -957,12 +932,12 @@ function BlockSpecificContentForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "نص الزر الأساسي (Primary CTA Text)" : "Primary Button Text"}
+              label={ct("FIELDS.primaryCtaText")}
               value={content.cta_text || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, cta_text: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "رابط الزر الأساسي (Primary CTA Link)" : "Primary Button Link URL"}
+              label={ct("FIELDS.primaryCtaLink")}
               value={content.cta_link || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, cta_link: e.target.value }))}
             />
@@ -970,18 +945,18 @@ function BlockSpecificContentForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "نص الزر الثانوي (Secondary CTA Text)" : "Secondary Button Text"}
+              label={ct("FIELDS.secondaryCtaText")}
               value={content.secondary_cta_text || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, secondary_cta_text: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "رابط الزر الثانوي (Secondary CTA Link)" : "Secondary Button Link URL"}
+              label={ct("FIELDS.secondaryCtaLink")}
               value={content.secondary_cta_link || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, secondary_cta_link: e.target.value }))}
             />
           </div>
 
-          <GlobalSliderNotice lang={lang} />
+          <GlobalSliderNotice lang={currentUiLang} />
         </div>
       );
     }
@@ -994,12 +969,10 @@ function BlockSpecificContentForm({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
             <div>
               <h4 className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "بطاقات خدمات المنصة (Services Cards)" : "Platform Services Cards"}
+                {ct("TITLES.servicesCards")}
               </h4>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                {lang === "ar"
-                  ? "تظهر هذه البطاقات الـ 3 التفاعلية مباشرة في الصفحة الرئيسية مع خلفية وأيقونة ووصف يظهر عند التمرير."
-                  : "Interactive expanding cards rendered on homepage with background image, icon, and hover description."}
+                {ct("LABELS.servicesCardsDesc")}
               </p>
             </div>
             <button
@@ -1011,7 +984,7 @@ function BlockSpecificContentForm({
                     ...(prev.services || []),
                     {
                       id: `serv-${Date.now()}`,
-                      title: lang === "ar" ? "خدمة جديدة" : "New Service",
+                      title: contentT("TITLES.newService"),
                       description: "",
                       icon: "Scale",
                       image: "/images/service1.webp",
@@ -1022,7 +995,7 @@ function BlockSpecificContentForm({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground text-xs font-bold transition-colors shrink-0"
             >
               <PlusIcon className="h-3.5 w-3.5" />
-              <span>{lang === "ar" ? "إضافة بطاقة خدمة" : "Add Service Card"}</span>
+              <span>{ct("BUTTONS.addServiceCard")}</span>
             </button>
           </div>
 
@@ -1038,7 +1011,7 @@ function BlockSpecificContentForm({
                       #{idx + 1}
                     </span>
                     <span className="text-xs font-bold text-foreground">
-                      {item.title || (lang === "ar" ? `الخدمة ${idx + 1}` : `Service ${idx + 1}`)}
+                      {item.title || (ct("TITLES.serviceNumber", { count: idx + 1 }))}
                     </span>
                   </div>
                   <button
@@ -1050,7 +1023,7 @@ function BlockSpecificContentForm({
                       }))
                     }
                     className="p-1 text-muted-foreground hover:text-rose-500 rounded-lg transition-colors"
-                    title={lang === "ar" ? "حذف البطاقة" : "Delete Card"}
+                    title={ct("TITLES.deleteCard")}
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
@@ -1058,7 +1031,7 @@ function BlockSpecificContentForm({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <BaseTextInput
-                    label={lang === "ar" ? "عنوان كرت الخدمة" : "Service Title"}
+                    label={ct("FIELDS.serviceTitle")}
                     value={item.title || ""}
                     onChange={(e) =>
                       onChange((prev) => {
@@ -1069,7 +1042,7 @@ function BlockSpecificContentForm({
                     }
                   />
                   <IconPicker
-                    label={lang === "ar" ? "أيقونة الخدمة (رمز أو صورة)" : "Service Icon (Vector / Image)"}
+                    label={ct("FIELDS.serviceIcon")}
                     value={item.icon || "Scale"}
                     onChange={(iconVal) =>
                       onChange((prev) => {
@@ -1084,7 +1057,7 @@ function BlockSpecificContentForm({
 
                 <div className="space-y-3">
                   <ImageInput
-                    label={lang === "ar" ? "صورة خلفية كرت الخدمة" : "Card Background Image"}
+                    label={ct("FIELDS.cardBackgroundImage")}
                     value={item.image || ""}
                     onChange={(imgVal) =>
                       onChange((prev) => {
@@ -1105,7 +1078,7 @@ function BlockSpecificContentForm({
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-foreground">
-                      {lang === "ar" ? "الوصف التعريفي (يظهر عند التمرير Hover)" : "Hover Description"}
+                      {ct("FIELDS.hoverDescription")}
                     </label>
                     <textarea
                       rows={2}
@@ -1135,12 +1108,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Section Badge"}
+              label={ct("FIELDS.sectionBadge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان القسم" : "Section Title"}
+              label={ct("FIELDS.sectionTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -1148,7 +1121,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "الوصف الفرعي" : "Subtitle / Description"}
+              {ct("FIELDS.subtitleDescription")}
             </label>
             <textarea
               rows={2}
@@ -1162,7 +1135,7 @@ function BlockSpecificContentForm({
           <div className="space-y-3 pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "خطوات مسار العمل" : "Workflow Steps"} ({steps.length})
+                {ct("TITLES.workflowSteps")} ({steps.length})
               </label>
               <button
                 type="button"
@@ -1174,7 +1147,7 @@ function BlockSpecificContentForm({
                       {
                         id: `step-${Date.now()}`,
                         step_number: `0${(prev.steps?.length || 0) + 1}`,
-                        title: lang === "ar" ? "خطوة جديدة" : "New Step",
+                        title: contentT("TITLES.newStep"),
                         description: "",
                       },
                     ],
@@ -1182,7 +1155,7 @@ function BlockSpecificContentForm({
                 }
                 className="text-xs font-bold text-primary hover:underline"
               >
-                + {lang === "ar" ? "إضافة خطوة" : "Add Step"}
+                + {ct("BUTTONS.addStep")}
               </button>
                 </div>
 
@@ -1214,7 +1187,7 @@ function BlockSpecificContentForm({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <BaseTextInput
-                    label={lang === "ar" ? "رقم الخطوة" : "Step Number (e.g. 01)"}
+                    label={ct("FIELDS.stepNumber")}
                     value={step.step_number || ""}
                     onChange={(e) =>
                       onChange((prev) => {
@@ -1226,7 +1199,7 @@ function BlockSpecificContentForm({
                   />
                   <div className="sm:col-span-2">
                     <BaseTextInput
-                      label={lang === "ar" ? "عنوان الخطوة" : "Step Title"}
+                      label={ct("FIELDS.stepTitle")}
                       value={step.title || ""}
                       onChange={(e) =>
                         onChange((prev) => {
@@ -1240,7 +1213,7 @@ function BlockSpecificContentForm({
         </div>
 
                 <IconPicker
-                  label={lang === "ar" ? "أيقونة الخطوة (رمز أو صورة)" : "Step Icon (Vector / Image)"}
+                  label={ct("FIELDS.stepIcon")}
                   value={step.icon || "Sparkles"}
                   onChange={(iconVal) =>
                     onChange((prev) => {
@@ -1254,7 +1227,7 @@ function BlockSpecificContentForm({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "شرح الخطوة" : "Step Description"}
+                    {ct("FIELDS.stepDescription")}
                   </label>
                   <textarea
                     rows={2}
@@ -1284,19 +1257,19 @@ function BlockSpecificContentForm({
           <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Section Badge"}
+              label={ct("FIELDS.sectionBadge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان القسم الرئيسي" : "Section Title"}
+              label={ct("FIELDS.sectionTitleMain")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
               </div>
 
           <BaseTextInput
-            label={lang === "ar" ? "العنوان الفرعي" : "Subtitle"}
+            label={ct("FIELDS.subtitle")}
             value={content.subtitle || ""}
             onChange={(e) => onChange((prev) => ({ ...prev, subtitle: e.target.value }))}
           />
@@ -1304,11 +1277,11 @@ function BlockSpecificContentForm({
           {/* Client Option Card Form */}
           <div className="p-4 rounded-xl border border-border bg-muted/20 space-y-3">
             <h4 className="text-xs font-bold text-primary uppercase">
-              {lang === "ar" ? "بطاقة مسار العملاء (طلب استشارة/قضية)" : "Client Action Card"}
+              {ct("TITLES.clientActionCard")}
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <BaseTextInput
-                label={lang === "ar" ? "عنوان البطاقة" : "Card Title"}
+                label={ct("FIELDS.cardTitle")}
                 value={clientOpt.title || ""}
                 onChange={(e) =>
                   onChange((prev) => ({
@@ -1318,7 +1291,7 @@ function BlockSpecificContentForm({
                 }
               />
           <BaseTextInput
-                label={lang === "ar" ? "ملاحظة / بادج المحامين بالانتظار" : "Waiting Lawyers Note"}
+                label={ct("FIELDS.waitingLawyersNote")}
                 value={clientOpt.note_text || ""}
             onChange={(e) =>
                   onChange((prev) => ({
@@ -1331,7 +1304,7 @@ function BlockSpecificContentForm({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <IconPicker
-                label={lang === "ar" ? "أيقونة مسار العميل" : "Client Action Icon"}
+                label={ct("FIELDS.clientActionIcon")}
                 value={clientOpt.icon || "Users"}
                 onChange={(iconVal) =>
                   onChange((prev) => ({
@@ -1342,7 +1315,7 @@ function BlockSpecificContentForm({
                 currentLang={lang}
               />
               <ImageInput
-                label={lang === "ar" ? "صورة توضيحية للعميل" : "Client Card Image"}
+                label={ct("FIELDS.clientCardImage")}
                 value={clientOpt.image || ""}
                 onChange={(imgVal) =>
                   onChange((prev) => ({
@@ -1356,7 +1329,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "الوصف" : "Description"}
+                {ct("FIELDS.description")}
             </label>
             <textarea
                 rows={2}
@@ -1372,7 +1345,7 @@ function BlockSpecificContentForm({
           </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <BaseTextInput
-                label={lang === "ar" ? "نص الزر" : "CTA Button Text"}
+                label={ct("FIELDS.ctaButtonText")}
                 value={clientOpt.cta_text || ""}
             onChange={(e) =>
                   onChange((prev) => ({
@@ -1382,7 +1355,7 @@ function BlockSpecificContentForm({
             }
           />
           <BaseTextInput
-                label={lang === "ar" ? "رابط الزر" : "CTA Button Link"}
+                label={ct("FIELDS.ctaButtonLink")}
                 value={clientOpt.cta_link || ""}
             onChange={(e) =>
                   onChange((prev) => ({
@@ -1397,11 +1370,11 @@ function BlockSpecificContentForm({
           {/* Lawyer Option Card Form */}
           <div className="p-4 rounded-xl border border-border bg-muted/20 space-y-3">
             <h4 className="text-xs font-bold text-primary uppercase">
-              {lang === "ar" ? "بطاقة مسار المحامين (الانضمام للمنصة)" : "Lawyer Action Card"}
+              {ct("TITLES.lawyerActionCard")}
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <BaseTextInput
-                label={lang === "ar" ? "عنوان البطاقة" : "Card Title"}
+                label={ct("FIELDS.cardTitle")}
                 value={lawyerOpt.title || ""}
             onChange={(e) =>
                   onChange((prev) => ({
@@ -1411,7 +1384,7 @@ function BlockSpecificContentForm({
             }
           />
           <BaseTextInput
-                label={lang === "ar" ? "ملاحظة / بادج الفرص المتاحة" : "Opportunities Note"}
+                label={ct("FIELDS.opportunitiesNote")}
                 value={lawyerOpt.note_text || ""}
             onChange={(e) =>
                   onChange((prev) => ({
@@ -1424,7 +1397,7 @@ function BlockSpecificContentForm({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <IconPicker
-                label={lang === "ar" ? "أيقونة مسار المحامي" : "Lawyer Action Icon"}
+                label={ct("FIELDS.lawyerActionIcon")}
                 value={lawyerOpt.icon || "Briefcase"}
                 onChange={(iconVal) =>
                   onChange((prev) => ({
@@ -1435,7 +1408,7 @@ function BlockSpecificContentForm({
                 currentLang={lang}
               />
               <ImageInput
-                label={lang === "ar" ? "صورة توضيحية للمحامي" : "Lawyer Card Image"}
+                label={ct("FIELDS.lawyerCardImage")}
                 value={lawyerOpt.image || ""}
                 onChange={(imgVal) =>
                   onChange((prev) => ({
@@ -1449,7 +1422,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "الوصف" : "Description"}
+                {ct("FIELDS.description")}
             </label>
             <textarea
                 rows={2}
@@ -1465,7 +1438,7 @@ function BlockSpecificContentForm({
           </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <BaseTextInput
-                label={lang === "ar" ? "نص الزر" : "CTA Button Text"}
+                label={ct("FIELDS.ctaButtonText")}
                 value={lawyerOpt.cta_text || ""}
             onChange={(e) =>
                   onChange((prev) => ({
@@ -1475,7 +1448,7 @@ function BlockSpecificContentForm({
             }
           />
             <BaseTextInput
-                label={lang === "ar" ? "رابط الزر" : "CTA Button Link"}
+                label={ct("FIELDS.ctaButtonLink")}
                 value={lawyerOpt.cta_link || ""}
               onChange={(e) =>
                   onChange((prev) => ({
@@ -1497,12 +1470,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Section Badge"}
+              label={ct("FIELDS.sectionBadge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "العنوان الرئيسي" : "Section Title"}
+              label={ct("FIELDS.mainTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -1510,7 +1483,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "نص النبذة والقصة" : "Narrative Story Description"}
+              {ct("FIELDS.narrativeStoryDesc")}
             </label>
             <textarea
               rows={4}
@@ -1522,7 +1495,7 @@ function BlockSpecificContentForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <ImageInput
-              label={lang === "ar" ? "الصورة الجانبية لقصة المنصة" : "Our Story Portrait Image"}
+              label={ct("FIELDS.storyPortraitImage")}
               value={content.image || ""}
               onChange={(val) => onChange((prev) => ({ ...prev, image: val }))}
               currentLang={lang}
@@ -1533,7 +1506,7 @@ function BlockSpecificContentForm({
               ]}
             />
             <BaseTextInput
-              label={lang === "ar" ? "نص شارة الاعتماد / الإحصائية" : "Stats Badge Label"}
+              label={ct("FIELDS.statsBadgeLabel")}
               value={content.stats_label || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, stats_label: e.target.value }))}
             />
@@ -1544,7 +1517,7 @@ function BlockSpecificContentForm({
             <div className="space-y-3 pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-foreground">
-                  {lang === "ar" ? "قائمة المميزات ونقاط القوة" : "Features List"} ({features.length})
+                  {ct("TITLES.featuresList")} ({features.length})
               </label>
               <button
                 type="button"
@@ -1554,7 +1527,7 @@ function BlockSpecificContentForm({
                       features: [
                         ...(prev.features || []),
                         {
-                          title: lang === "ar" ? "ميزة جديدة" : "New Feature",
+                          title: contentT("TITLES.newFeature"),
                           description: "",
                           icon: "ShieldCheck",
                       },
@@ -1563,7 +1536,7 @@ function BlockSpecificContentForm({
                 }
                 className="text-xs font-bold text-primary hover:underline"
               >
-                  + {lang === "ar" ? "إضافة ميزة" : "Add Feature"}
+                  + {ct("BUTTONS.addFeature")}
               </button>
             </div>
 
@@ -1592,7 +1565,7 @@ function BlockSpecificContentForm({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <BaseTextInput
-                      label={lang === "ar" ? "عنوان الميزة" : "Feature Title"}
+                      label={ct("FIELDS.featureTitle")}
                       value={feat.title || ""}
                   onChange={(e) =>
                     onChange((prev) => {
@@ -1603,7 +1576,7 @@ function BlockSpecificContentForm({
                   }
                 />
                     <IconPicker
-                      label={lang === "ar" ? "أيقونة الميزة" : "Feature Icon"}
+                      label={ct("FIELDS.featureIcon")}
                       value={feat.icon || "ShieldCheck"}
                       onChange={(iconVal) =>
                     onChange((prev) => {
@@ -1618,7 +1591,7 @@ function BlockSpecificContentForm({
 
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-foreground">
-                      {lang === "ar" ? "شرح وتفاصيل الميزة" : "Description"}
+                      {ct("FIELDS.featureDescription")}
                     </label>
                     <textarea
                       rows={2}
@@ -1647,12 +1620,12 @@ function BlockSpecificContentForm({
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Section Badge"}
+              label={ct("FIELDS.sectionBadge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
           />
           <BaseTextInput
-              label={lang === "ar" ? "العنوان الرئيسي" : "Main Title"}
+              label={ct("FIELDS.titleOnlyMainTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -1660,7 +1633,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "نص المحتوى والمقال" : "Body Content"}
+              {ct("FIELDS.bodyContent")}
             </label>
             <textarea
               rows={4}
@@ -1671,7 +1644,7 @@ function BlockSpecificContentForm({
           </div>
 
           <ImageInput
-            label={lang === "ar" ? "الصورة المرفقة" : "Featured Image"}
+            label={ct("FIELDS.featuredImage")}
             value={content.image || ""}
             onChange={(imgVal) => onChange((prev) => ({ ...prev, image: imgVal }))}
             currentLang={lang}
@@ -1693,19 +1666,19 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Section Badge"}
+              label={ct("FIELDS.sectionBadge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان القسم" : "Section Title"}
+              label={ct("FIELDS.sectionTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
           </div>
 
           <BaseTextInput
-            label={lang === "ar" ? "العنوان الفرعي" : "Subtitle / Explanation"}
+            label={ct("FIELDS.subtitleExplanation")}
             value={content.subtitle || ""}
             onChange={(e) => onChange((prev) => ({ ...prev, subtitle: e.target.value }))}
           />
@@ -1714,7 +1687,7 @@ function BlockSpecificContentForm({
           <div className="space-y-3 pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "بطاقات القيم والمبادئ" : "Core Values List"} ({values.length})
+                {ct("TITLES.coreValuesList")} ({values.length})
               </label>
               <button
                 type="button"
@@ -1725,7 +1698,7 @@ function BlockSpecificContentForm({
                       ...(prev.values || []),
                       {
                         id: `val-${Date.now()}`,
-                        title: lang === "ar" ? "قيمة جديدة" : "New Value",
+                        title: contentT("TITLES.newValue"),
                         description: "",
                         icon: "ShieldCheckIcon",
                       },
@@ -1734,7 +1707,7 @@ function BlockSpecificContentForm({
                 }
                 className="text-xs font-bold text-primary hover:underline"
               >
-                + {lang === "ar" ? "إضافة قيمة" : "Add Value"}
+                + {ct("BUTTONS.addValue")}
               </button>
             </div>
 
@@ -1745,7 +1718,7 @@ function BlockSpecificContentForm({
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary">
-                    {lang === "ar" ? `القيمة #${idx + 1}` : `Value #${idx + 1}`}
+                    {ct("TITLES.valueNumber", { count: idx + 1 })}
                   </span>
                   <button
                     type="button"
@@ -1763,7 +1736,7 @@ function BlockSpecificContentForm({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <BaseTextInput
-                    label={lang === "ar" ? "اسم القيمة" : "Value Name"}
+                    label={ct("FIELDS.valueName")}
                     value={val.title || ""}
                     onChange={(e) =>
                       onChange((prev) => {
@@ -1774,7 +1747,7 @@ function BlockSpecificContentForm({
                     }
                   />
                   <IconPicker
-                    label={lang === "ar" ? "أيقونة القيمة (رمز أو صورة)" : "Value Icon (Vector / Image)"}
+                    label={ct("FIELDS.valueIcon")}
                     value={val.icon || "ShieldCheck"}
                     onChange={(iconVal) =>
                       onChange((prev) => {
@@ -1789,7 +1762,7 @@ function BlockSpecificContentForm({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "شرح القيمة" : "Value Description"}
+                    {ct("FIELDS.valueDescription")}
                   </label>
                   <textarea
                     rows={2}
@@ -1818,12 +1791,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Section Badge"}
+              label={ct("FIELDS.sectionBadge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "العنوان (رؤية / رسالة / بيان)" : "Heading (Vision / Mission / Statement)"}
+              label={ct("FIELDS.headingVisionMission")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -1831,7 +1804,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "نص البيان الأساسي (Statement)" : "Main Statement"}
+              {ct("FIELDS.mainStatement")}
             </label>
             <textarea
               rows={3}
@@ -1842,7 +1815,7 @@ function BlockSpecificContentForm({
           </div>
 
           <BaseTextInput
-            label={lang === "ar" ? "الاقتباس السفلي (اختياري)" : "Footer Quote (optional)"}
+            label={ct("FIELDS.footerQuote")}
             value={content.footer_quote || ""}
             onChange={(e) => onChange((prev) => ({ ...prev, footer_quote: e.target.value }))}
           />
@@ -1851,7 +1824,7 @@ function BlockSpecificContentForm({
           <div className="space-y-3 pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "بطاقات الركائز أو الأهداف" : "Pillar / Objective Cards"} ({pillars.length})
+                {ct("TITLES.pillarCards")} ({pillars.length})
               </label>
               <button
                 type="button"
@@ -1862,7 +1835,7 @@ function BlockSpecificContentForm({
                       ...(prev.pillars || []),
                       {
                         id: `pil-${Date.now()}`,
-                        title: lang === "ar" ? "ركيزة جديدة" : "New Pillar",
+                        title: contentT("TITLES.newPillar"),
                         description: "",
                         tag: "",
                         icon: "Sparkles",
@@ -1872,7 +1845,7 @@ function BlockSpecificContentForm({
                 }
                 className="text-xs font-bold text-primary hover:underline"
               >
-                + {lang === "ar" ? "إضافة ركيزة" : "Add Pillar"}
+                + {ct("BUTTONS.addPillar")}
               </button>
             </div>
 
@@ -1883,7 +1856,7 @@ function BlockSpecificContentForm({
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary">
-                    {lang === "ar" ? `الركيزة #${idx + 1}` : `Pillar #${idx + 1}`}
+                    {ct("TITLES.pillarNumber", { count: idx + 1 })}
                   </span>
                   <button
                     type="button"
@@ -1901,7 +1874,7 @@ function BlockSpecificContentForm({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <BaseTextInput
-                    label={lang === "ar" ? "عنوان الركيزة" : "Pillar Title"}
+                    label={ct("FIELDS.pillarTitle")}
                     value={pil.title || ""}
                     onChange={(e) =>
                       onChange((prev) => {
@@ -1912,7 +1885,7 @@ function BlockSpecificContentForm({
                     }
                   />
                   <BaseTextInput
-                    label={lang === "ar" ? "الوسم السفلي (اختياري)" : "Bottom Tag (optional)"}
+                    label={ct("FIELDS.bottomTag")}
                     value={pil.tag || ""}
                     onChange={(e) =>
                       onChange((prev) => {
@@ -1923,7 +1896,7 @@ function BlockSpecificContentForm({
                     }
                   />
                   <IconPicker
-                    label={lang === "ar" ? "أيقونة الركيزة (رمز أو صورة)" : "Pillar Icon (Vector / Image)"}
+                    label={ct("FIELDS.pillarIcon")}
                     value={pil.icon || "Sparkles"}
                     onChange={(iconVal) =>
                       onChange((prev) => {
@@ -1938,7 +1911,7 @@ function BlockSpecificContentForm({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "شرح الركيزة" : "Pillar Description"}
+                    {ct("FIELDS.pillarDescription")}
                   </label>
                   <textarea
                     rows={2}
@@ -1967,12 +1940,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Badge"}
+              label={ct("FIELDS.badge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان الصفحة الرئيسي" : "Main Title"}
+              label={ct("FIELDS.pageMainTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -1980,12 +1953,12 @@ function BlockSpecificContentForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "عنوان المقدمة" : "Intro Heading"}
+              label={ct("FIELDS.introHeading")}
               value={content.intro_title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, intro_title: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "نص المقدمة التمهيدي" : "Intro Content"}
+              label={ct("FIELDS.introContent")}
               value={content.intro_content || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, intro_content: e.target.value }))}
             />
@@ -1995,7 +1968,7 @@ function BlockSpecificContentForm({
           <div className="space-y-4 pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-foreground">
-                {lang === "ar" ? "البنود والفقرات القانونية" : "Legal Clauses & Articles"} ({sections.length})
+                {ct("TITLES.legalClauses")} ({sections.length})
               </label>
               <button
                 type="button"
@@ -2006,7 +1979,7 @@ function BlockSpecificContentForm({
                       ...(prev.sections || []),
                       {
                         id: `sec-${Date.now()}`,
-                        title: lang === "ar" ? "بند قانوني جديد" : "New Clause",
+                        title: contentT("TITLES.newClause"),
                         lead: "",
                         content: "",
                         points: [],
@@ -2016,7 +1989,7 @@ function BlockSpecificContentForm({
                 }
                 className="text-xs font-bold text-primary hover:underline"
               >
-                + {lang === "ar" ? "إضافة بند قانوني" : "Add Clause"}
+                + {ct("BUTTONS.addClause")}
               </button>
             </div>
 
@@ -2027,7 +2000,7 @@ function BlockSpecificContentForm({
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary">
-                    {lang === "ar" ? `البند #${idx + 1}` : `Clause #${idx + 1}`}
+                    {ct("TITLES.clauseNumber", { count: idx + 1 })}
                   </span>
                   <button
                     type="button"
@@ -2044,7 +2017,7 @@ function BlockSpecificContentForm({
                 </div>
 
                 <BaseTextInput
-                  label={lang === "ar" ? "عنوان البند / الفقرة" : "Clause Title"}
+                  label={ct("FIELDS.clauseTitle")}
                   value={secItem.title || ""}
                   onChange={(e) =>
                     onChange((prev) => {
@@ -2056,7 +2029,7 @@ function BlockSpecificContentForm({
                 />
 
                 <BaseTextInput
-                  label={lang === "ar" ? "السطر التمهيدي للبند (Lead Text)" : "Lead / Intro Text"}
+                  label={ct("FIELDS.clauseLead")}
                   value={secItem.lead || ""}
                   onChange={(e) =>
                     onChange((prev) => {
@@ -2069,7 +2042,7 @@ function BlockSpecificContentForm({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "نص البند الكامل" : "Clause Body Text"}
+                    {ct("FIELDS.clauseBody")}
                   </label>
                   <textarea
                     rows={3}
@@ -2097,12 +2070,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Badge"}
+              label={ct("FIELDS.badge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان الصفحة الرئيسي" : "Page Title"}
+              label={ct("FIELDS.pageMainTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -2110,7 +2083,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "الوصف الفرعي والتمهيدي" : "Description Subtitle"}
+              {ct("FIELDS.descriptionSubtitle")}
             </label>
             <textarea
               rows={2}
@@ -2120,7 +2093,7 @@ function BlockSpecificContentForm({
             />
           </div>
 
-          <GlobalSliderNotice lang={lang} />
+          <GlobalSliderNotice lang={currentUiLang} />
 
           {/* Dynamic Backend Data Integration Card */}
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 p-4 space-y-3">
@@ -2131,12 +2104,10 @@ function BlockSpecificContentForm({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "الربط التلقائي ببيانات التواصل (Dynamic Contact Data)" : "Dynamic Contact Data Source"}
+                    {ct("TITLES.dynamicContactData")}
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    {lang === "ar"
-                      ? "يتم جلب قنوات التواصل (البريد، الهاتف الموحد، العنوان الجغرافي، الروابط الاجتماعية) تلقائياً من الباك إند."
-                      : "Official phone numbers, emails, addresses, and social links are automatically retrieved from backend Contact Settings."}
+                    {ct("LABELS.dynamicContactDataDesc")}
                   </p>
                 </div>
               </div>
@@ -2145,7 +2116,7 @@ function BlockSpecificContentForm({
                 target="_blank"
                 className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition-colors shrink-0"
               >
-                <span>{lang === "ar" ? "تعديل بيانات التواصل" : "Edit Contact Settings"}</span>
+                <span>{ct("BUTTONS.editContactSettings")}</span>
                 <ArrowTopRightOnSquareIcon className="h-3 w-3" />
               </Link>
             </div>
@@ -2154,12 +2125,12 @@ function BlockSpecificContentForm({
           {/* Complaint Form Settings */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-border">
             <BaseTextInput
-              label={lang === "ar" ? "عنوان قسم الشكاوى والمقترحات" : "Complaint Section Title"}
+              label={ct("FIELDS.complaintSectionTitle")}
               value={content.complaint_title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, complaint_title: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "وصف وتوضيح قسم الشكاوى" : "Complaint Section Subtitle"}
+              label={ct("FIELDS.complaintSectionSubtitle")}
               value={content.complaint_subtitle || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, complaint_subtitle: e.target.value }))}
             />
@@ -2174,12 +2145,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Badge"}
+              label={ct("FIELDS.badge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان صفحة الأسئلة الشائعة" : "FAQ Section Title"}
+              label={ct("FIELDS.faqSectionTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -2187,7 +2158,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "الوصف التعريفي" : "Subtitle / Description"}
+              {ct("FIELDS.faqSubtitleDesc")}
             </label>
             <textarea
               rows={2}
@@ -2199,13 +2170,13 @@ function BlockSpecificContentForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "نص تلميح حقل البحث" : "Search Input Placeholder"}
+              label={ct("FIELDS.searchInputPlaceholder")}
               value={content.search_placeholder || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, search_placeholder: e.target.value }))}
             />
           </div>
 
-          <GlobalSliderNotice lang={lang} />
+          <GlobalSliderNotice lang={currentUiLang} />
 
           {/* Dynamic Backend Data Integration Card */}
           <div className="rounded-xl border border-sky-500/30 bg-sky-50/50 dark:bg-sky-950/20 p-4 space-y-3">
@@ -2216,12 +2187,10 @@ function BlockSpecificContentForm({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "الربط التلقائي ببنك الأسئلة (Dynamic FAQs Repository)" : "Dynamic FAQs Data Source"}
+                    {ct("TITLES.dynamicFaqs")}
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    {lang === "ar"
-                      ? "يقوم الباك إند بجلب كافة الأسئلة والأجوبة المصنفة تلقائياً من بنك الأسئلة والاستفسارات (/questions) ودمجها مع الصفحة."
-                      : "The backend automatically injects published questions and categorizations from the Questions repository (/questions)."}
+                    {ct("LABELS.dynamicFaqsDesc")}
                   </p>
                 </div>
               </div>
@@ -2230,7 +2199,7 @@ function BlockSpecificContentForm({
                 target="_blank"
                 className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-sky-700 transition-colors shrink-0"
               >
-                <span>{lang === "ar" ? "إدارة بنك الأسئلة" : "Manage Questions CRUD"}</span>
+                <span>{ct("BUTTONS.manageQuestions")}</span>
                 <ArrowTopRightOnSquareIcon className="h-3 w-3" />
               </Link>
             </div>
@@ -2245,12 +2214,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Badge"}
+              label={ct("FIELDS.badge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان صفحة المدونة" : "Blog Page Title"}
+              label={ct("FIELDS.blogPageTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -2258,7 +2227,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "الوصف التعريفي للمدونة" : "Blog Description"}
+              {ct("FIELDS.blogDescription")}
             </label>
             <textarea
               rows={2}
@@ -2270,18 +2239,18 @@ function BlockSpecificContentForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "عنوان قسم المقالات" : "Articles Section Heading"}
+              label={ct("FIELDS.articlesSectionHeading")}
               value={content.articles_heading || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, articles_heading: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "نص شارة المشتركين" : "Subscribers Badge Text"}
+              label={ct("FIELDS.subscribersBadge")}
               value={content.subscribers_badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, subscribers_badge: e.target.value }))}
             />
           </div>
 
-          <GlobalSliderNotice lang={lang} />
+          <GlobalSliderNotice lang={currentUiLang} />
 
           {/* Dynamic Backend Data Integration Card */}
           <div className="rounded-xl border border-violet-500/30 bg-violet-50/50 dark:bg-violet-950/20 p-4 space-y-3">
@@ -2292,12 +2261,10 @@ function BlockSpecificContentForm({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
-                    {lang === "ar" ? "الربط التلقائي بالمقالات والتصنيفات (Dynamic Blogs Integration)" : "Dynamic Blogs & Categories"}
+                    {ct("TITLES.dynamicBlogs")}
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    {lang === "ar"
-                      ? "يقوم الباك إند بجلب كافة المقالات المنشورة وتصنيفاتها وفلاتر البحث تلقائياً من نظام المدونة (/blogs)."
-                      : "The backend automatically injects published blog articles, categories, and pagination from the Blogs module (/blogs)."}
+                    {ct("LABELS.dynamicBlogsDesc")}
                   </p>
                 </div>
               </div>
@@ -2306,7 +2273,7 @@ function BlockSpecificContentForm({
                 target="_blank"
                 className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-violet-700 transition-colors shrink-0"
               >
-                <span>{lang === "ar" ? "إدارة المقالات والمدونة" : "Manage Blogs & Categories"}</span>
+                <span>{ct("BUTTONS.manageBlogs")}</span>
                 <ArrowTopRightOnSquareIcon className="h-3 w-3" />
               </Link>
             </div>
@@ -2321,12 +2288,12 @@ function BlockSpecificContentForm({
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BaseTextInput
-              label={lang === "ar" ? "الوسم (Badge)" : "Badge"}
+              label={ct("FIELDS.badge")}
               value={content.badge || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, badge: e.target.value }))}
             />
             <BaseTextInput
-              label={lang === "ar" ? "عنوان الهيدر الرئيسي" : "Page Title"}
+              label={ct("FIELDS.pageHeroTitle")}
               value={content.title || ""}
               onChange={(e) => onChange((prev) => ({ ...prev, title: e.target.value }))}
             />
@@ -2334,7 +2301,7 @@ function BlockSpecificContentForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
-              {lang === "ar" ? "الوصف التوضيحي" : "Description / Subtitle"}
+              {ct("FIELDS.heroDescriptionSubtitle")}
             </label>
             <textarea
               rows={2}
@@ -2344,7 +2311,7 @@ function BlockSpecificContentForm({
             />
           </div>
 
-          <GlobalSliderNotice lang={lang} />
+          <GlobalSliderNotice lang={currentUiLang} />
         </div>
       );
     }
@@ -2352,9 +2319,7 @@ function BlockSpecificContentForm({
     default:
       return (
         <div className="text-xs text-muted-foreground p-4 text-center">
-          {currentUiLang === "ar"
-            ? "لا توجد حقول محددة لهذا البلوك."
-            : "No specific fields defined for this block type."}
+          {t("LABELS.noFieldBlocks")}
         </div>
       );
   }
