@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   SquaresPlusIcon,
@@ -18,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
+import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
 import { IconPicker, getIconComponent } from "../../components/Inputs/IconPicker";
@@ -25,14 +27,25 @@ import { blockTemplatesService } from "../../services/blockTemplatesService";
 import { toast } from "../../stores/toast";
 import type { BlockTemplate, BlockCategory, FieldDefinition, FieldInputType } from "../../types/blocks";
 
+const CATEGORY_TITLE_KEYS: Record<string, string> = {
+  content_media: "TITLES.blockCatContentMedia",
+  cards_grid: "TITLES.blockCatCardsGrid",
+  workflow: "TITLES.blockCatWorkflow",
+  quotes: "TITLES.blockCatQuotes",
+  support: "TITLES.blockCatSupport",
+  legal: "TITLES.blockCatLegal",
+  hero: "TITLES.blockCatHero",
+};
+
 export default function BlocksShowAll() {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language || "ar").startsWith("en") ? "en" : "ar";
 
   const [templates, setTemplates] = useState<BlockTemplate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? "";
+  const categoryFilter = searchParams.get("category") ?? "all";
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -217,18 +230,46 @@ export default function BlocksShowAll() {
     fetchTemplates();
   };
 
+  const filterItems: FilterItem[] = useMemo(
+    () => [
+      {
+        type: "text",
+        key: "search",
+        label: t("TITLES.search"),
+        placeholder: t("LABELS.searchBlocks"),
+        prependInputIcon: MagnifyingGlassIcon,
+      },
+      {
+        type: "select",
+        key: "category",
+        label: t("TITLES.category"),
+        placeholder: t("TITLES.all"),
+        items: [
+          { id: "content_media", name: t("TITLES.blockCatContentMedia") },
+          { id: "cards_grid", name: t("TITLES.blockCatCardsGrid") },
+          { id: "workflow", name: t("TITLES.blockCatWorkflow") },
+          { id: "quotes", name: t("TITLES.blockCatQuotes") },
+          { id: "support", name: t("TITLES.blockCatSupport") },
+          { id: "legal", name: t("TITLES.blockCatLegal") },
+          { id: "hero", name: t("TITLES.blockCatHero") },
+        ],
+      },
+    ],
+    [t]
+  );
+
   const filteredTemplates = useMemo(() => {
     return templates.filter((t) => {
       const matchSearch =
-        t.name_ar.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.name_en.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.description_ar.toLowerCase().includes(searchQuery.toLowerCase());
+        t.name_ar.toLowerCase().includes(search.toLowerCase()) ||
+        t.name_en.toLowerCase().includes(search.toLowerCase()) ||
+        t.id.toLowerCase().includes(search.toLowerCase()) ||
+        t.description_ar.toLowerCase().includes(search.toLowerCase());
 
       const matchCat = categoryFilter === "all" || t.category === categoryFilter;
       return matchSearch && matchCat;
     });
-  }, [templates, searchQuery, categoryFilter]);
+  }, [templates, search, categoryFilter]);
 
   return (
     <div className="space-y-5">
@@ -249,52 +290,26 @@ export default function BlocksShowAll() {
         }
       />
 
-      {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-border/80 bg-card p-4 shadow-xs">
-        <div className="relative w-full sm:w-80">
-          <MagnifyingGlassIcon className="absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground start-3" />
-          <input
-            type="text"
-            placeholder={t("LABELS.searchBlocks")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-border bg-background py-2 pe-3 ps-9 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+      {/* Toolbar: Total + Filter dropdown */}
+      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/80 bg-card p-4 shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <h2 className="text-sm font-bold text-foreground">
+            {t("TITLES.blocks")}
+          </h2>
+          <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
+            {filteredTemplates.length}
+          </span>
         </div>
-
-        {/* Category Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-{[ 
-            { key: "all", label: "TITLES.all" },
-            { key: "content_media", label: "TITLES.blockCatContentMedia" },
-            { key: "cards_grid", label: "TITLES.blockCatCardsGrid" },
-            { key: "workflow", label: "TITLES.blockCatWorkflow" },
-            { key: "quotes", label: "TITLES.blockCatQuotes" },
-            { key: "support", label: "TITLES.blockCatSupport" },
-            { key: "legal", label: "TITLES.blockCatLegal" },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setCategoryFilter(tab.key)}
-              className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors whitespace-nowrap ${
-                categoryFilter === tab.key
-                  ? "bg-primary text-primary-foreground shadow-xs"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {t(tab.label)}
-            </button>
-          ))}
-        </div>
+        <Filter items={filterItems} />
       </div>
 
       {/* Grid of Block Templates */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-48 rounded-2xl border border-border/70 bg-card p-5 animate-pulse"
+              className="h-52 rounded-2xl border border-border/70 bg-card p-5 animate-pulse"
             />
           ))}
         </div>
@@ -313,112 +328,134 @@ export default function BlocksShowAll() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filteredTemplates.map((tpl) => {
             const IconComp = getIconComponent(tpl.icon);
             return (
-              <div
+              <section
                 key={tpl.id}
-                className={`flex flex-col justify-between rounded-2xl border p-5 transition-all hover:shadow-md ${
+                className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10 ${
                   tpl.is_active
-                    ? "border-border/80 bg-card hover:border-primary/40"
-                    : "border-border/40 bg-muted/20 opacity-70"
+                    ? "border-border/70 hover:border-primary/40"
+                    : "border-border/40 bg-muted/20 opacity-75 hover:opacity-100"
                 }`}
               >
-                <div className="space-y-3">
-                  {/* Top Bar: Icon + Category + Status */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-xs">
-                        <IconComp className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground uppercase font-mono">
-                          {tpl.category}
-                        </span>
-                        <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
-                          {tpl.id}
-                        </p>
-                      </div>
-                    </div>
+                {/* Top accent bar */}
+                <div
+                  className={`h-1 w-full bg-linear-to-r transition-colors ${
+                    tpl.is_active
+                      ? "from-primary via-secondary to-transparent"
+                      : "from-muted-foreground/20 to-transparent"
+                  }`}
+                />
 
-                    <button
-                      onClick={() => handleToggleStatus(tpl)}
-                      className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
+                {/* Header: Icon + Category + Status */}
+                <div className="flex items-start justify-between gap-4 px-5 pt-5">
+                  <div className="flex min-w-0 items-center gap-3.5">
+                    <div
+                      className={`flex size-12 shrink-0 items-center justify-center rounded-xl shadow-sm ring-1 transition-transform group-hover:scale-105 group-hover:rotate-3 ${
                         tpl.is_active
-                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                          : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                          ? "bg-linear-to-br from-primary/15 to-secondary/10 text-primary ring-primary/20"
+                          : "bg-muted text-muted-foreground ring-border/50"
                       }`}
                     >
-                      {tpl.is_active ? (
-                        <>
-                          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          {t("STATUS.available")}
-                        </>
-                      ) : (
-                        <>
-                          <span className="size-1.5 rounded-full bg-zinc-400" />
-                          {t("STATUS.disabled")}
-                        </>
-                      )}
-                    </button>
+                      <IconComp className="h-6 w-6" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="inline-flex items-center gap-1.5 rounded-md bg-muted/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                        <span
+                          className={`size-1 rounded-full ${
+                            tpl.is_active ? "bg-primary" : "bg-muted-foreground/40"
+                          }`}
+                        />
+                        {t(CATEGORY_TITLE_KEYS[tpl.category] || tpl.category)}
+                      </span>
+                      <p className="mt-1 truncate font-mono text-[10px] text-muted-foreground/70">
+                        {tpl.id}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Title & Description */}
-                  <div>
-                    <h3 className="text-sm font-bold text-foreground">
-                      {currentLang === "ar" ? tpl.name_ar : tpl.name_en}
-                    </h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
-                      {currentLang === "ar" ? tpl.description_ar : tpl.description_en}
-                    </p>
-                  </div>
+                  {/* Status toggle pill */}
+                  <button
+                    type="button"
+                    onClick={() => handleToggleStatus(tpl)}
+                    title={tpl.is_active ? t("STATUS.disabled") : t("STATUS.available")}
+                    className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold shadow-xs ring-1 transition-all hover:opacity-90 active:scale-95 ${
+                      tpl.is_active
+                        ? "bg-emerald-500/10 text-emerald-600 ring-emerald-500/25 dark:text-emerald-400"
+                        : "bg-zinc-500/10 text-zinc-500 ring-zinc-500/20"
+                    }`}
+                  >
+                    <span
+                      className={`size-1.5 rounded-full ${
+                        tpl.is_active ? "animate-pulse bg-emerald-500" : "bg-zinc-400"
+                      }`}
+                    />
+                    {tpl.is_active ? t("STATUS.available") : t("STATUS.disabled")}
+                  </button>
+                </div>
+
+                {/* Title & Description */}
+                <div className="flex flex-1 flex-col px-5 pb-2 pt-4">
+                  <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+                    {currentLang === "ar" ? tpl.name_ar : tpl.name_en}
+                  </h3>
+                  <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
+                    {currentLang === "ar" ? tpl.description_ar : tpl.description_en}
+                  </p>
 
                   {/* Shape Tags */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {tpl.shape_tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="rounded-md bg-primary/5 text-primary border border-primary/15 px-2 py-0.5 text-[10px] font-semibold"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  {tpl.shape_tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-3">
+                      {tpl.shape_tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="rounded-lg border border-primary/10 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold text-primary"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-                  {/* Fields Count Indicator */}
-                  <div className="text-[11px] font-bold text-muted-foreground pt-1 border-t border-border/50 flex items-center justify-between">
-                    <span>
+                {/* Footer: Fields + Actions */}
+                <div className="mt-auto flex items-center justify-between gap-4 border-t border-border/50 bg-muted/10 px-5 py-3.5">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-foreground">
+                      <Squares2X2Icon className="h-3.5 w-3.5 text-muted-foreground" />
                       {t("TITLES.inputFieldsCount", { count: tpl.fields?.length || 0 })}
                     </span>
-                    <span className="font-mono text-[10px] text-muted-foreground">
-                      {tpl.fields?.map((f) => f.type).join(" • ")}
-                    </span>
+                    {tpl.fields?.length ? (
+                      <span className="hidden truncate font-mono text-[10px] text-muted-foreground sm:inline">
+                        {tpl.fields.map((f) => f.type).join(" • ")}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleOpenEdit(tpl)}
+                      className="gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <PencilSquareIcon className="h-3.5 w-3.5" />
+                      {t("LABELS.editShape")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeleteTemplate(tpl)}
+                      className="px-3 py-1.5 text-muted-foreground hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:hover:border-rose-900 dark:hover:bg-rose-950/30"
+                      title={t("BUTTONS.delete")}
+                    >
+                      <TrashIcon className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
                 </div>
-
-                {/* Bottom Actions */}
-                <div className="flex items-center justify-end gap-2 pt-4 mt-2 border-t border-border/60">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleOpenEdit(tpl)}
-                    className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    <PencilSquareIcon className="h-3.5 w-3.5" />
-                    {t("LABELS.editShape")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleDeleteTemplate(tpl)}
-                    className="p-2 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                    title={t("BUTTONS.delete")}
-                  >
-                    <TrashIcon className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
+              </section>
             );
           })}
         </div>
