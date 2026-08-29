@@ -128,8 +128,6 @@ export default function PageContentManagerWorkspace() {
 
   // Delete Section
   const handleDeleteSection = (secId: string) => {
-    if (!window.confirm(t("MESSAGES.confirmDeleteSection"))) return;
-
     setSections((prev) => {
       const next = prev.filter((s) => s.id !== secId);
       if (selectedSectionId === secId) {

@@ -3,8 +3,8 @@ import {
   DocumentDuplicateIcon,
   EyeIcon,
   EyeSlashIcon,
-  TrashIcon,
 } from "@heroicons/react/24/outline";
+import { Deleter } from "../Shared/Deleter";
 import { getSectionMeta, getIconComponent } from "./sectionMeta";
 import type { PageSection } from "../../types/pageBuilder";
 import type { BlockTemplate } from "../../types/blocks";
@@ -86,13 +86,9 @@ export function SectionItem({
         </button>
 
         {/* Delete */}
-        <button
-          onClick={onDelete}
-          title={t("TITLES.deleteSection")}
-          className="p-1 rounded text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-        >
-          <TrashIcon className="h-4 w-4" />
-        </button>
+        <div className="shrink-0" title={t("TITLES.deleteSection")}>
+          <Deleter onRemove={onDelete} text="" />
+        </div>
       </div>
     </div>
   );

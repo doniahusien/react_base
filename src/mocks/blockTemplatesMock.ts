@@ -12,7 +12,7 @@ export const INITIAL_BLOCK_TEMPLATES: BlockTemplate[] = [
   // 1 — Hero header (home page top, over the global slider)
   {
     id: "hero_header",
-    name_ar: "الهيدر الرئيسي (Hero) المرتبط بالسلايدر العام",
+    name_ar: "الهيدر الرئيسي المرتبط بالسلايدر العام",
     name_en: "Main Hero Header (Linked to Global Slider)",
     description_ar: "الهيدر الرئيسي مع عنوان ثلاثي الأسطر، كلمة مميزة بلون رئيسي، وصف، وزرّي توجيه. الصور تأتي من السلايدر العام",
     description_en: "Top hero header with three-line title, highlighted word, description, and two CTA buttons. Images come from the global slider",
@@ -182,7 +182,7 @@ export const INITIAL_BLOCK_TEMPLATES: BlockTemplate[] = [
   // 5 — Cards grid with icons and background images
   {
     id: "cards_grid_with_icons_images",
-    name_ar: "شبكة بطاقات (كروت) بخلفيات وأيقونات",
+    name_ar: "شبكة بطاقات بخلفيات وأيقونات",
     name_en: "Cards Grid with Icons & Images",
     description_ar: "شبكة بطاقات تتمدد عند التمرير، كل بطاقة بأيقونة وصورة خلفية وعنوان ووصف (تُستخدم لخدمات المنصة وما شابهها)",
     description_en: "Expanding cards grid; each card has an icon, background image, title, and hover description (used for services and similar)",

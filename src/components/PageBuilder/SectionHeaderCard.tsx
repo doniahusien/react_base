@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { EyeIcon, EyeSlashIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { Button } from "../UI/Button";
+import { Deleter } from "../Shared/Deleter";
 import { getSectionMeta, getIconComponent } from "./sectionMeta";
 import type { PageSection } from "../../types/pageBuilder";
 import type { BlockTemplate } from "../../types/blocks";
@@ -37,9 +38,9 @@ export function SectionHeaderCard({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary font-mono">
+             {/*  <span className="rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary font-mono">
                 {section.type}
-              </span>
+              </span> */}
               <span
                 className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                   section.is_active
@@ -89,15 +90,9 @@ export function SectionHeaderCard({
               </>
             )}
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onDelete}
-            className="text-xs gap-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-          >
-            <TrashIcon className="h-4 w-4" />
-            {t("BUTTONS.delete")}
-          </Button>
+     {/*      <span className="shrink-0">
+            <Deleter onRemove={onDelete} text={t("BUTTONS.delete")} />
+          </span> */}
         </div>
       </div>
 
