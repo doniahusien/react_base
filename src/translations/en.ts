@@ -278,7 +278,7 @@ export const en = {
     blocks: "Blocks",
     editSeoInfo: "Edit SEO & Info",
     deletePage: "Delete Page",
-    manageContent: "Manage Content",
+    manageContent: "Manage sections",
     pageSettings: "Page Settings & SEO",
     createNewPage: "Create New Page",
     generalInfo: "General Info",

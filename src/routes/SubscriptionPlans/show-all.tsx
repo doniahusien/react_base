@@ -72,15 +72,7 @@ export default function SubscriptionPlansShowAll() {
           { id: "0", label: t("STATUS.inactive") },
         ],
       },
-      {
-        type: "radio",
-        key: "target_role",
-        label: t("TITLES.targetRole"),
-        options: [
-          { id: "client", label: t("TITLES.client") },
-          { id: "lawyer", label: t("TITLES.lawyer") },
-        ],
-      },
+  
     ],
     [t]
   );

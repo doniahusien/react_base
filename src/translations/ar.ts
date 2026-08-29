@@ -278,7 +278,7 @@ export const ar = {
     blocks: "أقسام/بلوكات",
     editSeoInfo: "تعديل بيانات الصفحة لمحركات البحث",
     deletePage: "حذف الصفحة",
-    manageContent: "إدارة المحتوى والأقسام",
+    manageContent: "إدارة الأقسام",
     pageSettings: "إعدادات وبيانات الصفحة",
     createNewPage: "إنشاء صفحة جديدة",
     generalInfo: "البيانات الأساسية",
