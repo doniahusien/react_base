@@ -207,7 +207,7 @@ export default function BlogsShowAll() {
         rightActions={
           <Button type="button" onClick={() => navigate("/blogs/create")}>
             <Plus width={16} height={16} />
-            {t("TITLES.add", { count: t("TITLES.blog") })}
+            {t("TITLES.add", { entity: t("TITLES.blog") })}
           </Button>
         }
       />

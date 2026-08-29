@@ -36,7 +36,7 @@ export default function BlogCreate() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.add", { count: t("TITLES.blog") })}
+        title={t("TITLES.add", { entity: t("TITLES.blog") })}
         translateTitle={false}
         icon={Newspaper}
         path={[

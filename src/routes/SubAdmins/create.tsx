@@ -76,7 +76,7 @@ export default function SubAdminCreate() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.add", { count: t("TITLES.subAdmin") })}
+        title={t("TITLES.add", { entity: t("TITLES.subAdmin") })}
         translateTitle={false}
         icon={SubAdminsIcon}
         path={[

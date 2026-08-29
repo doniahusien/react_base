@@ -101,8 +101,8 @@ export function CatalogFormModal({
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <h3 className="text-base font-semibold text-foreground">
             {editing
-              ? t("TITLES.edit", { count: entityLabel })
-              : t("TITLES.add", { count: entityLabel })}
+              ? t("TITLES.edit", { entity: entityLabel })
+              : t("TITLES.add", { entity: entityLabel })}
           </h3>
           <button
             type="button"

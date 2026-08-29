@@ -88,7 +88,7 @@ export default function CountryEdit() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.edit", { count: t("TITLES.country") })}
+        title={t("TITLES.edit", { entity: t("TITLES.country") })}
         translateTitle={false}
         subtitle={t("LABELS.updateCountryInfo")}
         translateSubtitle={false}

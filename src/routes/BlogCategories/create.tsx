@@ -33,7 +33,7 @@ export default function BlogCategoryCreate() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.add", { count: t("TITLES.blogCategory") })}
+        title={t("TITLES.add", { entity: t("TITLES.blogCategory") })}
         translateTitle={false}
         subtitle={t("LABELS.createNewCategory")}
         translateSubtitle={false}

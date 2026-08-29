@@ -83,7 +83,7 @@ export default function BlogCategoryEdit() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.edit", { count: t("TITLES.blogCategory") })}
+        title={t("TITLES.edit", { entity: t("TITLES.blogCategory") })}
         translateTitle={false}
         subtitle={t("LABELS.updateCategoryInfo")}
         translateSubtitle={false}

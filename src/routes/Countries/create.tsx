@@ -37,7 +37,7 @@ export default function CountryCreate() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.add", { count: t("TITLES.country") })}
+        title={t("TITLES.add", { entity: t("TITLES.country") })}
         translateTitle={false}
         subtitle={t("LABELS.createNewCountry")}
         translateSubtitle={false}

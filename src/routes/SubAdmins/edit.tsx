@@ -122,7 +122,7 @@ export default function SubAdminEdit() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.edit", { count: t("TITLES.subAdmin") })}
+        title={t("TITLES.edit", { entity: t("TITLES.subAdmin") })}
         translateTitle={false}
         icon={SubAdminsIcon}
         path={[

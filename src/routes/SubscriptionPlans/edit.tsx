@@ -244,7 +244,7 @@ export default function SubscriptionPlanEdit() {
   return (
     <div className="space-y-0">
       <PageHeader
-        title={t("TITLES.edit", { count: t("TITLES.subscriptionPlan") })}
+        title={t("TITLES.edit", { entity: t("TITLES.subscriptionPlan") })}
         translateTitle={false}
         icon={Plans}
         path={[

@@ -280,7 +280,7 @@ export default function PagesShowAll() {
         rightActions={
           <Button onClick={handleOpenCreate} className="gap-2">
             <PlusIcon className="h-4 w-4" />
-            {t("TITLES.add", { count: t("TITLES.page") })}
+            {t("TITLES.add", { entity: t("TITLES.page") })}
           </Button>
         }
       />

@@ -199,7 +199,7 @@ export default function RegionsShowAll() {
         rightActions={
           <Button type="button" onClick={openCreate}>
             <Plus width={16} height={16} />
-            {t("TITLES.add", { count: t("TITLES.region") })}
+            {t("TITLES.add", { entity: t("TITLES.region") })}
           </Button>
         }
       />

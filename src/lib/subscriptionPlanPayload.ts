@@ -1,19 +1,20 @@
 import type {
   SubscriptionPlan,
+  SubscriptionPlanFeature,
   SubscriptionPlanFeatureInput,
   SubscriptionPlanUpdatePayload,
-} from "./subscriptionPlans";
+} from "../types/subscriptionPlans";
 
 export function buildPlanUpdatePayload(
   plan: SubscriptionPlan,
   overrides?: Partial<{ is_active: boolean }>
 ): SubscriptionPlanUpdatePayload {
   const features: SubscriptionPlanFeatureInput[] = (plan.features ?? [])
-    .map((f) => ({
+    .map((f: SubscriptionPlanFeature) => ({
       name_ar: (f.name_ar ?? "").trim(),
       name_en: (f.name_en ?? "").trim() || undefined,
     }))
-    .filter((f) => f.name_ar);
+    .filter((f: SubscriptionPlanFeatureInput) => f.name_ar);
 
   return {
     name_ar: plan.name_ar ?? "",
