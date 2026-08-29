@@ -467,8 +467,8 @@ export default function BlocksShowAll() {
       ========================================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-border pb-4">
+          <div className="w-full max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-border pb-4 flex-shrink-0">
               <div className="flex items-center gap-2.5">
                 <SquaresPlusIcon className="h-6 w-6 text-primary" />
                 <div>
@@ -490,7 +490,7 @@ export default function BlocksShowAll() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveTemplate} className="space-y-4">
+            <form onSubmit={handleSaveTemplate} className="space-y-4 flex-1 overflow-y-auto pr-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <BaseTextInput
                   name="name_ar"
@@ -644,7 +644,7 @@ export default function BlocksShowAll() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border flex-shrink-0">
                 <Button
                   type="button"
                   variant="outline"

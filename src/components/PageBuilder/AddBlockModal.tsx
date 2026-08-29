@@ -102,7 +102,7 @@ export function AddBlockModal({
         </div>
 
         {/* Block Catalog Grid - Matching Blocks CRUD definitions */}
-        <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-1 max-h-[60vh]">
+        <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-1">
           {availableTemplates.length === 0 ? (
             <div className="sm:col-span-2 flex flex-col items-center justify-center p-10 text-center text-muted-foreground bg-muted/10 rounded-2xl border border-dashed border-border">
               <SparklesIcon className="h-10 w-10 mb-2 opacity-40 text-primary" />
