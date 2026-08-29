@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import type { ComponentType } from "react";
+import { BaseSelectInput } from "../Inputs/BaseSelectInput";
 
 export interface FilterCheckboxOption {
   id: string | number;
@@ -222,18 +223,22 @@ function FilterSectionComponent({
 
           {section.type === "select" && (
             <div className="px-5 pb-4">
-              <select
-                value={tempValues[section.key] || ""}
-                onChange={(e) => onTempChange(section.key, e.target.value)}
-                className={fieldControlClasses}
-              >
-                <option value="">{section.placeholder || "Select..."}</option>
-                {section.items?.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name || item.title}
-                  </option>
-                ))}
-              </select>
+              <BaseSelectInput
+                name={section.key}
+                items={section.items?.map((item) => ({
+                  id: item.id,
+                  name: item.name || item.title || String(item.id),
+                })) || []}
+                value={tempValues[section.key] ? { id: tempValues[section.key], name: section.items?.find(i => String(i.id) === tempValues[section.key])?.name || section.items?.find(i => String(i.id) === tempValues[section.key])?.title || tempValues[section.key] } : null}
+                onChange={(val) => {
+                  if (val && !Array.isArray(val)) {
+                    onTempChange(section.key, String(val.id));
+                  } else {
+                    onTempChange(section.key, "");
+                  }
+                }}
+                placeholder={section.placeholder || "Select..."}
+              />
             </div>
           )}
 
@@ -261,13 +266,14 @@ export function Filter({
   onClear,
   triggerButton,
 }: FilterProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [tempValues, setTempValues] = useState<Record<string, string>>({});
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const sectionKeys = (sections ?? items ?? []).map((s) => s.key).join("|");
+  const isRTL = (i18n.language || "ar").startsWith("ar");
 
   const normalizedSections: FilterSection[] = useMemo(
     () =>
@@ -376,7 +382,7 @@ export function Filter({
             />
             <div
               ref={panelRef}
-              className="fixed inset-x-3 bottom-3 z-50 flex max-h-[min(82vh,calc(100vh-1.5rem))] flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:bottom-auto sm:mt-3 sm:max-h-[calc(100vh-120px)] sm:w-[340px] sm:rounded-2xl"
+              className={`fixed inset-x-3 bottom-3 z-50 flex max-h-[min(82vh,calc(100vh-1.5rem))] flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl sm:absolute sm:inset-x-auto sm:top-full sm:bottom-auto sm:mt-3 sm:max-h-[calc(100vh-120px)] sm:w-[340px] sm:rounded-2xl ${isRTL ? 'sm:left-0' : 'sm:right-0'}`}
             >
               <div className="flex shrink-0 items-center justify-between border-b border-border bg-primary/5 px-5 py-4">
                 <div className="flex items-center gap-2">

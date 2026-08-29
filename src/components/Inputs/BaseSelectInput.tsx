@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useId, useCallback } from "react";
+import { createPortal } from "react-dom";
 import type { ComponentType } from "react";
 import { ChevronDownIcon as ChevronDown, XMarkIcon as X, CheckIcon as Check } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
@@ -23,9 +24,11 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
   const uid = useId();
   const id = `${uid}-${name}`;
   const ref = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState<SelectOption[]>([]);
   const [loading, setLoading] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const hasError = touched && !!error;
 
   const mapOption = useCallback((item: any): SelectOption => {
@@ -48,10 +51,28 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
   useEffect(() => { if (url) setOptions([]); }, [url]);
   useEffect(() => { if (!url || url.includes("undefined") || options.length > 0) return; fetchOptions(); }, [url, options.length, fetchOptions]);
 
-  const handleOpen = () => { if (disabled) return; if (!isOpen) fetchOptions(); setIsOpen((v) => !v); };
+  const handleOpen = () => {
+    if (disabled) return;
+    if (!isOpen) {
+      fetchOptions();
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 6,
+          left: rect.left + window.scrollX,
+          width: rect.width,
+        });
+      }
+    }
+    setIsOpen((v) => !v);
+  };
 
   useEffect(() => {
-    const h = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setIsOpen(false); };
+    const h = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node) && !dropdownRef.current?.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
     document.addEventListener("click", h);
     return () => document.removeEventListener("click", h);
   }, []);
@@ -87,8 +108,16 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
             <ChevronDown width={15} height={15} className={`shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${hasError ? "text-destructive" : "text-muted-foreground"}`} />
           </button>
         </div>
-        {isOpen && (
-          <div className="absolute top-full z-50 mt-1.5 w-full overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+        {isOpen && createPortal(
+          <div
+            ref={dropdownRef}
+            className="fixed z-[100] overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
+            style={{
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`,
+              width: `${dropdownPosition.width}px`,
+            }}
+          >
             <div className="max-h-56 overflow-y-auto py-1.5">
               {loading ? <p className="px-4 py-2.5 text-sm text-muted-foreground">Loading…</p>
                 : options.length === 0 ? <p className="px-4 py-2.5 text-sm text-muted-foreground">No options</p>
@@ -99,7 +128,8 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
                   </button>
                 ))}
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
       {hasError && <p className="flex items-center gap-1.5 px-1 text-xs text-destructive"><span className="inline-block h-1 w-1 rounded-full bg-destructive shrink-0" />{error}</p>}

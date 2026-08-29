@@ -22,6 +22,7 @@ import { Button } from "../../components/UI/Button";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
+import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
 import { IconPicker, getIconComponent } from "../../components/Inputs/IconPicker";
 import { blockTemplatesService } from "../../services/blockTemplatesService";
 import { toast } from "../../stores/toast";
@@ -516,26 +517,25 @@ export default function BlocksShowAll() {
                   placeholder={t("LABELS.blockTypeSlugPlaceholder")}
                   disabled={!!editingTemplate}
                 />
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground">
-                    {t("TITLES.category")}
-                  </label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, category: e.target.value as BlockCategory }))
+                <BaseSelectInput
+                  name="category"
+                  label={t("TITLES.category")}
+                  items={[
+                    { id: "content_media", name: t("TITLES.blockCatContentMedia") },
+                    { id: "cards_grid", name: t("TITLES.blockCatCardsGrid") },
+                    { id: "workflow", name: t("TITLES.blockCatWorkflow") },
+                    { id: "quotes", name: t("TITLES.blockCatQuotes") },
+                    { id: "support", name: t("TITLES.blockCatSupport") },
+                    { id: "legal", name: t("TITLES.blockCatLegal") },
+                    { id: "hero", name: t("TITLES.blockCatHero") },
+                  ]}
+                  value={{ id: formData.category, name: t(CATEGORY_TITLE_KEYS[formData.category] || formData.category) }}
+                  onChange={(val) => {
+                    if (val && !Array.isArray(val)) {
+                      setFormData((prev) => ({ ...prev, category: val.id as BlockCategory }));
                     }
-                    className="w-full rounded-xl border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
-                  >
-                    <option value="content_media">{t("TITLES.blockCatContentMedia")}</option>
-                    <option value="cards_grid">{t("TITLES.blockCatCardsGrid")}</option>
-                    <option value="workflow">{t("TITLES.blockCatWorkflow")}</option>
-                    <option value="quotes">{t("TITLES.blockCatQuotes")}</option>
-                    <option value="support">{t("TITLES.blockCatSupport")}</option>
-                    <option value="legal">{t("TITLES.blockCatLegal")}</option>
-                    <option value="hero">{t("TITLES.blockCatHero")}</option>
-                  </select>
-                </div>
+                  }}
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -615,20 +615,23 @@ export default function BlocksShowAll() {
                         placeholder="تسمية الحقل (عربي)"
                         className="flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs"
                       />
-                      <select
-                        value={field.type}
-                        onChange={(e) =>
-                          handleUpdateField(idx, { type: e.target.value as FieldInputType })
-                        }
-                        className="w-28 rounded-lg border border-border bg-background p-1.5 text-xs font-semibold"
-                      >
-                        <option value="text">{t("LABELS.fieldTypeText")}</option>
-                        <option value="textarea">{t("LABELS.fieldTypeTextarea")}</option>
-                        <option value="image">{t("LABELS.fieldTypeImage")}</option>
-                        <option value="icon">{t("LABELS.fieldTypeIcon")}</option>
-                        <option value="url">{t("LABELS.fieldTypeUrl")}</option>
-                        <option value="repeater">{t("LABELS.fieldTypeRepeater")}</option>
-                      </select>
+                      <BaseSelectInput
+                        name={`field_type_${idx}`}
+                        items={[
+                          { id: "text", name: t("LABELS.fieldTypeText") },
+                          { id: "textarea", name: t("LABELS.fieldTypeTextarea") },
+                          { id: "image", name: t("LABELS.fieldTypeImage") },
+                          { id: "icon", name: t("LABELS.fieldTypeIcon") },
+                          { id: "url", name: t("LABELS.fieldTypeUrl") },
+                          { id: "repeater", name: t("LABELS.fieldTypeRepeater") },
+                        ]}
+                        value={{ id: field.type, name: t(`LABELS.fieldType${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`) }}
+                        onChange={(val) => {
+                          if (val && !Array.isArray(val)) {
+                            handleUpdateField(idx, { type: val.id as FieldInputType });
+                          }
+                        }}
+                      />
                       <button
                         type="button"
                         onClick={() => handleRemoveField(idx)}
