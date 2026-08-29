@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   DocumentDuplicateIcon,
@@ -24,6 +24,8 @@ import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
 import { BaseFilesInput } from "../../components/Inputs/BaseFilesInput";
+import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
+import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import type { FileOutputItem } from "../../components/Inputs/BaseFilesInput";
 import { pagesService } from "../../services/pagesService";
 import { toast } from "../../stores/toast";
@@ -36,8 +38,9 @@ export default function PagesShowAll() {
 
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<string>("all");
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? "";
+  const typeFilter = searchParams.get("type") ?? "all";
 
   // Modal State for Create / Edit Metadata
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,6 +112,15 @@ export default function PagesShowAll() {
 
   const handleOpenEdit = (page: Page) => {
     setEditingPage(page);
+    const keywordsValue = page.seo?.keywords;
+    let keywordsStr = "";
+    if (typeof keywordsValue === "string") {
+      keywordsStr = keywordsValue;
+    } else if (Array.isArray(keywordsValue)) {
+      keywordsStr = keywordsValue.join(", ");
+    } else if (keywordsValue && typeof keywordsValue === "object") {
+      keywordsStr = keywordsValue.ar || keywordsValue.en || "";
+    }
     setFormData({
       slug: page.slug,
       title_ar: page.title.ar,
@@ -120,7 +132,7 @@ export default function PagesShowAll() {
       meta_description_ar: page.seo?.meta_description?.ar || "",
       meta_description_en: page.seo?.meta_description?.en || "",
       og_image: page.seo?.og_image || "",
-      keywords: page.seo?.keywords || "",
+      keywords: keywordsStr,
     });
     setModalTab("general");
     setIsModalOpen(true);
@@ -205,14 +217,14 @@ export default function PagesShowAll() {
   const filteredPages = useMemo(() => {
     return pages.filter((page) => {
       const matchSearch =
-        page.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        page.title.ar.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        page.title.en.toLowerCase().includes(searchQuery.toLowerCase());
+        page.slug.toLowerCase().includes(search.toLowerCase()) ||
+        page.title.ar.toLowerCase().includes(search.toLowerCase()) ||
+        page.title.en.toLowerCase().includes(search.toLowerCase());
 
-      const matchType = filterType === "all" || page.type === filterType;
+      const matchType = typeFilter === "all" || page.type === typeFilter;
       return matchSearch && matchType;
     });
-  }, [pages, searchQuery, filterType]);
+  }, [pages, search, typeFilter]);
 
   const typeLabels: Record<PageType, { badge: string }> = {
     system: { badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
@@ -228,6 +240,31 @@ export default function PagesShowAll() {
     };
     return labels[type] || type;
   };
+
+  const filterItems: FilterItem[] = useMemo(
+    () => [
+      {
+        type: "text",
+        key: "search",
+        label: t("TITLES.search"),
+        placeholder: t("PAGES.searchPlaceholder"),
+        prependInputIcon: MagnifyingGlassIcon,
+      },
+      {
+        type: "select",
+        key: "type",
+        label: t("PAGES.pageType"),
+        placeholder: t("PAGES.all"),
+        items: [
+          { id: "all", name: t("PAGES.all") },
+          { id: "system", name: t("PAGES.system") },
+          { id: "policy", name: t("PAGES.policies") },
+          { id: "custom", name: t("PAGES.custom") },
+        ],
+      },
+    ],
+    [t]
+  );
 
   return (
     <div className="space-y-5">
@@ -248,41 +285,17 @@ export default function PagesShowAll() {
         }
       />
 
-      {/* Top Controls Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-border/80 bg-card p-4 shadow-sm">
-        {/* Search Input */}
-        <div className="relative w-full sm:w-80">
-          <MagnifyingGlassIcon className="absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground start-3" />
-          <input
-            type="text"
-            placeholder={t("PAGES.searchPlaceholder")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-border bg-background py-2 pe-3 ps-9 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+      {/* Toolbar: Total + Filter dropdown */}
+      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/80 bg-card p-4 shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <h2 className="text-sm font-bold text-foreground">
+            {t("TITLES.pages")}
+          </h2>
+          <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
+            {filteredPages.length}
+          </span>
         </div>
-
-        {/* Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
-          {[
-            { key: "all", label: t("PAGES.all") },
-            { key: "system", label: t("PAGES.system") },
-            { key: "policy", label: t("PAGES.policies") },
-            { key: "custom", label: t("PAGES.custom") },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setFilterType(tab.key)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                filterType === tab.key
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <Filter items={filterItems} />
       </div>
 
       {/* Pages Grid */}
@@ -485,23 +498,18 @@ export default function PagesShowAll() {
                         placeholder={t("PAGES.pageSlugPlaceholder")}
                       />
 
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-foreground">
-                          {t("PAGES.pageType")}
-                        </label>
-                        <select
-                          value={formData.type}
-                          onChange={(e) =>
-                            setFormData((prev) => ({ ...prev, type: e.target.value as PageType }))
-                          }
-                          className="w-full rounded-lg border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
-                        >
-                          <option value="custom">{t("PAGES.typeCustom")}</option>
-                          <option value="landing">{t("PAGES.typeLanding")}</option>
-                          <option value="policy">{t("PAGES.typePolicy")}</option>
-                          <option value="system">{t("PAGES.typeSystem")}</option>
-                        </select>
-                      </div>
+                      <BaseSelectInput
+                        name="type"
+                        label={t("PAGES.pageType")}
+                        items={[
+                          { id: "custom", name: t("PAGES.typeCustom") },
+                          { id: "landing", name: t("PAGES.typeLanding") },
+                          { id: "policy", name: t("PAGES.typePolicy") },
+                          { id: "system", name: t("PAGES.typeSystem") },
+                        ]}
+                        value={{ id: formData.type, name: t(`PAGES.type${formData.type.charAt(0).toUpperCase() + formData.type.slice(1)}`) }}
+                        onChange={(val) => setFormData((prev) => ({ ...prev, type: (val as { id: string }).id as PageType }))}
+                      />
                     </div>
 
                     <div className="flex items-center justify-between rounded-xl border border-border p-3.5 bg-muted/20">
