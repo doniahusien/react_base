@@ -722,6 +722,7 @@ export const en = {
     filterByDateDesc: "Filter statistics by from and to dates",
     fromDate: "From date",
     toDate: "To date",
+    invalidDateRange: "The to date field must be a date after or equal to from date.",
     showingPeriod: "Showing period",
     totalClients: "Total Clients",
     totalLawyers: "Total Lawyers",

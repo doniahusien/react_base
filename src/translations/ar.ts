@@ -723,6 +723,7 @@ export const ar = {
     filterByDateDesc: "تصفية الإحصائيات حسب تاريخ البداية والنهاية",
     fromDate: "من تاريخ",
     toDate: "إلى تاريخ",
+    invalidDateRange: "يجب أن يكون تاريخ النهاية بعد تاريخ البداية أو مساويًا له.",
     showingPeriod: "الفترة المعروضة",
     totalClients: "إجمالي العملاء",
     totalLawyers: "إجمالي المحامين",

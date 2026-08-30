@@ -131,7 +131,13 @@ export default function Home() {
     fetchStats();
   }, [fetchStats]);
 
+  const invalidRange = !!(fromDate && toDate && toDate < fromDate);
+
   const applyFilter = () => {
+    if (invalidRange) {
+      toast.error(t("ANALYTICS.invalidDateRange"));
+      return;
+    }
     fetchStats(fromDate || undefined, toDate || undefined);
   };
 
@@ -232,7 +238,8 @@ export default function Home() {
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-border bg-background/80 pe-2 ps-9 text-xs text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  onClick={(e) => e.currentTarget.showPicker?.()}
+                  className="date-input-bare h-9 w-full rounded-lg border border-border bg-background/80 pe-2 ps-9 text-xs text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </label>
@@ -248,15 +255,27 @@ export default function Home() {
                   value={toDate}
                   min={fromDate || undefined}
                   onChange={(e) => setToDate(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-border bg-background/80 pe-2 ps-9 text-xs text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  onClick={(e) => e.currentTarget.showPicker?.()}
+                  aria-invalid={invalidRange}
+                  className={`date-input-bare h-9 w-full rounded-lg border bg-background/80 pe-2 ps-9 text-xs text-foreground outline-none transition focus:ring-2 ${
+                    invalidRange
+                      ? "border-destructive focus:border-destructive focus:ring-destructive/20"
+                      : "border-border focus:border-primary focus:ring-primary/20"
+                  }`}
                 />
               </div>
+              {invalidRange && (
+                <span className="text-[10px] font-medium text-destructive">
+                  {t("ANALYTICS.invalidDateRange")}
+                </span>
+              )}
             </label>
 
             <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={applyFilter}
+                disabled={invalidRange}
                 loading={loading}
                 className="h-9 px-3 text-xs"
               >

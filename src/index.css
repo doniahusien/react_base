@@ -2086,6 +2086,16 @@
   animation: dot-flow 20s linear infinite;
 }
 
+/* Date inputs render a custom calendar icon, so suppress the native one */
+.date-input-bare::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+
+.date-input-bare {
+  cursor: pointer;
+}
+
 /* Dot pattern background */
 .bg-dot-pattern {
   background-image: radial-gradient(
