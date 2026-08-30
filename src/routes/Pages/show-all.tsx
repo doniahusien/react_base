@@ -47,6 +47,8 @@ export default function PagesShowAll() {
   const [editingPage, setEditingPage] = useState<Page | null>(null);
   const [modalTab, setModalTab] = useState<"general" | "seo">("general");
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Page | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState<{
@@ -189,29 +191,38 @@ export default function PagesShowAll() {
   };
 
   const handleToggleStatus = async (page: Page) => {
-    const newStatus = await pagesService.toggleStatus(page.id);
-    setPages((prev) =>
-      prev.map((p) => (p.id === page.id ? { ...p, is_published: newStatus } : p))
-    );
-    toast.success(
-      newStatus ? t("PAGES.pagePublished") : t("PAGES.pageMovedToDraft")
-    );
+    try {
+      const newStatus = await pagesService.toggleStatus(page.id);
+      setPages((prev) =>
+        prev.map((p) => (p.id === page.id ? { ...p, is_published: newStatus } : p))
+      );
+      toast.success(
+        newStatus ? t("PAGES.pagePublished") : t("PAGES.pageMovedToDraft")
+      );
+    } catch (err: any) {
+      toast.error(t("MESSAGES.errorSavingPage"), err?.response?.data?.message);
+    }
   };
 
-  const handleDeletePage = async (page: Page) => {
-    if (page.type === "system") {
+  /** DELETE /admin/pages/{id} — the API also rejects system pages. */
+  const handleDeletePage = async () => {
+    if (!deleteTarget) return;
+    if (deleteTarget.type === "system") {
       toast.error(t("PAGES.systemPageCannotDelete"));
+      setDeleteTarget(null);
       return;
     }
-
-    const pageTitle = currentLang === "ar" ? page.title.ar : page.title.en;
-    const confirmMsg = `${t("PAGES.confirmDeletePage")} "${pageTitle}"?`;
-
-    if (!window.confirm(confirmMsg)) return;
-
-    await pagesService.remove(page.id);
-    toast.success(t("PAGES.pageDeletedSuccess"));
-    fetchPages();
+    setDeleting(true);
+    try {
+      await pagesService.remove(deleteTarget.id);
+      toast.success(t("PAGES.pageDeletedSuccess"));
+      setDeleteTarget(null);
+      fetchPages();
+    } catch (err: any) {
+      toast.error(t("MESSAGES.deletedFailed"), err?.response?.data?.message);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const filteredPages = useMemo(() => {
@@ -396,6 +407,17 @@ export default function PagesShowAll() {
                     <PencilSquareIcon className="h-4 w-4" />
                   </button>
 
+                  {/* System pages are not deletable, server-side and here. */}
+                  {page.type !== "system" && (
+                    <button
+                      onClick={() => setDeleteTarget(page)}
+                      title={t("BUTTONS.delete")}
+                      className="p-1.5 rounded-lg border border-border text-muted-foreground transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:hover:border-rose-900 dark:hover:bg-rose-950/30"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
+                  )}
+
 
                   <Button
                     size="sm"
@@ -409,6 +431,44 @@ export default function PagesShowAll() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Delete confirmation */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+            onClick={() => setDeleteTarget(null)}
+          />
+          <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-background p-6 shadow-2xl shadow-foreground/20">
+            <h3 className="mb-2 text-base font-semibold text-foreground">
+              {t("TITLES.confirmDelete")}
+            </h3>
+            <p className="mb-6 text-sm text-muted-foreground">
+              {t("PAGES.confirmDeletePage")} "
+              {currentLang === "ar"
+                ? deleteTarget.title.ar
+                : deleteTarget.title.en}
+              "
+            </p>
+            <div className="flex items-center gap-3">
+              <Button
+                reverse
+                className="max-w-full flex-1"
+                onClick={() => setDeleteTarget(null)}
+              >
+                {t("BUTTONS.cancel")}
+              </Button>
+              <Button
+                className="max-w-full flex-1 !bg-destructive text-destructive-foreground hover:!bg-destructive/90"
+                loading={deleting}
+                onClick={handleDeletePage}
+              >
+                {t("BUTTONS.delete")}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 

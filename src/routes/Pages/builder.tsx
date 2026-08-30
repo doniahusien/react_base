@@ -217,8 +217,10 @@ export default function PageContentManagerWorkspace() {
   };
 
   // Filtered Dynamic Block Templates for Modal
+  // Inactive blocks are rejected by the API on save, so they are not offerable.
   const availableBlockTemplates = useMemo(() => {
     return blockTemplates.filter((tpl) => {
+      if (!tpl.is_active) return false;
       const matchQuery =
         tpl.name_ar.toLowerCase().includes(blockSearch.toLowerCase()) ||
         tpl.name_en.toLowerCase().includes(blockSearch.toLowerCase()) ||
