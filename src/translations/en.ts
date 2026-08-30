@@ -99,8 +99,8 @@ export const en = {
     security: "Security",
    },
   TITLES: {
-    dashName:"Elwaseet",
-    dashDescription:"Admin Dashboard",
+    dashName:"Lawyers Community ",
+    dashDescription:"for Legal Mediation",
     gridView: "Grid", compactView: "Compact", tableView: "Table",
     viewAll: "View All", cities: "Cities", created_at: "Created At",
     loading: "Loading...", noResults: "No results", adminPanel: "Admin Panel",

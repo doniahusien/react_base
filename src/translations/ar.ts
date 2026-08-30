@@ -99,8 +99,8 @@ export const ar = {
     security: "الأمان",
    },
   TITLES: {
-    dashName:"الوسيط",
-    dashDescription:"لوحة التحكم",
+    dashName:"مجتمع المحاماة",
+    dashDescription:"للوساطة القانونية",
     gridView: "شبكة", compactView: "مضغوط", tableView: "جدول",
     viewAll: "عرض الكل", cities: "المدن", created_at: "تاريخ الإنشاء", city: "المدينة",
     loading: "جارٍ التحميل...", noResults: "لا توجد نتائج", adminPanel: "لوحة الإدارة",

@@ -211,7 +211,7 @@ export default function Login() {
                 <img src="/logo.svg" alt="Logo" width={28} height={28} className="h-7 w-7" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs md:text-lg font-bold text-white">{t("TITLES.dashName")}</span>
+                <span className="text-xs md:text-base font-bold leading-snug text-white">{t("TITLES.dashName")}</span>
                 <span className="text-xs text-gray-300/80">{t("TITLES.dashDescription")}</span>
               </div>            </div>
             <div className="flex items-center justify-end gap-3">
@@ -307,7 +307,7 @@ export default function Login() {
                   <img src="/logo.svg" alt="Logo" width={22} height={22} className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div className="flex min-w-0 flex-col">
-                  <span className="truncate text-sm font-bold leading-tight text-foreground sm:text-base">{t("TITLES.dashName")}</span>
+                  <span className="text-sm font-bold leading-snug text-foreground sm:text-base">{t("TITLES.dashName")}</span>
                   <span className="truncate text-[11px] text-muted-foreground sm:text-xs">{t("TITLES.dashDescription")}</span>
                 </div>
               </div>

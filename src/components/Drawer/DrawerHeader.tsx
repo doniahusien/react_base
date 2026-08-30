@@ -30,11 +30,11 @@ export function DrawerHeader({
         />
       </div>
       {showLabel && (
-        <div className="flex flex-col">
-          <span className="text-sm font-bold text-foreground">
+        <div className="min-w-0 flex flex-col">
+          <span className="text-sm font-bold leading-snug text-foreground">
             {t("TITLES.dashName")}
           </span>
-          <span className="text-xs text-gray-300/80">
+          <span className="text-xs text-gray-300">
             {t("TITLES.dashDescription")}
           </span>
         </div>
