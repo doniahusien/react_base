@@ -35,8 +35,9 @@ export const slidersService = {
   },
 
   /**
-   * POST /admin/sliders — one slide per request, multipart with `image`,
-   * `alt[ar]`, `alt[en]`, and `is_active`.
+   * POST /admin/sliders — all slides in a single multipart request, indexed as
+   * `images[i][image]`, `images[i][alt][ar]`, `images[i][alt][en]`,
+   * `images[i][is_active]`.
    */
   async add(slides: NewSlide[]): Promise<SliderImage[]> {
     if (USE_MOCK_PAGE_BUILDER) {
@@ -46,20 +47,22 @@ export const slidersService = {
         )
       );
     }
-    const created: SliderImage[] = [];
-    for (const slide of slides) {
-      const fd = new FormData();
-      fd.append("image", slide.image);
-      fd.append("alt[ar]", slide.alt?.ar ?? "");
-      fd.append("alt[en]", slide.alt?.en ?? "");
-      fd.append("is_active", slide.is_active === false ? "0" : "1");
-      const res = await api.post(RESOURCE, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      const row = res.data?.data;
-      if (row) created.push(normalizeSlider(row));
-    }
-    return created;
+    if (!slides.length) return [];
+
+    const fd = new FormData();
+    slides.forEach((slide, i) => {
+      fd.append(`images[${i}][image]`, slide.image);
+      fd.append(`images[${i}][alt][ar]`, slide.alt?.ar ?? "");
+      fd.append(`images[${i}][alt][en]`, slide.alt?.en ?? "");
+      fd.append(`images[${i}][is_active]`, slide.is_active === false ? "0" : "1");
+    });
+
+    const res = await api.post(RESOURCE, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    const rows = res.data?.data;
+    if (Array.isArray(rows)) return rows.map(normalizeSlider);
+    return rows ? [normalizeSlider(rows)] : [];
   },
 
   /**
