@@ -209,8 +209,8 @@ export default function PageContentManagerWorkspace() {
       await pagesService.saveSections(page.id, sections);
       setHasUnsavedChanges(false);
       toast.success(t("MESSAGES.pageSaved"));
-    } catch (e) {
-      toast.error(t("MESSAGES.errorSavingPage"));
+    } catch (e: any) {
+      toast.error(t("MESSAGES.errorSavingPage"), e?.response?.data?.message);
     } finally {
       setSaving(false);
     }

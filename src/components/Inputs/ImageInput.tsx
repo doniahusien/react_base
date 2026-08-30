@@ -5,6 +5,8 @@ import {
   XMarkIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
+import { uploadImage } from "../../services/uploadService";
+import { mediaUrl } from "../../lib/mediaUrl";
 
 interface ImageInputProps {
   label?: string;
@@ -34,17 +36,23 @@ export function ImageInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPresets, setShowPresets] = useState(false);
   const [activeDrag, setActiveDrag] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleFileChange = (file: File | null) => {
+  const handleFileChange = async (file: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      if (result) {
-        onChange(result);
-      }
-    };
-    reader.readAsDataURL(file);
+    setUploading(true);
+    setError("");
+    try {
+      onChange(await uploadImage(file));
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message ||
+          (currentLang === "ar" ? "فشل رفع الصورة" : "Image upload failed")
+      );
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -101,19 +109,25 @@ export function ImageInput({
           }}
           onDragLeave={() => setActiveDrag(false)}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            if (!uploading) fileInputRef.current?.click();
+          }}
           className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 transition-all duration-200 ${
             activeDrag
               ? "border-primary bg-primary/10"
               : "border-border/80 bg-muted/10 hover:border-primary/50 hover:bg-muted/20"
-          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          } ${disabled || uploading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <CloudArrowUpIcon className="h-6 w-6" />
           </div>
           <div className="text-center">
             <p className="text-xs font-bold text-foreground">
-              {currentLang === "ar"
+              {uploading
+                ? currentLang === "ar"
+                  ? "جارٍ رفع الصورة..."
+                  : "Uploading image..."
+                : currentLang === "ar"
                 ? "انقر لرفع صورة أو اسحبها وأفلتها هنا"
                 : "Click to upload or drag and drop image"}
             </p>
@@ -126,7 +140,7 @@ export function ImageInput({
         <div className="relative overflow-hidden rounded-2xl border border-border bg-card group shadow-xs">
           <div className="h-40 sm:h-44 w-full overflow-hidden bg-muted flex items-center justify-center">
             <img
-              src={value}
+              src={mediaUrl(value) ?? value}
               alt="Uploaded Preview"
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
@@ -160,6 +174,8 @@ export function ImageInput({
           </div>
         </div>
       )}
+
+      {error && <p className="text-[11px] font-bold text-rose-500">{error}</p>}
 
       {/* Preset Images Quick Selector */}
       {showPresets && (

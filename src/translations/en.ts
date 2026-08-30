@@ -332,6 +332,7 @@ export const en = {
     badgeSystemCore: "System Core",
     badgeLandingPage: "Landing Page",
     badgeCustom: "Custom",
+    badgeLanding: "Landing",
     badgePolicyLegal: "Policy / Legal",
   },
   LABELS: {
@@ -565,6 +566,7 @@ export const en = {
     other: "Other",
   },
   FIELDS: {
+    altText: "Image Alt Text",
     currency_ar: "Currency (Arabic)", currency_en: "Currency (English)",
     name_ar: "Name (Arabic)", name_en: "Name (English)",
     phone_code: "Phone Code", phone_number_limit: "Phone Number Limit",

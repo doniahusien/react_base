@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   PhotoIcon,
@@ -14,8 +14,18 @@ import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { Deleter } from "../../components/Shared/Deleter";
 import { slidersService } from "../../services/slidersService";
+import { mediaUrl } from "../../lib/mediaUrl";
 import { toast } from "../../stores/toast";
 import type { SliderImage } from "../../types/sliders";
+
+/** A slide waiting to be created, with the alt text and status the API expects. */
+interface StagedImage {
+  preview: string;
+  value: string | File;
+  alt_ar: string;
+  alt_en: string;
+  is_active: boolean;
+}
 
 const SITE_PRESET_IMAGES = [
   "/images/images/slider1.webp",
@@ -60,7 +70,7 @@ function SlideCard({
       {/* Image */}
       <div className="relative aspect-16/9 w-full overflow-hidden bg-muted">
         <img
-          src={slide.image}
+          src={mediaUrl(slide.image) ?? slide.image}
           alt={slide.alt?.[currentLang] || `Slide ${index + 1}`}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
@@ -121,9 +131,9 @@ export default function SlidersShowAll() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [stagedImages, setStagedImages] = useState<string[]>([]);
+  const [stagedImages, setStagedImages] = useState<StagedImage[]>([]);
   const [urlInput, setUrlInput] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputId = useId();
 
   const fetchSliders = useCallback(async () => {
     setLoading(true);
@@ -152,23 +162,40 @@ export default function SlidersShowAll() {
     setIsModalOpen(true);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files?.length) return;
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setStagedImages((prev) => [...prev, reader.result as string]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  // Files are sent as-is to POST /sliders, so they only need a local preview.
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // FileList is live: resetting the input clears it, so copy it out first.
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (!files.length) return;
+    setStagedImages((prev) => [
+      ...prev,
+      ...files.map((file) => ({
+        preview: URL.createObjectURL(file),
+        value: file,
+        alt_ar: "",
+        alt_en: "",
+        is_active: true,
+      })),
+    ]);
   };
 
-  const handleStagePreset = (src: string) => {
-    setStagedImages((prev) => (prev.includes(src) ? prev : [...prev, src]));
+  // The API validates `image` as an uploaded file, so a preset path has to be
+  // fetched back into a File before it can be sent.
+  const handleStagePreset = async (src: string) => {
+    if (stagedImages.some((s) => s.preview === src)) return;
+    try {
+      const blob = await (await fetch(src)).blob();
+      const name = src.split("/").pop() || "slide.webp";
+      const file = new File([blob], name, { type: blob.type || "image/webp" });
+      setStagedImages((prev) =>
+        prev.some((s) => s.preview === src)
+          ? prev
+          : [...prev, { preview: src, value: file, alt_ar: "", alt_en: "", is_active: true }]
+      );
+    } catch {
+      toast.error(t("LABELS.errorSavingSliderImages"));
+    }
   };
 
 
@@ -179,7 +206,13 @@ export default function SlidersShowAll() {
     }
     setSaving(true);
     try {
-      await slidersService.add(stagedImages);
+      await slidersService.add(
+        stagedImages.map((s) => ({
+          image: s.value,
+          alt: { ar: s.alt_ar.trim(), en: s.alt_en.trim() },
+          is_active: s.is_active,
+        }))
+      );
       toast.success(
         t("LABELS.imagesAddedToSlider", { count: stagedImages.length })
       );
@@ -193,9 +226,9 @@ export default function SlidersShowAll() {
   };
 
   const handleToggleStatus = async (slide: SliderImage) => {
-    await slidersService.toggleStatus(slide.id);
+    const isActive = await slidersService.toggleStatus(slide.id);
     setSlides((prev) =>
-      prev.map((s) => (s.id === slide.id ? { ...s, is_active: !s.is_active } : s))
+      prev.map((s) => (s.id === slide.id ? { ...s, is_active: isActive } : s))
     );
   };
 
@@ -283,10 +316,9 @@ export default function SlidersShowAll() {
             <div className="flex-1 space-y-5 overflow-y-auto p-5">
               {/* Upload */}
               <div>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex w-full flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/10 p-8 transition-colors hover:border-primary hover:bg-primary/5"
+                <label
+                  htmlFor={fileInputId}
+                  className="flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/10 p-8 transition-colors hover:border-primary hover:bg-primary/5"
                 >
                   <ArrowUpTrayIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
                   <span className="text-xs font-bold text-foreground">
@@ -295,14 +327,14 @@ export default function SlidersShowAll() {
                   <span className="mt-0.5 text-[11px] text-muted-foreground">
                     PNG, JPG, WEBP
                   </span>
-                </button>
+                </label>
                 <input
-                  ref={fileInputRef}
+                  id={fileInputId}
                   type="file"
                   accept="image/*"
                   multiple
-                  className="hidden"
-                  onChange={handleFileUpload}
+                  className="sr-only"
+                  onChange={handleFileSelect}
                 />
               </div>
 
@@ -314,7 +346,7 @@ export default function SlidersShowAll() {
                 </label>
                 <div className="grid grid-cols-3 mt-2! gap-2 sm:grid-cols-5">
                   {SITE_PRESET_IMAGES.map((img) => {
-                    const selected = stagedImages.includes(img);
+                    const selected = stagedImages.some((s) => s.value === img);
                     return (
                       <button
                         key={img}
@@ -356,30 +388,84 @@ export default function SlidersShowAll() {
                     {t("LABELS.noImagesSelected")}
                   </p>
                 ) : (
-                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                  <div className="space-y-2">
                     {stagedImages.map((img, idx) => (
                       <div
-                        key={`${img}-${idx}`}
-                        className="relative aspect-16/9 overflow-hidden rounded-xl border border-border"
+                        key={`${img.preview}-${idx}`}
+                        className="flex items-start gap-3 rounded-xl border border-border bg-muted/10 p-2.5"
                       >
-                        <img 
-                          src={img} 
-                          alt="" 
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              "https://placehold.co/400x225/f1f5f9/64748b?text=Image+Preview";
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setStagedImages((prev) => prev.filter((_, i) => i !== idx))
-                          }
-                          className="absolute top-1 end-1 rounded-md bg-black/70 p-1 text-white hover:bg-rose-600"
-                        >
-                          <XMarkIcon className="h-3 w-3" />
-                        </button>
+                        <div className="relative h-16 w-28 shrink-0 overflow-hidden rounded-lg border border-border">
+                          <img
+                            src={img.preview}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src =
+                                "https://placehold.co/400x225/f1f5f9/64748b?text=Image+Preview";
+                            }}
+                          />
+                        </div>
+
+                        <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
+                          <BaseTextInput
+                            label={`${t("FIELDS.altText")} (AR)`}
+                            value={img.alt_ar}
+                            onChange={(e) =>
+                              setStagedImages((prev) =>
+                                prev.map((s, i) =>
+                                  i === idx ? { ...s, alt_ar: e.target.value } : s
+                                )
+                              )
+                            }
+                          />
+                          <BaseTextInput
+                            label={`${t("FIELDS.altText")} (EN)`}
+                            value={img.alt_en}
+                            onChange={(e) =>
+                              setStagedImages((prev) =>
+                                prev.map((s, i) =>
+                                  i === idx ? { ...s, alt_en: e.target.value } : s
+                                )
+                              )
+                            }
+                          />
+                        </div>
+
+                        <div className="flex shrink-0 flex-col items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setStagedImages((prev) => prev.filter((_, i) => i !== idx))
+                            }
+                            className="rounded-md bg-muted p-1 text-muted-foreground hover:bg-rose-600 hover:text-white"
+                          >
+                            <XMarkIcon className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setStagedImages((prev) =>
+                                prev.map((s, i) =>
+                                  i === idx ? { ...s, is_active: !s.is_active } : s
+                                )
+                              )
+                            }
+                            title={
+                              img.is_active ? t("TITLES.visible") : t("TITLES.hidden")
+                            }
+                            className={`rounded-md p-1 ${
+                              img.is_active
+                                ? "bg-emerald-500/15 text-emerald-600"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {img.is_active ? (
+                              <EyeIcon className="h-3.5 w-3.5" />
+                            ) : (
+                              <EyeSlashIcon className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

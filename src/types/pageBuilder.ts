@@ -6,7 +6,7 @@
 // that shape. Do not add a page-specific variant of an existing shape.
 // ============================================================================
 
-export type PageType = "system"| "custom" | "policy";
+export type PageType = "system" | "landing" | "custom" | "policy";
 
 /** Canonical block ids. Must stay in sync with INITIAL_BLOCK_TEMPLATES. */
 export type BlockType =

@@ -28,6 +28,18 @@ import { blockTemplatesService } from "../../services/blockTemplatesService";
 import { toast } from "../../stores/toast";
 import type { BlockTemplate, BlockCategory, FieldDefinition, FieldInputType } from "../../types/blocks";
 
+/**
+ * `default_content` is required on write and seeds a section's content when the
+ * block is added to a page, so it is derived from the field schema.
+ */
+function buildDefaultContent(fields: FieldDefinition[]) {
+  const shape: Record<string, any> = {};
+  for (const field of fields) {
+    shape[field.key] = field.type === "repeater" ? [] : field.default_value ?? "";
+  }
+  return { ar: { ...shape }, en: { ...shape } };
+}
+
 const CATEGORY_TITLE_KEYS: Record<string, string> = {
   content_media: "TITLES.blockCatContentMedia",
   cards_grid: "TITLES.blockCatCardsGrid",
@@ -52,6 +64,8 @@ export default function BlocksShowAll() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<BlockTemplate | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<BlockTemplate | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState<{
@@ -183,12 +197,15 @@ export default function BlocksShowAll() {
         name_ar: formData.name_ar.trim(),
         name_en: formData.name_en.trim() || formData.name_ar.trim(),
         description_ar: formData.description_ar.trim(),
-        description_en: formData.description_en.trim(),
+        description_en:
+          formData.description_en.trim() || formData.description_ar.trim(),
         category: formData.category,
         icon: formData.icon,
         shape_tags: tags,
         is_active: formData.is_active,
         fields: formData.fields,
+        default_content:
+          editingTemplate?.default_content ?? buildDefaultContent(formData.fields),
       };
 
       await blockTemplatesService.save(payload, !editingTemplate);
@@ -199,36 +216,47 @@ export default function BlocksShowAll() {
       );
       setIsModalOpen(false);
       fetchTemplates();
-    } catch {
-      toast.error(t("MESSAGES.blockTemplateSaveFailed"));
+    } catch (err: any) {
+      toast.error(
+        t("MESSAGES.blockTemplateSaveFailed"),
+        err?.response?.data?.message
+      );
     } finally {
       setSaving(false);
     }
   };
 
   const handleToggleStatus = async (tpl: BlockTemplate) => {
-    const newStatus = await blockTemplatesService.toggleStatus(tpl.id);
-    setTemplates((prev) =>
-      prev.map((t) => (t.id === tpl.id ? { ...t, is_active: newStatus } : t))
-    );
-    toast.success(
-      newStatus ? t("MESSAGES.blockEnabled") : t("MESSAGES.blockDisabled")
-    );
+    try {
+      const newStatus = await blockTemplatesService.toggleStatus(tpl.id);
+      setTemplates((prev) =>
+        prev.map((t) => (t.id === tpl.id ? { ...t, is_active: newStatus } : t))
+      );
+      toast.success(
+        newStatus ? t("MESSAGES.blockEnabled") : t("MESSAGES.blockDisabled")
+      );
+    } catch (err: any) {
+      toast.error(
+        t("MESSAGES.blockTemplateSaveFailed"),
+        err?.response?.data?.message
+      );
+    }
   };
 
-  const handleDeleteTemplate = async (tpl: BlockTemplate) => {
-    if (
-      !window.confirm(
-        t("MESSAGES.confirmDeleteBlockTemplate", {
-          name: currentLang === "ar" ? tpl.name_ar : tpl.name_en,
-        })
-      )
-    )
-      return;
-
-    await blockTemplatesService.remove(tpl.id);
-    toast.success(t("MESSAGES.blockTemplateDeleted"));
-    fetchTemplates();
+  // The API refuses to delete a block that page sections still use.
+  const handleDeleteTemplate = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await blockTemplatesService.remove(deleteTarget.id);
+      toast.success(t("MESSAGES.blockTemplateDeleted"));
+      setDeleteTarget(null);
+      fetchTemplates();
+    } catch (err: any) {
+      toast.error(t("MESSAGES.deletedFailed"), err?.response?.data?.message);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const filterItems: FilterItem[] = useMemo(
@@ -448,7 +476,7 @@ export default function BlocksShowAll() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleDeleteTemplate(tpl)}
+                      onClick={() => setDeleteTarget(tpl)}
                       className="px-3 py-1.5 text-muted-foreground hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:hover:border-rose-900 dark:hover:bg-rose-950/30"
                       title={t("BUTTONS.delete")}
                     >
@@ -459,6 +487,45 @@ export default function BlocksShowAll() {
               </section>
             );
           })}
+        </div>
+      )}
+
+      {/* Delete confirmation */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+            onClick={() => setDeleteTarget(null)}
+          />
+          <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-background p-6 shadow-2xl shadow-foreground/20">
+            <h3 className="mb-2 text-base font-semibold text-foreground">
+              {t("TITLES.confirmDelete")}
+            </h3>
+            <p className="mb-6 text-sm text-muted-foreground">
+              {t("MESSAGES.confirmDeleteBlockTemplate", {
+                name:
+                  currentLang === "ar"
+                    ? deleteTarget.name_ar
+                    : deleteTarget.name_en,
+              })}
+            </p>
+            <div className="flex items-center gap-3">
+              <Button
+                reverse
+                className="max-w-full flex-1"
+                onClick={() => setDeleteTarget(null)}
+              >
+                {t("BUTTONS.cancel")}
+              </Button>
+              <Button
+                className="max-w-full flex-1 !bg-destructive text-destructive-foreground hover:!bg-destructive/90"
+                loading={deleting}
+                onClick={handleDeleteTemplate}
+              >
+                {t("BUTTONS.delete")}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 

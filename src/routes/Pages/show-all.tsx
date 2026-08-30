@@ -181,8 +181,8 @@ export default function PagesShowAll() {
       );
       setIsModalOpen(false);
       fetchPages();
-    } catch (err) {
-      toast.error("Error saving page");
+    } catch (err: any) {
+      toast.error(t("MESSAGES.errorSavingPage"), err?.response?.data?.message);
     } finally {
       setSaving(false);
     }
@@ -228,6 +228,7 @@ export default function PagesShowAll() {
 
   const typeLabels: Record<PageType, { badge: string }> = {
     system: { badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
+    landing: { badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
     custom: { badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
     policy: { badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
   };
@@ -235,6 +236,7 @@ export default function PagesShowAll() {
   const getTypeLabel = (type: PageType): string => {
     const labels: Record<PageType, string> = {
       system: t("PAGES.badgeSystemCore"),
+      landing: t("PAGES.badgeLanding"),
       custom: t("PAGES.badgeCustom"),
       policy: t("PAGES.badgePolicyLegal"),
     };

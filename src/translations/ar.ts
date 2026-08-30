@@ -332,6 +332,7 @@ export const ar = {
     badgeSystemCore: "أساسية للنظام",
     badgeLandingPage: "صفحة هبوط",
     badgeCustom: "مخصصة",
+    badgeLanding: "صفحة هبوط",
     badgePolicyLegal: "شروط وسياسات",
   },
   LABELS: {
@@ -528,6 +529,7 @@ export const ar = {
     fieldTypeRepeater: "تكرار كروت",
   },
   FIELDS: {
+    altText: "النص البديل للصورة",
     flag: "العلم", name_ar: "الاسم (بالعربية)", name_en: "الاسم (بالإنجليزية)",
     phone_code: "رمز الهاتف", phone_number_limit: "حد رقم الهاتف",
     phone_length: "حد رقم الهاتف", email: "البريد الإلكتروني",

@@ -188,14 +188,19 @@ PUT /api/v1/admin/pages/2/sections
 | Method | Path | Purpose |
 | :--- | :--- | :--- |
 | `GET` | `/api/v1/admin/sliders` | list, `ORDER BY id ASC` |
-| `POST` | `/api/v1/admin/sliders` | add images, body `{ "images": ["<path>", ...] }` |
-| `PUT` | `/api/v1/admin/sliders/{id}` | update `image`, `alt`, `is_active` |
+| `POST` | `/api/v1/admin/sliders` | add one slide, body `{ "image": "<path>" }` or multipart `image` |
+| `POST` | `/api/v1/admin/sliders/{id}` | update `image`, `alt`, `is_active` |
 | `DELETE` | `/api/v1/admin/sliders/{id}` | delete |
 | `PATCH` | `/api/v1/admin/sliders/{id}/toggle-status` | flip `is_active` |
 
-Slider images need a real upload endpoint returning a stored path. The dashboard
-currently produces base64 data URLs as a mock stand-in; it will send multipart
-uploads once an endpoint exists.
+### Media upload — admin
+
+| Method | Path | Purpose |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/admin/upload-image` | multipart, field `file`, returns the stored path |
+
+The dashboard sends every device file through this endpoint first and stores only
+the returned path, both for slider rows and for the `image` fields inside blocks.
 
 ### Public — guest
 
@@ -569,10 +574,12 @@ The same map lives in code at `src/mocks/blockTemplatesMock.ts`
 All endpoints use the project's standard envelope.
 
 ```json
-{ "status": true, "message": "...", "data": { } }
+{ "status": "success", "message": "...", "data": { } }
 ```
 
-Validation errors return `422` with `{ "status": false, "message": "...", "errors": { "field": ["..."] } }`.
+Validation errors return `422` with `{ "status": "fail", "message": "...", "data": null }`.
+The message is already localized by `Accept-Language`, and there is no per-field
+`errors` object, so the dashboard shows the message as returned.
 
 ---
 
@@ -589,8 +596,8 @@ Each function has two implementations behind one signature — local mock data, 
 the real endpoint above. The choice is a single flag in `.env`:
 
 ```
-VITE_USE_MOCK_PAGE_BUILDER="true"   # mock data, backend not ready
-VITE_USE_MOCK_PAGE_BUILDER="false"  # real endpoints
+VITE_USE_MOCK_PAGE_BUILDER="false"  # real endpoints — current setting
+VITE_USE_MOCK_PAGE_BUILDER="true"   # local mock data
 ```
 
 This means the endpoints must match this document exactly — paths, methods,
@@ -598,10 +605,5 @@ request bodies, and the response envelope. If something has to differ, tell the
 frontend before building it, so the change happens in one service file instead
 of across the screens.
 
-Two things still needed from the backend beyond the tables and endpoints:
-
-1. **An image upload endpoint** returning a stored path, for slider images and
-   for the `image` fields inside blocks. The dashboard currently produces base64
-   data URLs as a mock stand-in and will switch to multipart upload.
-2. **Confirmation of the injected-data shape** in section 5, since the website
-   templates will read those keys directly.
+One thing still needed from the backend: **confirmation of the injected-data
+shape** in section 5, since the website templates read those keys directly.

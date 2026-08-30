@@ -38,12 +38,20 @@ edited under About in the dashboard and returned inside the normal
 texts. Append the real contact settings, questions, and articles on the guest
 response. See section 5 of the contract.
 
-## Two things we still need from you
+## What the live API does differently
 
-1. **An image upload endpoint** that returns a stored file path, for slider
-   images and for the `image` fields inside blocks.
-2. **Confirmation of the injected-data field names** in section 5, since the
-   website templates read those keys directly.
+The backend is live and the dashboard now calls it. These four points differ from
+the contract below and the frontend has been adjusted to match them:
+
+1. **Upload** is `POST /api/v1/admin/upload-image`, multipart, field name `file`.
+2. **Creating a slider** takes one image per request in an `image` field, not an
+   `images` array.
+3. **Updating a slider** is `POST /api/v1/admin/sliders/{id}`, not `PUT`.
+4. **The envelope `status` is a string** (`"success"` / `"fail"`), not a boolean,
+   and validation failures return the message only — no `errors` object.
+
+Still open: **confirmation of the injected-data field names** in section 5, since
+the website templates read those keys directly.
 
 ## Important
 
