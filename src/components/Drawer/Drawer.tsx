@@ -24,7 +24,6 @@ import {
   LockClosedIcon,
   Cog6ToothIcon,
   BellIcon,
-  BellAlertIcon,
   BoltIcon,
   MoonIcon,
   LanguageIcon,
@@ -243,13 +242,6 @@ export function Drawer() {
             icon: BellIcon,
             permission: PERMISSION_CODES.manage_notifications,
           },
-/*           {
-            href: "/system-notifications?page=1",
-            label: t("SIDEBAR.SystemNotifications"),
-            labelStr: "System Notifications",
-            icon: BellAlertIcon,
-            permission: PERMISSION_CODES.manage_notifications,
-          }, */
         ],
       },
       {

@@ -22,6 +22,20 @@ export interface NotificationSentByAdmin {
   full_name?: string | null;
 }
 
+export interface SystemNotificationPayload {
+  type?: string | null;
+  url?: string | null;
+}
+
+export interface SystemNotification {
+  id: number;
+  message: string;
+  payload?: SystemNotificationPayload | null;
+  is_read: boolean | 0 | 1 | "0" | "1";
+  read_at?: string | null;
+  created_at?: string | null;
+}
+
 export interface AppNotification {
   id: number;
   title: string;

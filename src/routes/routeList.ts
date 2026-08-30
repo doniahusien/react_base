@@ -41,7 +41,6 @@ export const routes = [
   { path: "/notifications", component: lazy(() => import("./Notifications/show-all")) },
   { path: "/notifications/create", component: lazy(() => import("./Notifications/create")) },
   { path: "/notifications/:id", component: lazy(() => import("./Notifications/show")) },
-  { path: "/system-notifications", component: lazy(() => import("./SystemNotifications/show-all")) },
   { path: "/contact-settings", component: lazy(() => import("./ContactSettings/index")) },
   { path: "/settings", component: lazy(() => import("./Settings/index")) },
   { path: "/complaints", component: lazy(() => import("./Complaints/show-all")) },

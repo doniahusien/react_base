@@ -38,10 +38,6 @@ export const ROUTE_PERMISSIONS: Array<{
   { prefix: "/contact-settings", permission: PERMISSION_CODES.manage_content },
   { prefix: "/settings", permission: PERMISSION_CODES.manage_content },
   { prefix: "/notifications", permission: PERMISSION_CODES.manage_notifications },
-  {
-    prefix: "/system-notifications",
-    permission: PERMISSION_CODES.manage_notifications,
-  },
   { prefix: "/complaints", permission: PERMISSION_CODES.manage_complaints },
   { prefix: "/contacts", permission: PERMISSION_CODES.manage_complaints },
   { prefix: "/clients", permission: PERMISSION_CODES.manage_accounts },

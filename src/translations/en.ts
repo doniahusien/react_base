@@ -103,7 +103,7 @@ export const en = {
     dashName:"Lawyers Community ",
     dashDescription:"for Legal Mediation",
     gridView: "Grid", compactView: "Compact", tableView: "Table",
-    viewAll: "View All", cities: "Cities", created_at: "Created At",
+    viewAll: "View All", loadMore: "Load more", cities: "Cities", created_at: "Created At",
     loading: "Loading...", noResults: "No results", adminPanel: "Admin Panel",
     menu: "Menu", active: "Active", inactive: "Inactive", search: "Search",
     searchPlaceholder: "Search {{count}}...",
@@ -704,6 +704,10 @@ export const en = {
     clients: "Clients",
     regular_lawyers: "Regular lawyers",
     premium_lawyers: "Premium lawyers",
+  },
+  NOTIFICATION_TYPE: {
+    lawyer_request: "Lawyer request",
+    new_complaint: "New complaint",
   },
   ROLES: {
     superAdmin: "Super Admin", admin: "Admin", superUser: "Super User",

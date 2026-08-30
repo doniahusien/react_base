@@ -55,7 +55,7 @@ export function Header({ mode }: HeaderProps) {
           )}
         </div>
         <div className="relative z-10 flex shrink-0 items-center gap-0.5 md:gap-1.5">
-          <div className="header-pill">
+          <div className="header-pill overflow-visible">
             <button
               type="button"
               onClick={() => setCustomizerOpen(true)}

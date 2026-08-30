@@ -103,7 +103,7 @@ export const ar = {
     dashName:"مجتمع المحاماة",
     dashDescription:"للوساطة القانونية",
     gridView: "شبكة", compactView: "مضغوط", tableView: "جدول",
-    viewAll: "عرض الكل", cities: "المدن", created_at: "تاريخ الإنشاء", city: "المدينة",
+    viewAll: "عرض الكل", loadMore: "تحميل المزيد", cities: "المدن", created_at: "تاريخ الإنشاء", city: "المدينة",
     loading: "جارٍ التحميل...", noResults: "لا توجد نتائج", adminPanel: "لوحة الإدارة",
     menu: "القائمة", active: "نشط", inactive: "غير نشط", banned: "محظور",
     user: "المستخدم", phone: "الهاتف", quick_view: "عرض سريع", home: "الرئيسية",
@@ -668,6 +668,10 @@ export const ar = {
     clients: "العملاء",
     regular_lawyers: "المحامون العاديون",
     premium_lawyers: "المحامون المميزون",
+  },
+  NOTIFICATION_TYPE: {
+    lawyer_request: "طلب انضمام محامي",
+    new_complaint: "شكوى جديدة",
   },
   ROLES: {
     superAdmin: "سوبر مسؤول", admin: "مسؤول", superUser: "سوبر مستخدم",
