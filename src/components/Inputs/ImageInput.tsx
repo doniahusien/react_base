@@ -1,4 +1,4 @@
-import { useState, useRef, useId } from "react";
+import { useEffect, useState, useRef, useId } from "react";
 import {
   PhotoIcon,
   CloudArrowUpIcon,
@@ -15,6 +15,12 @@ interface ImageInputProps {
   currentLang?: "ar" | "en";
   presetImages?: string[];
   disabled?: boolean;
+  /**
+   * Set by callers whose own endpoint takes the file as multipart. The picked
+   * file is handed over instead of being uploaded here, and presets are fetched
+   * back into a File so both paths produce an upload.
+   */
+  onFileSelect?: (file: File | null) => void;
 }
 
 const DEFAULT_PRESETS = [
@@ -31,6 +37,7 @@ export function ImageInput({
   currentLang = "ar",
   presetImages = DEFAULT_PRESETS,
   disabled = false,
+  onFileSelect,
 }: ImageInputProps) {
   const inputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,11 +45,38 @@ export function ImageInput({
   const [activeDrag, setActiveDrag] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    };
+  }, [localPreview]);
+
+  const showLocalPreview = (file: File) => {
+    setLocalPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+  };
+
+  const clearLocalPreview = () => {
+    setLocalPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  };
 
   const handleFileChange = async (file: File | null) => {
     if (!file) return;
-    setUploading(true);
     setError("");
+    if (onFileSelect) {
+      showLocalPreview(file);
+      onChange(file.name);
+      onFileSelect(file);
+      return;
+    }
+    setUploading(true);
     try {
       onChange(await uploadImage(file));
     } catch (err: any) {
@@ -54,6 +88,38 @@ export function ImageInput({
       setUploading(false);
     }
   };
+
+  const handlePresetSelect = async (img: string) => {
+    setShowPresets(false);
+    setError("");
+    if (!onFileSelect) {
+      clearLocalPreview();
+      onChange(img);
+      return;
+    }
+    setUploading(true);
+    try {
+      const blob = await (await fetch(img)).blob();
+      const name = img.split("/").pop() || "image.webp";
+      onFileSelect(new File([blob], name, { type: blob.type || "image/webp" }));
+      clearLocalPreview();
+      onChange(img);
+    } catch {
+      setError(
+        currentLang === "ar" ? "فشل تحميل الصورة" : "Could not load that image"
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemove = () => {
+    clearLocalPreview();
+    onChange("");
+    onFileSelect?.(null);
+  };
+
+  const previewSrc = localPreview ?? (value ? mediaUrl(value) ?? value : null);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -101,7 +167,7 @@ export function ImageInput({
       />
 
       {/* Image Uploader & Preview Box */}
-      {!value ? (
+      {!previewSrc ? (
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -140,7 +206,7 @@ export function ImageInput({
         <div className="relative overflow-hidden rounded-2xl border border-border bg-card group shadow-xs">
           <div className="h-40 sm:h-44 w-full overflow-hidden bg-muted flex items-center justify-center">
             <img
-              src={mediaUrl(value) ?? value}
+              src={previewSrc}
               alt="Uploaded Preview"
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
@@ -164,7 +230,7 @@ export function ImageInput({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onChange("");
+                handleRemove();
               }}
               className="rounded-xl bg-rose-600 px-3 py-1.5 text-xs font-bold text-white shadow-md hover:bg-rose-700 transition-all flex items-center gap-1.5"
             >
@@ -191,10 +257,7 @@ export function ImageInput({
               <button
                 key={idx}
                 type="button"
-                onClick={() => {
-                  onChange(img);
-                  setShowPresets(false);
-                }}
+                onClick={() => handlePresetSelect(img)}
                 className={`group relative h-16 rounded-xl overflow-hidden border transition-all ${
                   value === img
                     ? "border-primary ring-2 ring-primary"

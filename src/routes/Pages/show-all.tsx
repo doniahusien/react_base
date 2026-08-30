@@ -23,10 +23,9 @@ import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
-import { BaseFilesInput } from "../../components/Inputs/BaseFilesInput";
 import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
+import { ImageInput } from "../../components/Inputs/ImageInput";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
-import type { FileOutputItem } from "../../components/Inputs/BaseFilesInput";
 import { pagesService } from "../../services/pagesService";
 import { toast } from "../../stores/toast";
 import type { Page, PageType } from "../../types/pageBuilder";
@@ -49,6 +48,8 @@ export default function PagesShowAll() {
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Page | null>(null);
   const [deleting, setDeleting] = useState(false);
+  /** Sent as `seo[og_image]`; null keeps whatever the page already has. */
+  const [ogImageFile, setOgImageFile] = useState<File | null>(null);
 
   // Form State
   const [formData, setFormData] = useState<{
@@ -108,6 +109,7 @@ export default function PagesShowAll() {
       og_image: "",
       keywords: "",
     });
+    setOgImageFile(null);
     setModalTab("general");
     setIsModalOpen(true);
   };
@@ -136,6 +138,7 @@ export default function PagesShowAll() {
       og_image: page.seo?.og_image || "",
       keywords: keywordsStr,
     });
+    setOgImageFile(null);
     setModalTab("general");
     setIsModalOpen(true);
   };
@@ -175,7 +178,7 @@ export default function PagesShowAll() {
         payload.id = editingPage.id;
       }
 
-      await pagesService.save(payload);
+      await pagesService.save(payload, ogImageFile);
       toast.success(
         editingPage
           ? t("PAGES.pageUpdatedSuccess")
@@ -308,12 +311,12 @@ export default function PagesShowAll() {
             {filteredPages.length}
           </span>
         </div>
-        <Filter items={filterItems} />
-      </div>
+{/*         <Filter items={filterItems} />
+ */}      </div>
 
       {/* Pages Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
@@ -332,7 +335,7 @@ export default function PagesShowAll() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filteredPages.map((page) => (
             <div
               key={page.id}
@@ -642,20 +645,14 @@ export default function PagesShowAll() {
                       />
                     </div>
 
-                    <BaseFilesInput
-                      name="og_image"
+                    <ImageInput
                       label={t("PAGES.ogImage")}
-                      multiple={false}
-                      accept="image/*"
-                      attachment={false}
-                      value={formData.og_image ? { media: formData.og_image } : null}
-                      onChange={(val) => {
-                        const file = val as FileOutputItem | null;
-                        setFormData((prev) => ({ 
-                          ...prev, 
-                          og_image: file?.str || "" 
-                        }));
-                      }}
+                      value={formData.og_image}
+                      onChange={(imgVal) =>
+                        setFormData((prev) => ({ ...prev, og_image: imgVal }))
+                      }
+                      onFileSelect={setOgImageFile}
+                      currentLang={currentLang}
                     />
 
                     <BaseTextInput

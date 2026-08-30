@@ -313,7 +313,7 @@ export const ar = {
     metaDescriptionArabicPlaceholder: "وصف مختصر لمحتوى الصفحة",
     metaDescriptionEnglish: "وصف نتائج البحث (بالإنجليزية)",
     metaDescriptionEnglishPlaceholder: "ملخص قصير يظهر في نتائج البحث",
-    ogImage: "رابط صورة المشاركة على مواقع التواصل",
+    ogImage: "صورة المشاركة على مواقع التواصل",
     ogImagePlaceholder: "/images/og-share.jpg أو https://...",
     keywords: "الكلمات المفتاحية",
     keywordsPlaceholder: "ذهب، فضة، سبائك، استثمار",

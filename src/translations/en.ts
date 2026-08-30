@@ -313,7 +313,7 @@ export const en = {
     metaDescriptionArabicPlaceholder: "Short summary for search results",
     metaDescriptionEnglish: "Meta Description (English)",
     metaDescriptionEnglishPlaceholder: "Short summary for search results",
-    ogImage: "Social Share Image (OG Image)",
+    ogImage: "Social share image",
     ogImagePlaceholder: "/images/og-share.jpg or https://...",
     keywords: "Keywords (Comma separated)",
     keywordsPlaceholder: "gold, silver, bullion, investment",

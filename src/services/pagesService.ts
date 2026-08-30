@@ -23,6 +23,39 @@ function migrateSections(page: Page): Page {
   };
 }
 
+/** Flattens a page into the bracket notation the API expects for multipart. */
+function buildPageFormData(
+  payload: Partial<Page> & { id?: number },
+  ogImageFile: File
+): FormData {
+  const fd = new FormData();
+  if (payload.slug) fd.append("slug", payload.slug);
+  if (payload.title) {
+    fd.append("title[ar]", payload.title.ar ?? "");
+    fd.append("title[en]", payload.title.en ?? "");
+  }
+  if (payload.type) fd.append("type", payload.type);
+  if (payload.is_published != null) {
+    fd.append("is_published", payload.is_published ? "1" : "0");
+  }
+
+  const seo = payload.seo;
+  if (seo?.meta_title) {
+    fd.append("seo[meta_title][ar]", seo.meta_title.ar ?? "");
+    fd.append("seo[meta_title][en]", seo.meta_title.en ?? "");
+  }
+  if (seo?.meta_description) {
+    fd.append("seo[meta_description][ar]", seo.meta_description.ar ?? "");
+    fd.append("seo[meta_description][en]", seo.meta_description.en ?? "");
+  }
+  if (typeof seo?.keywords === "string") {
+    fd.append("seo[keywords]", seo.keywords);
+  }
+  fd.append("seo[og_image]", ogImageFile);
+
+  return fd;
+}
+
 export const pagesService = {
   /** GET /admin/pages */
   async list(params?: PageListParams): Promise<Page[]> {
@@ -61,11 +94,32 @@ export const pagesService = {
     return page ? migrateSections(page) : null;
   },
 
-  /** POST /admin/pages on create, PUT /{id} on update */
-  async save(payload: Partial<Page> & { id?: number }): Promise<Page> {
+  /**
+   * POST /admin/pages on create, PUT /{id} on update.
+   *
+   * `seo[og_image]` is an uploaded file, so picking a new image switches the
+   * request to multipart. Laravel does not parse multipart on PUT, hence the
+   * `_method` override on update.
+   */
+  async save(
+    payload: Partial<Page> & { id?: number },
+    ogImageFile?: File | null
+  ): Promise<Page> {
     if (USE_MOCK_PAGE_BUILDER) {
       return pageBuilderMockService.savePage(payload);
     }
+
+    if (ogImageFile) {
+      const fd = buildPageFormData(payload, ogImageFile);
+      if (payload.id) fd.append("_method", "PUT");
+      const res = await api.post(
+        payload.id ? `${RESOURCE}/${payload.id}` : RESOURCE,
+        fd,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      return res.data?.data;
+    }
+
     const res = payload.id
       ? await api.put(`${RESOURCE}/${payload.id}`, payload)
       : await api.post(RESOURCE, payload);
