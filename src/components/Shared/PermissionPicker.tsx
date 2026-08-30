@@ -72,7 +72,7 @@ export function PermissionPicker({
 
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
 
-      <div className="space-y-2">
+      <div className="space-y-2  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {options.map((p) => {
           const checked = selected.has(p.code);
           const routes = p.target_routes ?? [];

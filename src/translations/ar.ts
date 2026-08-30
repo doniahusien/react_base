@@ -678,6 +678,7 @@ export const ar = {
   },
   ACTIONS: {
     edit: "تعديل", show: "عرض", delete: "حذف",
+    remove:"إزالة",
     selectAll: "تحديد الجميع", deselectAll: "إلغاء تحديد الجميع", changeFlag: "تغيير العلم",
     select: "تحديد", suspend: "تعليق", restore: "استعادة",
     approve: "اعتماد", reject: "رفض",

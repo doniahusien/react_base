@@ -714,6 +714,7 @@ export const en = {
   },
   ACTIONS: {
     edit: "Edit", show: "Show", delete: "Delete",
+    remove:"Remove",
     selectAll: "Select All", deselectAll: "Deselect All", changeFlag: "Change Flag",
     select: "Select", suspend: "Suspend", restore: "Restore",
     approve: "Approve", reject: "Reject",

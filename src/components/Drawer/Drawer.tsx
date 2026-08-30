@@ -243,13 +243,13 @@ export function Drawer() {
             icon: BellIcon,
             permission: PERMISSION_CODES.manage_notifications,
           },
-          {
+/*           {
             href: "/system-notifications?page=1",
             label: t("SIDEBAR.SystemNotifications"),
             labelStr: "System Notifications",
             icon: BellAlertIcon,
             permission: PERMISSION_CODES.manage_notifications,
-          },
+          }, */
         ],
       },
       {
@@ -324,6 +324,20 @@ export function Drawer() {
         groupLabelStr: "General Settings",
         items: [
           {
+            href: "/settings",
+            label: t("SIDEBAR.AppSettings"),
+            labelStr: "App Settings",
+            icon: Cog6ToothIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
+            href: "/contact-settings",
+            label: t("SIDEBAR.ContactSettings"),
+            labelStr: "Contact Settings",
+            icon: PhoneIcon,
+            permission: PERMISSION_CODES.manage_content,
+          },
+          {
             href: "/languages?page=1",
             label: t("SIDEBAR.Languages"),
             labelStr: "Languages",
@@ -337,20 +351,8 @@ export function Drawer() {
             icon: BookOpenIcon,
             permission: PERMISSION_CODES.manage_content,
           },
-          {
-            href: "/contact-settings",
-            label: t("SIDEBAR.ContactSettings"),
-            labelStr: "Contact Settings",
-            icon: PhoneIcon,
-            permission: PERMISSION_CODES.manage_content,
-          },
-          {
-            href: "/settings",
-            label: t("SIDEBAR.AppSettings"),
-            labelStr: "App Settings",
-            icon: Cog6ToothIcon,
-            permission: PERMISSION_CODES.manage_content,
-          },
+
+       
         ],
       },
     ],
