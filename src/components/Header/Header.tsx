@@ -3,6 +3,7 @@ import { Bars3Icon as Menu, Cog6ToothIcon as Settings2 } from "@heroicons/react/
 import { useAppStore } from "../../store";
 import { useAuthStore } from "../../stores/auth";
 import { ThemeSwitcher, LanguageSwitcher } from "../Shared";
+import { NotificationsBell } from "./NotificationsBell";
 
 interface HeaderProps {
   mode: "vertical" | "horizontal" | "two-column";
@@ -66,6 +67,8 @@ export function Header({ mode }: HeaderProps) {
             </button>
             <div className="h-3 w-px bg-border/70" />
             <ThemeSwitcher variant="icon" iconSize={12} />
+            <div className="h-3 w-px bg-border/70" />
+            <NotificationsBell />
           </div>
           <LanguageSwitcher variant="pills" />
           <div className="mx-0.5 h-6 w-px" />

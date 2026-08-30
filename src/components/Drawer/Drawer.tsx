@@ -24,6 +24,7 @@ import {
   LockClosedIcon,
   Cog6ToothIcon,
   BellIcon,
+  BellAlertIcon,
   BoltIcon,
   MoonIcon,
   LanguageIcon,
@@ -232,6 +233,26 @@ export function Drawer() {
         ],
       },
       {
+        groupKey: "groupNotifications",
+        groupLabelStr: "Notifications",
+        items: [
+          {
+            href: "/notifications?page=1",
+            label: t("SIDEBAR.Notifications"),
+            labelStr: "Notifications",
+            icon: BellIcon,
+            permission: PERMISSION_CODES.manage_notifications,
+          },
+          {
+            href: "/system-notifications?page=1",
+            label: t("SIDEBAR.SystemNotifications"),
+            labelStr: "System Notifications",
+            icon: BellAlertIcon,
+            permission: PERMISSION_CODES.manage_notifications,
+          },
+        ],
+      },
+      {
         groupKey: "groupPageBuilder",
         groupLabelStr: "Page Builder",
         items: [
@@ -376,6 +397,7 @@ export function Drawer() {
     if (groupKey === "groupContent") return NewspaperIcon;
     if (groupKey === "groupCatalog" || groupKey === "groupGeneralSettings") return LanguageIcon;
     if (groupKey === "groupPlaces") return GlobeAltIcon;
+    if (groupKey === "groupNotifications") return BellIcon;
     return ChartBarIcon;
   };
 
