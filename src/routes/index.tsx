@@ -215,12 +215,7 @@ export default function Home() {
         subtitle={
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
             <span>{t("ANALYTICS.description")}</span>
-            <div className="flex items-center gap-2 text-xs">
-              <Funnel className="size-3.5" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">
-                {t("ANALYTICS.filterByDate")}
-              </span>
-            </div>
+           
           </div>
         }
         translateSubtitle={false}
