@@ -4,6 +4,8 @@ import { useAppStore } from "../../store";
 import { useAuthStore } from "../../stores/auth";
 import { ThemeSwitcher, LanguageSwitcher } from "../Shared";
 import { NotificationsBell } from "./NotificationsBell";
+import { usePermissions } from "../../hooks/usePermissions";
+import { PERMISSION_CODES } from "../../lib/permissions";
 
 interface HeaderProps {
   mode: "vertical" | "horizontal" | "two-column";
@@ -18,6 +20,7 @@ export function Header({ mode }: HeaderProps) {
     setCustomizerOpen,
   } = useAppStore();
   const user = useAuthStore((s) => s.user);
+  const { can } = usePermissions();
   const collapsed = sidebarCollapsed;
 
   return (
@@ -67,8 +70,12 @@ export function Header({ mode }: HeaderProps) {
             </button>
             <div className="h-3 w-px bg-border/70" />
             <ThemeSwitcher variant="icon" iconSize={12} />
-            <div className="h-3 w-px bg-border/70" />
-            <NotificationsBell />
+            {can(PERMISSION_CODES.manage_notifications) ? (
+              <>
+                <div className="h-3 w-px bg-border/70" />
+                <NotificationsBell />
+              </>
+            ) : null}
           </div>
           <LanguageSwitcher variant="pills" />
           <div className="mx-0.5 h-6 w-px" />

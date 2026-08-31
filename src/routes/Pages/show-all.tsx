@@ -13,7 +13,6 @@ import {
   ArrowPathIcon,
   CheckCircleIcon,
   XMarkIcon,
-  MagnifyingGlassIcon,
   DocumentTextIcon,
   GlobeAltIcon,
   RectangleStackIcon,
@@ -25,7 +24,8 @@ import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
 import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
 import { ImageInput } from "../../components/Inputs/ImageInput";
-import { Filter, type FilterItem } from "../../components/Filter/Filter";
+import { Filter, type FilterSection } from "../../components/Filter/Filter";
+import { Pagination } from "../../components/UI/Table/Pagination";
 import { pagesService } from "../../services/pagesService";
 import { toast } from "../../stores/toast";
 import type { Page, PageType } from "../../types/pageBuilder";
@@ -35,11 +35,28 @@ export default function PagesShowAll() {
   const navigate = useNavigate();
   const currentLang = (i18n.language || "ar").startsWith("en") ? "en" : "ar";
 
+  const PER_PAGE = 12;
+
   const [pages, setPages] = useState<Page[]>([]);
+  const [meta, setMeta] = useState({
+    total: 0,
+    current_page: 1,
+    last_page: 1,
+    per_page: PER_PAGE,
+  });
+  const [pageTypes, setPageTypes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams] = useSearchParams();
-  const search = searchParams.get("search") ?? "";
+  const [searchParams, setSearchParams] = useSearchParams();
   const typeFilter = searchParams.get("type") ?? "all";
+  const currentPage = Math.max(1, Number(searchParams.get("page")) || 1);
+
+  const goToPage = (next: number) => {
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.set("page", String(next));
+      return p;
+    });
+  };
 
   // Modal State for Create / Edit Metadata
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,14 +98,20 @@ export default function PagesShowAll() {
   const fetchPages = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await pagesService.list();
-      setPages(data);
-    } catch (err) {
+      const res = await pagesService.listPaged({
+        page: currentPage,
+        per_page: PER_PAGE,
+        type: typeFilter,
+      });
+      setPages(res.data);
+      setMeta(res.meta);
+      if (res.categories.length) setPageTypes(res.categories);
+    } catch {
       toast.error(t("ERRORS.fetch_failed", { defaultValue: "Failed to load pages" }));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [t, currentPage, typeFilter]);
 
   useEffect(() => {
     fetchPages();
@@ -220,25 +243,15 @@ export default function PagesShowAll() {
       await pagesService.remove(deleteTarget.id);
       toast.success(t("PAGES.pageDeletedSuccess"));
       setDeleteTarget(null);
-      fetchPages();
+      // Removing the last card of a page would otherwise leave an empty view.
+      if (pages.length === 1 && currentPage > 1) goToPage(currentPage - 1);
+      else fetchPages();
     } catch (err: any) {
       toast.error(t("MESSAGES.deletedFailed"), err?.response?.data?.message);
     } finally {
       setDeleting(false);
     }
   };
-
-  const filteredPages = useMemo(() => {
-    return pages.filter((page) => {
-      const matchSearch =
-        page.slug.toLowerCase().includes(search.toLowerCase()) ||
-        page.title.ar.toLowerCase().includes(search.toLowerCase()) ||
-        page.title.en.toLowerCase().includes(search.toLowerCase());
-
-      const matchType = typeFilter === "all" || page.type === typeFilter;
-      return matchSearch && matchType;
-    });
-  }, [pages, search, typeFilter]);
 
   const typeLabels: Record<PageType, { badge: string }> = {
     system: { badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
@@ -257,29 +270,26 @@ export default function PagesShowAll() {
     return labels[type] || type;
   };
 
-  const filterItems: FilterItem[] = useMemo(
+  const typeOptions = useMemo(
+    () => (pageTypes.length ? pageTypes : Object.keys(typeLabels)),
+    [pageTypes]
+  );
+
+  const filterSections: FilterSection[] = useMemo(
     () => [
-      {
-        type: "text",
-        key: "search",
-        label: t("TITLES.search"),
-        placeholder: t("PAGES.searchPlaceholder"),
-        prependInputIcon: MagnifyingGlassIcon,
-      },
       {
         type: "select",
         key: "type",
         label: t("PAGES.pageType"),
         placeholder: t("PAGES.all"),
-        items: [
-          { id: "all", name: t("PAGES.all") },
-          { id: "system", name: t("PAGES.system") },
-          { id: "policy", name: t("PAGES.policies") },
-          { id: "custom", name: t("PAGES.custom") },
-        ],
+        icon: RectangleStackIcon,
+        items: typeOptions.map((type) => ({
+          id: type,
+          name: getTypeLabel(type as PageType),
+        })),
       },
     ],
-    [t]
+    [t, typeOptions]
   );
 
   return (
@@ -288,7 +298,7 @@ export default function PagesShowAll() {
         title="pages"
         subtitle="pagesDesc"
         icon={RectangleStackIcon}
-        total={pages.length}
+        total={meta.total}
         path={[
           { label: "dashboard", href: "/", icon: Squares2X2Icon },
           { label: "pages", icon: RectangleStackIcon },
@@ -308,11 +318,11 @@ export default function PagesShowAll() {
             {t("TITLES.pages")}
           </h2>
           <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
-            {filteredPages.length}
+            {meta.total}
           </span>
         </div>
-{/*         <Filter items={filterItems} />
- */}      </div>
+        <Filter sections={filterSections} />
+      </div>
 
       {/* Pages Grid */}
       {loading ? (
@@ -324,7 +334,7 @@ export default function PagesShowAll() {
             />
           ))}
         </div>
-      ) : filteredPages.length === 0 ? (
+      ) : pages.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-12 text-center bg-card">
           <DocumentTextIcon className="h-12 w-12 text-muted-foreground/60 mb-3" />
           <h3 className="text-base font-semibold">
@@ -336,7 +346,7 @@ export default function PagesShowAll() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {filteredPages.map((page) => (
+          {pages.map((page) => (
             <div
               key={page.id}
               className="group relative flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-primary/40"
@@ -435,6 +445,10 @@ export default function PagesShowAll() {
             </div>
           ))}
         </div>
+      )}
+
+      {!loading && pages.length > 0 && (
+        <Pagination meta={meta} page={meta.current_page} onPage={goToPage} />
       )}
 
       {/* Delete confirmation */}

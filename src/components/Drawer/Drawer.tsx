@@ -106,7 +106,7 @@ export function Drawer() {
             label: t("SIDEBAR.Dashboard"),
             labelStr: "Dashboard",
             icon: ChartBarIcon,
-            permission: null,
+            permission: PERMISSION_CODES.manage_statistics,
           },
         ],
       },

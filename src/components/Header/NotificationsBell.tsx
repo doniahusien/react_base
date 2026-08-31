@@ -4,6 +4,8 @@ import { BellIcon as Bell } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import api from "../../lib/axios";
 import { normalizeResponse } from "../../lib/normalizeResponse";
+import { PERMISSION_CODES } from "../../lib/permissions";
+import { usePermissions } from "../../hooks/usePermissions";
 import type { SystemNotification } from "../../types/notifications";
 
 const POLL_INTERVAL_MS = 60_000;
@@ -56,6 +58,8 @@ function formatWhen(iso: string | null | undefined): string {
 export function NotificationsBell() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { can } = usePermissions();
+  const allowed = can(PERMISSION_CODES.manage_notifications);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<SystemNotification[]>([]);
@@ -107,10 +111,11 @@ export function NotificationsBell() {
   }, []);
 
   useEffect(() => {
+    if (!allowed) return;
     fetchUnread();
     const id = window.setInterval(fetchUnread, POLL_INTERVAL_MS);
     return () => window.clearInterval(id);
-  }, [fetchUnread]);
+  }, [allowed, fetchUnread]);
 
   useEffect(() => {
     if (open) fetchItems(1, false);
@@ -154,6 +159,8 @@ export function NotificationsBell() {
     if (path) navigate(path);
   };
 
+  if (!allowed) return null;
+
   return (
     <div className="relative overflow-visible" ref={wrapperRef}>
       <button
@@ -175,7 +182,7 @@ export function NotificationsBell() {
 
       {open && (
         <div
-          className="absolute end-0 top-full z-50 mt-2 w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
+          className="absolute end-0 top-full z-9999 mt-2 w-[22rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
           role="menu"
         >
           <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-3">

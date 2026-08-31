@@ -721,6 +721,67 @@ export const blockTemplatesMockService = {
     });
   },
 
+  getTemplatesPaged: async ({
+    page = 1,
+    per_page = 15,
+    search,
+    category,
+  }: {
+    page?: number;
+    per_page?: number;
+    search?: string;
+    category?: string;
+  }) => {
+    const templates = loadTemplates();
+    const term = (search ?? "").trim().toLowerCase();
+
+    const matched = templates.filter((t) => {
+      const matchCategory =
+        !category || category === "all" || t.category === category;
+      const matchSearch =
+        !term ||
+        [t.name_ar, t.name_en, t.id, t.description_ar, t.description_en].some(
+          (v) => (v ?? "").toLowerCase().includes(term)
+        );
+      return matchCategory && matchSearch;
+    });
+
+    const lastPage = Math.max(1, Math.ceil(matched.length / per_page));
+    const current = Math.min(Math.max(1, page), lastPage);
+    const start = (current - 1) * per_page;
+    const slice = matched.slice(start, start + per_page);
+
+    return new Promise<{
+      data: BlockTemplate[];
+      meta: {
+        total: number;
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        from?: number;
+        to?: number;
+      };
+      categories: string[];
+    }>((resolve) => {
+      setTimeout(
+        () =>
+          resolve({
+            data: JSON.parse(JSON.stringify(slice)),
+            meta: {
+              total: matched.length,
+              current_page: current,
+              last_page: lastPage,
+              per_page,
+              from: matched.length ? start + 1 : 0,
+              to: start + slice.length,
+            },
+            categories: [...new Set(templates.map((t) => t.category))],
+          }),
+        150
+      );
+    });
+  },
+
   getTemplateById: async (id: string): Promise<BlockTemplate | null> => {
     return new Promise((resolve) => {
       setTimeout(() => {

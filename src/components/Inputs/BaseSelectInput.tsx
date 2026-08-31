@@ -111,6 +111,7 @@ export function BaseSelectInput({ name, label, items = [], url, itemValue = "id"
         {isOpen && createPortal(
           <div
             ref={dropdownRef}
+            data-portal-dropdown=""
             className="fixed z-[100] overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
             style={{
               top: `${dropdownPosition.top}px`,

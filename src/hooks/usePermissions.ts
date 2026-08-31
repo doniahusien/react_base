@@ -1,6 +1,7 @@
 import { useAuthStore } from "../stores/auth";
 import {
   canAccessPath,
+  firstAllowedPath,
   hasPermission,
   isSuperAdmin,
   type PermissionCode,
@@ -14,6 +15,7 @@ export function usePermissions() {
     user,
     permissions,
     isSuperAdmin: isSuperAdmin(user),
+    homePath: firstAllowedPath(permissions, user),
     can: (code: PermissionCode | PermissionCode[] | null | undefined) =>
       hasPermission(permissions, code, user),
     canAccess: (pathname: string) =>

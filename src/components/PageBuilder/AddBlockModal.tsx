@@ -74,7 +74,7 @@ export function AddBlockModal({
         </div>
 
         {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+{/*         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <input
             type="text"
             placeholder={t("LABELS.searchBlockTemplates")}
@@ -99,7 +99,7 @@ export function AddBlockModal({
               </button>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Block Catalog Grid - Matching Blocks CRUD definitions */}
         <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-1">

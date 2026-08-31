@@ -334,7 +334,11 @@ export function Filter({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      // Select dropdowns render in a portal on <body>, so they are outside the
+      // panel in the DOM even though they belong to it.
+      if ((target as Element)?.closest?.("[data-portal-dropdown]")) return;
+      if (panelRef.current && !panelRef.current.contains(target)) {
         setIsOpen(false);
       }
     };

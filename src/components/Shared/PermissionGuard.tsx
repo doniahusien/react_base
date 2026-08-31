@@ -3,12 +3,12 @@ import { Navigate, useLocation } from "react-router-dom";
 import { usePermissions } from "../../hooks/usePermissions";
 
 export function PermissionGuard({ children }: { children: ReactNode }) {
-  const { canAccess, isSuperAdmin } = usePermissions();
+  const { canAccess, isSuperAdmin, homePath } = usePermissions();
   const { pathname } = useLocation();
 
   if (isSuperAdmin || canAccess(pathname)) {
     return <>{children}</>;
   }
 
-  return <Navigate to="/" replace />;
+  return <Navigate to={homePath} replace />;
 }

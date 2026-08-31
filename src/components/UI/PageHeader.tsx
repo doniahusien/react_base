@@ -138,7 +138,7 @@ export function PageHeader({
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
+          <div className="flex items-center gap-2 sm:gap-3 ms-auto shrink-0 w-full sm:w-auto">
             {rightActions}
             {addHref && (
               <a 

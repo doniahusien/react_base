@@ -15,6 +15,20 @@ export interface PageListParams {
   is_published?: boolean;
 }
 
+export interface PageListResult {
+  data: Page[];
+  meta: {
+    total: number;
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    from?: number;
+    to?: number;
+  };
+  /** Page types the API reports as available, used to build the filter. */
+  categories: string[];
+}
+
 /** Legacy block ids are rewritten on read so old rows keep working. */
 function migrateSections(page: Page): Page {
   return {
@@ -72,6 +86,77 @@ export const pagesService = {
       },
     });
     return normalizeResponse<Page>(res.data).data;
+  },
+
+  /**
+   * GET /admin/pages?page=&per_page=&type=
+   *
+   * The endpoint returns a Laravel paginator inlined under `data`, so the
+   * page counters sit next to the rows rather than in a `meta` object, and
+   * the available types come back as `metadata.categories`.
+   */
+  async listPaged(params: PageListParams = {}): Promise<PageListResult> {
+    const { page = 1, per_page = 12, search, type, is_published } = params;
+
+    if (USE_MOCK_PAGE_BUILDER) {
+      const all = await pageBuilderMockService.getPages();
+      const term = (search ?? "").trim().toLowerCase();
+      const matched = all.filter((p) => {
+        const matchType = !type || type === "all" || p.type === type;
+        const matchSearch =
+          !term ||
+          [p.slug, p.title?.ar, p.title?.en].some((v) =>
+            (v ?? "").toLowerCase().includes(term)
+          );
+        return matchType && matchSearch;
+      });
+      const lastPage = Math.max(1, Math.ceil(matched.length / per_page));
+      const current = Math.min(Math.max(1, page), lastPage);
+      const start = (current - 1) * per_page;
+      const slice = matched.slice(start, start + per_page);
+      return {
+        data: slice,
+        meta: {
+          total: matched.length,
+          current_page: current,
+          last_page: lastPage,
+          per_page,
+          from: matched.length ? start + 1 : 0,
+          to: start + slice.length,
+        },
+        categories: [...new Set(all.map((p) => p.type))],
+      };
+    }
+
+    const res = await api.get(RESOURCE, {
+      params: {
+        page,
+        per_page,
+        search: search?.trim() || undefined,
+        category: type && type !== "all" ? type : undefined,
+        is_published,
+      },
+    });
+
+    const paginator: any = res.data?.data ?? {};
+    const rows: Page[] = Array.isArray(paginator.data)
+      ? paginator.data
+      : normalizeResponse<Page>(res.data).data;
+
+    return {
+      data: rows,
+      meta: {
+        total: paginator.total ?? rows.length,
+        current_page: paginator.current_page ?? page,
+        last_page: paginator.last_page ?? 1,
+        per_page: paginator.per_page ?? per_page,
+        from: paginator.from,
+        to: paginator.to,
+      },
+      categories: Array.isArray(paginator.metadata?.categories)
+        ? paginator.metadata.categories
+        : [],
+    };
   },
 
   /** GET /admin/pages/{id} — includes sections in stored order */

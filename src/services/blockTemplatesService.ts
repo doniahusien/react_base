@@ -9,6 +9,27 @@ import type { BlockTemplate } from "../types/blocks";
 
 const RESOURCE = "block-templates";
 
+export interface BlockTemplateListParams {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  category?: string;
+}
+
+export interface BlockTemplateListResult {
+  data: BlockTemplate[];
+  meta: {
+    total: number;
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    from?: number;
+    to?: number;
+  };
+  /** Category slugs the API reports as available, used to build the filter. */
+  categories: string[];
+}
+
 export const blockTemplatesService = {
   /** GET /admin/block-templates?category= */
   async list(category?: string): Promise<BlockTemplate[]> {
@@ -16,9 +37,52 @@ export const blockTemplatesService = {
       return blockTemplatesMockService.getTemplates(category);
     }
     const res = await api.get(RESOURCE, {
-      params: { category: category && category !== "all" ? category : undefined },
+      params: {
+        category: category && category !== "all" ? category : undefined,
+        per_page: 100,
+      },
     });
-    return normalizeResponse<BlockTemplate>(res.data).data;
+    return normalizeResponse<BlockTemplate>(res.data, "templates").data;
+  },
+
+  /** GET /admin/block-templates?page=&per_page=&search=&category= */
+  async listPaged(
+    params: BlockTemplateListParams = {}
+  ): Promise<BlockTemplateListResult> {
+    const { page = 1, per_page = 15, search, category } = params;
+
+    if (USE_MOCK_PAGE_BUILDER) {
+      return blockTemplatesMockService.getTemplatesPaged({
+        page,
+        per_page,
+        search,
+        category,
+      });
+    }
+
+    const res = await api.get(RESOURCE, {
+      params: {
+        page,
+        per_page,
+        search: search?.trim() || undefined,
+        category: category && category !== "all" ? category : undefined,
+      },
+    });
+
+    const normalized = normalizeResponse<BlockTemplate>(res.data, "templates");
+    const rawMeta: any = normalized.meta ?? {};
+    return {
+      data: normalized.data,
+      meta: {
+        total: rawMeta.total ?? normalized.data.length,
+        current_page: rawMeta.current_page ?? page,
+        last_page: rawMeta.last_page ?? 1,
+        per_page: rawMeta.per_page ?? per_page,
+        from: rawMeta.from,
+        to: rawMeta.to,
+      },
+      categories: Array.isArray(rawMeta.categories) ? rawMeta.categories : [],
+    };
   },
 
   /** GET /admin/block-templates/{id} */

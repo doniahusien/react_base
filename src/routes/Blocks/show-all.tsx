@@ -6,7 +6,6 @@ import {
   PlusIcon,
   PencilSquareIcon,
   TrashIcon,
-  MagnifyingGlassIcon,
   ArrowPathIcon,
   XMarkIcon,
   SparklesIcon,
@@ -19,7 +18,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
-import { Filter, type FilterItem } from "../../components/Filter/Filter";
+import { Filter, type FilterSection } from "../../components/Filter/Filter";
+import { Pagination } from "../../components/UI/Table/Pagination";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
 import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
@@ -54,11 +54,28 @@ export default function BlocksShowAll() {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language || "ar").startsWith("en") ? "en" : "ar";
 
+  const PER_PAGE = 12;
+
   const [templates, setTemplates] = useState<BlockTemplate[]>([]);
+  const [meta, setMeta] = useState({
+    total: 0,
+    current_page: 1,
+    last_page: 1,
+    per_page: PER_PAGE,
+  });
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams] = useSearchParams();
-  const search = searchParams.get("search") ?? "";
+  const [searchParams, setSearchParams] = useSearchParams();
   const categoryFilter = searchParams.get("category") ?? "all";
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+
+  const goToPage = (next: number) => {
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.set("page", String(next));
+      return p;
+    });
+  };
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,14 +112,20 @@ export default function BlocksShowAll() {
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await blockTemplatesService.list();
-      setTemplates(data);
+      const res = await blockTemplatesService.listPaged({
+        page,
+        per_page: PER_PAGE,
+        category: categoryFilter,
+      });
+      setTemplates(res.data);
+      setMeta(res.meta);
+      if (res.categories.length) setCategories(res.categories);
     } catch {
       toast.error(t("MESSAGES.failedToLoadBlocks"));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [t, page, categoryFilter]);
 
   useEffect(() => {
     fetchTemplates();
@@ -251,7 +274,9 @@ export default function BlocksShowAll() {
       await blockTemplatesService.remove(deleteTarget.id);
       toast.success(t("MESSAGES.blockTemplateDeleted"));
       setDeleteTarget(null);
-      fetchTemplates();
+      // Removing the last card of a page would otherwise leave an empty view.
+      if (templates.length === 1 && page > 1) goToPage(page - 1);
+      else fetchTemplates();
     } catch (err: any) {
       toast.error(t("MESSAGES.deletedFailed"), err?.response?.data?.message);
     } finally {
@@ -259,46 +284,27 @@ export default function BlocksShowAll() {
     }
   };
 
-  const filterItems: FilterItem[] = useMemo(
+  const categoryOptions = useMemo(
+    () => (categories.length ? categories : Object.keys(CATEGORY_TITLE_KEYS)),
+    [categories]
+  );
+
+  const filterSections: FilterSection[] = useMemo(
     () => [
-      {
-        type: "text",
-        key: "search",
-        label: t("TITLES.search"),
-        placeholder: t("LABELS.searchBlocks"),
-        prependInputIcon: MagnifyingGlassIcon,
-      },
       {
         type: "select",
         key: "category",
         label: t("TITLES.category"),
         placeholder: t("TITLES.all"),
-        items: [
-          { id: "content_media", name: t("TITLES.blockCatContentMedia") },
-          { id: "cards_grid", name: t("TITLES.blockCatCardsGrid") },
-          { id: "workflow", name: t("TITLES.blockCatWorkflow") },
-          { id: "quotes", name: t("TITLES.blockCatQuotes") },
-          { id: "support", name: t("TITLES.blockCatSupport") },
-          { id: "legal", name: t("TITLES.blockCatLegal") },
-          { id: "hero", name: t("TITLES.blockCatHero") },
-        ],
+        icon: TagIcon,
+        items: categoryOptions.map((cat) => ({
+          id: cat,
+          name: t(CATEGORY_TITLE_KEYS[cat] || cat),
+        })),
       },
     ],
-    [t]
+    [t, categoryOptions]
   );
-
-  const filteredTemplates = useMemo(() => {
-    return templates.filter((t) => {
-      const matchSearch =
-        t.name_ar.toLowerCase().includes(search.toLowerCase()) ||
-        t.name_en.toLowerCase().includes(search.toLowerCase()) ||
-        t.id.toLowerCase().includes(search.toLowerCase()) ||
-        t.description_ar.toLowerCase().includes(search.toLowerCase());
-
-      const matchCat = categoryFilter === "all" || t.category === categoryFilter;
-      return matchSearch && matchCat;
-    });
-  }, [templates, search, categoryFilter]);
 
   return (
     <div className="space-y-5">
@@ -306,7 +312,7 @@ export default function BlocksShowAll() {
         title="blocks"
         subtitle="blocksDesc"
         icon={SquaresPlusIcon}
-        total={templates.length}
+        total={meta.total}
         path={[
           { label: "dashboard", href: "/", icon: Squares2X2Icon },
           { label: "blocks", icon: SquaresPlusIcon },
@@ -326,10 +332,10 @@ export default function BlocksShowAll() {
             {t("TITLES.blocks")}
           </h2>
           <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
-            {filteredTemplates.length}
+            {meta.total}
           </span>
         </div>
-        <Filter items={filterItems} />
+        <Filter sections={filterSections} />
       </div>
 
       {/* Grid of Block Templates */}
@@ -342,7 +348,7 @@ export default function BlocksShowAll() {
             />
           ))}
         </div>
-      ) : filteredTemplates.length === 0 ? (
+      ) : templates.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-12 text-center bg-card">
           <SquaresPlusIcon className="h-12 w-12 text-muted-foreground/50 mb-3" />
           <h3 className="text-base font-bold text-foreground">
@@ -358,7 +364,7 @@ export default function BlocksShowAll() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {filteredTemplates.map((tpl) => {
+          {templates.map((tpl) => {
             const IconComp = getIconComponent(tpl.icon);
             return (
               <section
@@ -488,6 +494,10 @@ export default function BlocksShowAll() {
             );
           })}
         </div>
+      )}
+
+      {!loading && templates.length > 0 && (
+        <Pagination meta={meta} page={meta.current_page} onPage={goToPage} />
       )}
 
       {/* Delete confirmation */}

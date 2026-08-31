@@ -11,6 +11,7 @@ import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
 import { useAppStore } from "../../store";
 import { schemas } from "../../lib/schemas";
+import { firstAllowedPath } from "../../lib/permissions";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -31,7 +32,8 @@ export default function Login() {
       });
       setAuth(res.data?.data);
       toast.success(t("MESSAGES.welcome"), res.data?.message);
-      navigate("/");
+      const { permissions, user } = useAuthStore.getState();
+      navigate(firstAllowedPath(permissions, user));
     } catch (err: any) {
       toast.error("Login failed", err?.response?.data?.message);
     } finally {

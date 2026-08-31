@@ -7,6 +7,7 @@ import type { NavGroup, NavItem } from "../types/sidebar";
  * that exists only here silently locks sub admins out of the screen.
  */
 export const PERMISSION_CODES = {
+  manage_statistics: "manage_statistics",
   manage_sub_admins: "manage_sub_admins",
   manage_clients: "manage_clients",
   manage_lawyers: "manage_lawyers",
@@ -39,6 +40,7 @@ export const ROUTE_PERMISSIONS: Array<{
   prefix: string;
   permission: PermissionCode | null;
 }> = [
+  { prefix: "/", permission: PERMISSION_CODES.manage_statistics },
   { prefix: "/profile", permission: null },
   { prefix: "/sub-admins", permission: PERMISSION_CODES.manage_sub_admins },
   { prefix: "/permissions", permission: PERMISSION_CODES.manage_sub_admins },
@@ -71,7 +73,6 @@ export const ROUTE_PERMISSIONS: Array<{
   { prefix: "/countries", permission: PERMISSION_CODES.manage_countries },
   { prefix: "/settings", permission: PERMISSION_CODES.manage_settings },
   { prefix: "/contact-settings", permission: PERMISSION_CODES.manage_settings },
-  { prefix: "/", permission: null },
 ];
 
 export function isSuperAdmin(user: AdminProfile | null | undefined): boolean {
@@ -108,6 +109,19 @@ export function canAccessPath(
   user?: AdminProfile | null
 ): boolean {
   return hasPermission(permissions, permissionForPath(pathname), user);
+}
+
+/** First screen a user may open. Profile is always reachable. */
+export function firstAllowedPath(
+  permissions: string[] | undefined,
+  user?: AdminProfile | null
+): string {
+  if (isSuperAdmin(user)) return "/";
+  for (const r of ROUTE_PERMISSIONS) {
+    if (r.permission == null) continue;
+    if (hasPermission(permissions, r.permission, user)) return r.prefix;
+  }
+  return "/profile";
 }
 
 export function filterNavGroups(

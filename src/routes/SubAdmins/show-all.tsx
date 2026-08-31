@@ -38,10 +38,9 @@ export default function SubAdminsShowAll() {
       { index: 0, field: "full_name", header: t("TITLES.name") },
       { index: 1, field: "email", header: t("TITLES.email") },
       { index: 2, field: "status", header: t("TITLES.status") },
-      { index: 3, field: "permissions", header: t("TITLES.permissions") },
-      { index: 4, field: "created_by", header: t("TITLES.createdBy") },
-      { index: 5, field: "created_at", header: t("TITLES.createdAt") },
-      { index: 6, field: "actions", header: t("TITLES.actions") },
+      { index: 3, field: "created_by", header: t("TITLES.createdBy") },
+      { index: 4, field: "created_at", header: t("TITLES.createdAt") },
+      { index: 5, field: "actions", header: t("TITLES.actions") },
     ],
     [t]
   );
