@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useRef } from "react";
 import {
   ScaleIcon,
   ShieldCheckIcon,
@@ -25,11 +25,13 @@ import {
   TrophyIcon,
   HandRaisedIcon,
   XMarkIcon,
-  MagnifyingGlassIcon,
-  PhotoIcon,
   CloudArrowUpIcon,
   ArrowUpTrayIcon,
 } from "@heroicons/react/24/outline";
+import { uploadImage } from "../../services/uploadService";
+import { toast } from "../../stores/toast";
+import { useTranslation } from "react-i18next";
+import { mediaUrl } from "../../lib/mediaUrl";
 
 export interface IconOption {
   key: string;
@@ -97,6 +99,8 @@ interface IconPickerProps {
   onChange: (iconValue: string) => void;
   label?: string;
   currentLang?: "ar" | "en";
+  /** When true, only platform icon keys can be selected (no image upload). */
+  iconsOnly?: boolean;
 }
 
 export function IconPicker({
@@ -104,43 +108,37 @@ export function IconPicker({
   onChange,
   label,
   currentLang = "ar",
+  iconsOnly = false,
 }: IconPickerProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"library" | "upload">("library");
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [activeDrag, setActiveDrag] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isImg = isImageIcon(value);
-  const CurrentIcon = getIconComponent(value);
+  const isImg = !iconsOnly && isImageIcon(value);
+  const iconSrc = isImg ? mediaUrl(value) ?? value : value;
+  const CurrentIcon = getIconComponent(iconsOnly && isImageIcon(value) ? "Sparkles" : value);
   const currentObj = AVAILABLE_ICONS.find(
-    (i) => i.key.toLowerCase() === value.toLowerCase()
+    (i) => i.key.toLowerCase() === (iconsOnly && isImageIcon(value) ? "sparkles" : value).toLowerCase()
   );
 
-  const filteredIcons = useMemo(() => {
-    return AVAILABLE_ICONS.filter((item) => {
-      const matchSearch =
-        item.name_ar.includes(search) ||
-        item.name_en.toLowerCase().includes(search.toLowerCase()) ||
-        item.key.toLowerCase().includes(search.toLowerCase());
-      const matchCat =
-        selectedCategory === "all" || item.category === selectedCategory;
-      return matchSearch && matchCat;
-    });
-  }, [search, selectedCategory]);
-
-  const handleFileUpload = (file: File | null) => {
+  const handleFileUpload = async (file: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const res = e.target?.result as string;
-      if (res) {
-        onChange(res);
-        setIsOpen(false);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      setUploading(true);
+      const path = await uploadImage(file);
+      onChange(path);
+      setIsOpen(false);
+    } catch (err: any) {
+      toast.error(
+        t("MESSAGES.uploadFailed"),
+        err?.response?.data?.message || err?.message
+      );
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -169,7 +167,7 @@ export function IconPicker({
           <div className="size-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 overflow-hidden border border-primary/20">
             {isImg ? (
               <img
-                src={value}
+                src={iconSrc}
                 alt="Icon"
                 className="w-full h-full object-contain p-1"
                 onError={(e) => {
@@ -200,7 +198,13 @@ export function IconPicker({
           </div>
 
           <span className="text-[11px] text-primary font-bold shrink-0 group-hover:underline">
-            {currentLang === "ar" ? "تغيير / رفع صورة" : "Change / Upload"}
+            {currentLang === "ar"
+              ? iconsOnly
+                ? "تغيير"
+                : "تغيير / رفع صورة"
+              : iconsOnly
+              ? "Change"
+              : "Change / Upload"}
           </span>
         </button>
 
@@ -226,7 +230,11 @@ export function IconPicker({
                 <SparklesIcon className="h-5 w-5 text-primary" />
                 <h3 className="text-sm font-bold">
                   {currentLang === "ar"
-                    ? "اختيار أو رفع أيقونة (Icon / Image)"
+                    ? iconsOnly
+                      ? "اختيار أيقونة"
+                      : "اختيار أو رفع أيقونة (Icon / Image)"
+                    : iconsOnly
+                    ? "Select Icon"
                     : "Select or Upload Icon Image"}
                 </h3>
               </div>
@@ -239,80 +247,40 @@ export function IconPicker({
             </div>
 
             {/* Mode Switcher Tabs */}
-            <div className="flex items-center p-1 bg-muted/40 rounded-xl border border-border">
-              <button
-                type="button"
-                onClick={() => setActiveTab("library")}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
-                  activeTab === "library"
-                    ? "bg-background text-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <SparklesIcon className="h-4 w-4 text-primary" />
-                <span>{currentLang === "ar" ? "أيقونات المنصة (SVG Icons)" : "Platform Icons"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("upload")}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
-                  activeTab === "upload"
-                    ? "bg-background text-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <CloudArrowUpIcon className="h-4 w-4 text-primary" />
-                <span>{currentLang === "ar" ? "رفع صورة أيقونة (Upload Image)" : "Upload Icon Image"}</span>
-              </button>
-            </div>
+            {!iconsOnly && (
+              <div className="flex items-center p-1 bg-muted/40 rounded-xl border border-border">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("library")}
+                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+                    activeTab === "library"
+                      ? "bg-background text-foreground shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <SparklesIcon className="h-4 w-4 text-primary" />
+                  <span>{currentLang === "ar" ? "أيقونات المنصة (SVG Icons)" : "Platform Icons"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("upload")}
+                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+                    activeTab === "upload"
+                      ? "bg-background text-foreground shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <CloudArrowUpIcon className="h-4 w-4 text-primary" />
+                  <span>{currentLang === "ar" ? "رفع صورة أيقونة (Upload Image)" : "Upload Icon Image"}</span>
+                </button>
+              </div>
+            )}
 
-            {/* TAB 1: Platform Icons Library */}
-            {activeTab === "library" && (
-              <div className="space-y-3 flex-1 flex flex-col min-h-0">
-                {/* Search & Category Filter */}
-                <div className="space-y-2">
-                  <div className="relative">
-                    <MagnifyingGlassIcon className="absolute top-1/2 -translate-y-1/2 start-3 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder={
-                        currentLang === "ar"
-                          ? "ابحث باسم الأيقونة..."
-                          : "Search icons..."
-                      }
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="w-full rounded-lg border border-border bg-background py-2 pe-3 ps-9 text-xs focus:border-primary focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-                    {[
-                      { key: "all", ar: "الكل", en: "All" },
-                      { key: "legal", ar: "قانوني وعدالة", en: "Legal" },
-                      { key: "security", ar: "أمان وضمان", en: "Security" },
-                      { key: "communication", ar: "تواصل ومواقع", en: "Contact" },
-                      { key: "general", ar: "عام ومميزات", en: "General" },
-                    ].map((cat) => (
-                      <button
-                        key={cat.key}
-                        type="button"
-                        onClick={() => setSelectedCategory(cat.key)}
-                        className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors shrink-0 ${
-                          selectedCategory === cat.key
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-                        }`}
-                      >
-                        {currentLang === "ar" ? cat.ar : cat.en}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Grid of Icons */}
+            {/* Platform Icons Library */}
+            {(iconsOnly || activeTab === "library") && (
+              <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2 p-1 min-h-[220px]">
-                  {filteredIcons.map((item) => {
+                  {AVAILABLE_ICONS.map((item) => {
                     const IconComp = item.component;
                     const isSelected =
                       !isImg && value.toLowerCase() === item.key.toLowerCase();
@@ -354,8 +322,8 @@ export function IconPicker({
               </div>
             )}
 
-            {/* TAB 2: Upload Custom Icon Image */}
-            {activeTab === "upload" && (
+            {/* Upload Custom Icon Image */}
+            {!iconsOnly && activeTab === "upload" && (
               <div className="space-y-4 flex-1 overflow-y-auto p-1">
                 {/* Hidden File Input */}
                 <input
@@ -377,9 +345,11 @@ export function IconPicker({
                   }}
                   onDragLeave={() => setActiveDrag(false)}
                   onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => !uploading && fileInputRef.current?.click()}
                   className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-6 transition-all duration-200 ${
-                    activeDrag
+                    uploading
+                      ? "pointer-events-none opacity-60"
+                      : activeDrag
                       ? "border-primary bg-primary/10"
                       : "border-border/80 bg-muted/20 hover:border-primary/50 hover:bg-muted/30"
                   }`}
@@ -389,7 +359,11 @@ export function IconPicker({
                   </div>
                   <div className="text-center space-y-1">
                     <p className="text-xs font-bold text-foreground">
-                      {currentLang === "ar"
+                      {uploading
+                        ? currentLang === "ar"
+                          ? "جاري رفع الأيقونة..."
+                          : "Uploading icon..."
+                        : currentLang === "ar"
                         ? "انقر لرفع ملف أيقونة أو اسحبها هنا"
                         : "Click to upload icon file or drag & drop"}
                     </p>
@@ -404,7 +378,7 @@ export function IconPicker({
                   <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card">
                     <div className="size-12 rounded-xl bg-muted border border-border flex items-center justify-center overflow-hidden shrink-0">
                       <img
-                        src={value}
+                        src={iconSrc}
                         alt="Current Custom Icon"
                         className="w-full h-full object-contain p-1"
                       />

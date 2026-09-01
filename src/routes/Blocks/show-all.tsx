@@ -1,57 +1,28 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   SquaresPlusIcon,
   PlusIcon,
   PencilSquareIcon,
   TrashIcon,
-  ArrowPathIcon,
-  XMarkIcon,
-  SparklesIcon,
   TagIcon,
-  CheckBadgeIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  DocumentDuplicateIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
 import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { Pagination } from "../../components/UI/Table/Pagination";
-import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
-import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
-import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
-import { IconPicker, getIconComponent } from "../../components/Inputs/IconPicker";
+import { getIconComponent, isImageIcon } from "../../components/Inputs/IconPicker";
+import { mediaUrl } from "../../lib/mediaUrl";
+import { CATEGORY_TITLE_KEYS } from "../../components/Shared/BlockTemplateForm";
 import { blockTemplatesService } from "../../services/blockTemplatesService";
 import { toast } from "../../stores/toast";
-import type { BlockTemplate, BlockCategory, FieldDefinition, FieldInputType } from "../../types/blocks";
-
-/**
- * `default_content` is required on write and seeds a section's content when the
- * block is added to a page, so it is derived from the field schema.
- */
-function buildDefaultContent(fields: FieldDefinition[]) {
-  const shape: Record<string, any> = {};
-  for (const field of fields) {
-    shape[field.key] = field.type === "repeater" ? [] : field.default_value ?? "";
-  }
-  return { ar: { ...shape }, en: { ...shape } };
-}
-
-const CATEGORY_TITLE_KEYS: Record<string, string> = {
-  content_media: "TITLES.blockCatContentMedia",
-  cards_grid: "TITLES.blockCatCardsGrid",
-  workflow: "TITLES.blockCatWorkflow",
-  quotes: "TITLES.blockCatQuotes",
-  support: "TITLES.blockCatSupport",
-  legal: "TITLES.blockCatLegal",
-  hero: "TITLES.blockCatHero",
-};
+import type { BlockTemplate } from "../../types/blocks";
 
 export default function BlocksShowAll() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const currentLang = (i18n.language || "ar").startsWith("en") ? "en" : "ar";
 
   const PER_PAGE = 12;
@@ -69,6 +40,9 @@ export default function BlocksShowAll() {
   const categoryFilter = searchParams.get("category") ?? "all";
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
 
+  const [deleteTarget, setDeleteTarget] = useState<BlockTemplate | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   const goToPage = (next: number) => {
     setSearchParams((prev) => {
       const p = new URLSearchParams(prev);
@@ -76,38 +50,6 @@ export default function BlocksShowAll() {
       return p;
     });
   };
-
-  // Modal State
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<BlockTemplate | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<BlockTemplate | null>(null);
-  const [deleting, setDeleting] = useState(false);
-
-  // Form State
-  const [formData, setFormData] = useState<{
-    id: string;
-    name_ar: string;
-    name_en: string;
-    description_ar: string;
-    description_en: string;
-    category: BlockCategory;
-    icon: string;
-    shape_tags_str: string;
-    is_active: boolean;
-    fields: FieldDefinition[];
-  }>({
-    id: "",
-    name_ar: "",
-    name_en: "",
-    description_ar: "",
-    description_en: "",
-    category: "content_media",
-    icon: "Sparkles",
-    shape_tags_str: "title, description, image, icon",
-    is_active: true,
-    fields: [],
-  });
 
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
@@ -131,129 +73,11 @@ export default function BlocksShowAll() {
     fetchTemplates();
   }, [fetchTemplates]);
 
-  const handleOpenCreate = () => {
-    setEditingTemplate(null);
-    setFormData({
-      id: `custom_block_${Date.now()}`,
-      name_ar: "",
-      name_en: "",
-      description_ar: "",
-      description_en: "",
-      category: "content_media",
-      icon: "Sparkles",
-      shape_tags_str: "title, description, image",
-      is_active: true,
-      fields: [
-        { key: "badge", label_ar: "الوسم (Badge)", label_en: "Badge", type: "text" },
-        { key: "title", label_ar: "العنوان الرئيسي", label_en: "Main Title", type: "text", required: true },
-        { key: "description", label_ar: "الوصف", label_en: "Description", type: "textarea", required: true },
-        { key: "image", label_ar: "رابط الصورة", label_en: "Image URL", type: "image", default_value: "/images/slider1.webp" },
-      ],
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (tpl: BlockTemplate) => {
-    setEditingTemplate(tpl);
-    setFormData({
-      id: tpl.id,
-      name_ar: tpl.name_ar,
-      name_en: tpl.name_en,
-      description_ar: tpl.description_ar,
-      description_en: tpl.description_en,
-      category: tpl.category,
-      icon: tpl.icon,
-      shape_tags_str: tpl.shape_tags.join(", "),
-      is_active: tpl.is_active,
-      fields: JSON.parse(JSON.stringify(tpl.fields || [])),
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleAddField = () => {
-    setFormData((prev) => ({
-      ...prev,
-      fields: [
-        ...prev.fields,
-        {
-          key: `field_${Date.now()}`,
-          label_ar: "حقل جديد",
-          label_en: "New Field",
-          type: "text" as FieldInputType,
-          required: false,
-        },
-      ],
-    }));
-  };
-
-  const handleRemoveField = (idx: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      fields: prev.fields.filter((_, i) => i !== idx),
-    }));
-  };
-
-  const handleUpdateField = (idx: number, patch: Partial<FieldDefinition>) => {
-    setFormData((prev) => {
-      const arr = [...prev.fields];
-      arr[idx] = { ...arr[idx], ...patch };
-      return { ...prev, fields: arr };
-    });
-  };
-
-  const handleSaveTemplate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name_ar.trim() || !formData.id.trim()) {
-      toast.error(t("MESSAGES.blockNameAndIdRequired"));
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const tags = formData.shape_tags_str
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      const payload: Partial<BlockTemplate> & { id: string } = {
-        id: formData.id.trim().toLowerCase().replace(/\s+/g, "_"),
-        name_ar: formData.name_ar.trim(),
-        name_en: formData.name_en.trim() || formData.name_ar.trim(),
-        description_ar: formData.description_ar.trim(),
-        description_en:
-          formData.description_en.trim() || formData.description_ar.trim(),
-        category: formData.category,
-        icon: formData.icon,
-        shape_tags: tags,
-        is_active: formData.is_active,
-        fields: formData.fields,
-        default_content:
-          editingTemplate?.default_content ?? buildDefaultContent(formData.fields),
-      };
-
-      await blockTemplatesService.save(payload, !editingTemplate);
-      toast.success(
-        editingTemplate
-          ? t("MESSAGES.blockTemplateUpdated")
-          : t("MESSAGES.blockTemplateCreated")
-      );
-      setIsModalOpen(false);
-      fetchTemplates();
-    } catch (err: any) {
-      toast.error(
-        t("MESSAGES.blockTemplateSaveFailed"),
-        err?.response?.data?.message
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleToggleStatus = async (tpl: BlockTemplate) => {
     try {
       const newStatus = await blockTemplatesService.toggleStatus(tpl.id);
       setTemplates((prev) =>
-        prev.map((t) => (t.id === tpl.id ? { ...t, is_active: newStatus } : t))
+        prev.map((item) => (item.id === tpl.id ? { ...item, is_active: newStatus } : item))
       );
       toast.success(
         newStatus ? t("MESSAGES.blockEnabled") : t("MESSAGES.blockDisabled")
@@ -266,7 +90,6 @@ export default function BlocksShowAll() {
     }
   };
 
-  // The API refuses to delete a block that page sections still use.
   const handleDeleteTemplate = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
@@ -274,7 +97,6 @@ export default function BlocksShowAll() {
       await blockTemplatesService.remove(deleteTarget.id);
       toast.success(t("MESSAGES.blockTemplateDeleted"));
       setDeleteTarget(null);
-      // Removing the last card of a page would otherwise leave an empty view.
       if (templates.length === 1 && page > 1) goToPage(page - 1);
       else fetchTemplates();
     } catch (err: any) {
@@ -320,14 +142,13 @@ export default function BlocksShowAll() {
           { label: "blocks", icon: SquaresPlusIcon },
         ]}
         rightActions={
-          <Button onClick={handleOpenCreate} className="gap-2">
+          <Button onClick={() => navigate("/blocks/create")} className="gap-2">
             <PlusIcon className="h-4 w-4" />
             {t("TITLES.add", { entity: t("TITLES.block") })}
           </Button>
         }
       />
 
-      {/* Toolbar: Total + Filter dropdown */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-3 rounded-2xl sm:rounded-3xl bg-card border border-border px-3 sm:px-5 py-3 sm:py-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <h2 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
@@ -342,7 +163,6 @@ export default function BlocksShowAll() {
         </div>
       </div>
 
-      {/* Grid of Block Templates */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -361,7 +181,10 @@ export default function BlocksShowAll() {
           <p className="text-xs text-muted-foreground mt-1 max-w-sm">
             {t("LABELS.noBlockTemplatesDesc")}
           </p>
-          <Button onClick={handleOpenCreate} className="mt-4 gap-2 text-xs">
+          <Button
+            onClick={() => navigate("/blocks/create")}
+            className="mt-4 gap-2 text-xs"
+          >
             <PlusIcon className="h-4 w-4" />
             {t("LABELS.createTemplate")}
           </Button>
@@ -370,6 +193,8 @@ export default function BlocksShowAll() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {templates.map((tpl) => {
             const IconComp = getIconComponent(tpl.icon);
+            const iconIsImage = isImageIcon(tpl.icon);
+            const iconSrc = iconIsImage ? mediaUrl(tpl.icon) ?? tpl.icon : null;
             return (
               <section
                 key={tpl.id}
@@ -379,7 +204,6 @@ export default function BlocksShowAll() {
                     : "border-border/40 bg-muted/20 opacity-75 hover:opacity-100"
                 }`}
               >
-                {/* Top accent bar */}
                 <div
                   className={`h-1 w-full bg-linear-to-r transition-colors ${
                     tpl.is_active
@@ -388,7 +212,6 @@ export default function BlocksShowAll() {
                   }`}
                 />
 
-                {/* Header: Icon + Category + Status */}
                 <div className="flex items-start justify-between gap-4 px-5 pt-5">
                   <div className="flex min-w-0 items-center gap-3.5">
                     <div
@@ -398,7 +221,15 @@ export default function BlocksShowAll() {
                           : "bg-muted text-muted-foreground ring-border/50"
                       }`}
                     >
-                      <IconComp className="h-6 w-6" />
+                      {iconIsImage && iconSrc ? (
+                        <img
+                          src={iconSrc}
+                          alt=""
+                          className="h-6 w-6 object-contain"
+                        />
+                      ) : (
+                        <IconComp className="h-6 w-6" />
+                      )}
                     </div>
                     <div className="min-w-0">
                       <span className="inline-flex items-center gap-1.5 rounded-md bg-muted/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
@@ -415,7 +246,6 @@ export default function BlocksShowAll() {
                     </div>
                   </div>
 
-                  {/* Status toggle pill */}
                   <button
                     type="button"
                     onClick={() => handleToggleStatus(tpl)}
@@ -435,7 +265,6 @@ export default function BlocksShowAll() {
                   </button>
                 </div>
 
-                {/* Title & Description */}
                 <div className="flex flex-1 flex-col px-5 pb-2 pt-4">
                   <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
                     {currentLang === "ar" ? tpl.name_ar : tpl.name_en}
@@ -444,7 +273,6 @@ export default function BlocksShowAll() {
                     {currentLang === "ar" ? tpl.description_ar : tpl.description_en}
                   </p>
 
-                  {/* Shape Tags */}
                   {tpl.shape_tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 pt-3">
                       {tpl.shape_tags.map((tag, idx) => (
@@ -459,7 +287,6 @@ export default function BlocksShowAll() {
                   )}
                 </div>
 
-                {/* Footer: Fields + Actions */}
                 <div className="mt-auto flex items-center justify-between gap-4 border-t border-border/50 bg-muted/10 px-5 py-3.5">
                   <div className="flex min-w-0 items-center gap-3">
                     <span className="flex items-center gap-1.5 text-[11px] font-bold text-foreground">
@@ -477,7 +304,7 @@ export default function BlocksShowAll() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleOpenEdit(tpl)}
+                      onClick={() => navigate(`/blocks/${tpl.id}/edit`)}
                       className="gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
                     >
                       <PencilSquareIcon className="h-3.5 w-3.5" />
@@ -504,7 +331,6 @@ export default function BlocksShowAll() {
         <Pagination meta={meta} page={meta.current_page} onPage={goToPage} />
       )}
 
-      {/* Delete confirmation */}
       {deleteTarget && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div
@@ -539,205 +365,6 @@ export default function BlocksShowAll() {
                 {t("BUTTONS.delete")}
               </Button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* ==========================================
-          ADD / EDIT BLOCK TEMPLATE MODAL
-      ========================================== */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-2xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-border pb-4 flex-shrink-0">
-              <div className="flex items-center gap-2.5">
-                <SquaresPlusIcon className="h-6 w-6 text-primary" />
-                <div>
-                  <h2 className="text-lg font-bold">
-                    {editingTemplate
-                      ? t("LABELS.editBlockTemplate")
-                      : t("LABELS.createBlockTemplate")}
-                  </h2>
-                  <p className="text-xs text-muted-foreground">
-                    {t("LABELS.blockTemplateModalDesc")}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-              >
-                <XMarkIcon className="h-5 w-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveTemplate} className="space-y-4 flex-1 overflow-y-auto pr-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <BaseTextInput
-                  name="name_ar"
-                  label={t("LABELS.blockTemplateNameArabic")}
-                  value={formData.name_ar}
-                  onInput={(val) => setFormData((prev) => ({ ...prev, name_ar: val }))}
-                  placeholder={t("LABELS.blockTemplateNameArabicPlaceholder")}
-                />
-                <BaseTextInput
-                  name="name_en"
-                  label={t("LABELS.blockTemplateNameEnglish")}
-                  value={formData.name_en}
-                  onInput={(val) => setFormData((prev) => ({ ...prev, name_en: val }))}
-                  placeholder={t("LABELS.blockTemplateNameEnglishPlaceholder")}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <BaseTextInput
-                  name="id"
-                  label={t("LABELS.blockTypeSlug")}
-                  value={formData.id}
-                  onInput={(val) => setFormData((prev) => ({ ...prev, id: val }))}
-                  placeholder={t("LABELS.blockTypeSlugPlaceholder")}
-                  disabled={!!editingTemplate}
-                />
-                <BaseSelectInput
-                  name="category"
-                  label={t("TITLES.category")}
-                  items={[
-                    { id: "content_media", name: t("TITLES.blockCatContentMedia") },
-                    { id: "cards_grid", name: t("TITLES.blockCatCardsGrid") },
-                    { id: "workflow", name: t("TITLES.blockCatWorkflow") },
-                    { id: "quotes", name: t("TITLES.blockCatQuotes") },
-                    { id: "support", name: t("TITLES.blockCatSupport") },
-                    { id: "legal", name: t("TITLES.blockCatLegal") },
-                    { id: "hero", name: t("TITLES.blockCatHero") },
-                  ]}
-                  value={{ id: formData.category, name: t(CATEGORY_TITLE_KEYS[formData.category] || formData.category) }}
-                  onChange={(val) => {
-                    if (val && !Array.isArray(val)) {
-                      setFormData((prev) => ({ ...prev, category: val.id as BlockCategory }));
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <IconPicker
-                  label={t("LABELS.blockTemplateIcon")}
-                  value={formData.icon}
-                  onChange={(iconKey) => setFormData((prev) => ({ ...prev, icon: iconKey }))}
-                  currentLang={currentLang}
-                />
-                <BaseTextInput
-                  name="shape_tags_str"
-                  label={t("LABELS.blockShapeTags")}
-                  value={formData.shape_tags_str}
-                  onInput={(val) => setFormData((prev) => ({ ...prev, shape_tags_str: val }))}
-                  placeholder={t("LABELS.blockShapeTagsPlaceholder")}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground">
-                  {t("LABELS.blockDescription")}
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.description_ar}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, description_ar: e.target.value }))
-                  }
-                  placeholder={t("LABELS.blockDescriptionPlaceholder")}
-                  className="w-full rounded-xl border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
-                />
-              </div>
-
-              {/* Dynamic Field Builder (Input Shapes) */}
-              <div className="space-y-3 pt-3 border-t border-border">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-bold text-foreground">
-                      {t("LABELS.blockFieldsSchema")}
-                    </h4>
-                    <p className="text-[11px] text-muted-foreground">
-                      {t("LABELS.blockFieldsSchemaDesc")}
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={handleAddField}
-                    className="gap-1.5 text-xs font-bold text-primary"
-                  >
-                    <PlusIcon className="h-3.5 w-3.5" />
-                    {t("LABELS.addField")}
-                  </Button>
-                </div>
-
-                <div className="space-y-2.5 max-h-60 overflow-y-auto p-1">
-                  {formData.fields.map((field, idx) => (
-                    <div
-                      key={idx}
-                      className="flex flex-col sm:flex-row items-start sm:items-center gap-2 rounded-xl border border-border bg-muted/20 p-2.5 text-xs"
-                    >
-                      <span className="font-bold text-muted-foreground w-6 text-center">
-                        #{idx + 1}
-                      </span>
-                      <input
-                        type="text"
-                        value={field.key}
-                        onChange={(e) => handleUpdateField(idx, { key: e.target.value })}
-                        placeholder="field_key"
-                        className="w-28 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-mono"
-                      />
-                      <input
-                        type="text"
-                        value={field.label_ar}
-                        onChange={(e) => handleUpdateField(idx, { label_ar: e.target.value })}
-                        placeholder="تسمية الحقل (عربي)"
-                        className="flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs"
-                      />
-                      <BaseSelectInput
-                        name={`field_type_${idx}`}
-                        items={[
-                          { id: "text", name: t("LABELS.fieldTypeText") },
-                          { id: "textarea", name: t("LABELS.fieldTypeTextarea") },
-                          { id: "image", name: t("LABELS.fieldTypeImage") },
-                          { id: "icon", name: t("LABELS.fieldTypeIcon") },
-                          { id: "url", name: t("LABELS.fieldTypeUrl") },
-                          { id: "repeater", name: t("LABELS.fieldTypeRepeater") },
-                        ]}
-                        value={{ id: field.type, name: t(`LABELS.fieldType${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`) }}
-                        onChange={(val) => {
-                          if (val && !Array.isArray(val)) {
-                            handleUpdateField(idx, { type: val.id as FieldInputType });
-                          }
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveField(idx)}
-                        className="p-1.5 text-muted-foreground hover:text-rose-500 rounded-lg"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border flex-shrink-0">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  {t("BUTTONS.cancel")}
-                </Button>
-                <Button type="submit" disabled={saving}>
-                  {saving ? t("BUTTONS.saving") : t("LABELS.saveBlockTemplate")}
-                </Button>
-              </div>
-            </form>
           </div>
         </div>
       )}
