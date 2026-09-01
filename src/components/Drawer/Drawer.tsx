@@ -121,13 +121,13 @@ export function Drawer() {
             icon: UserGroupIcon,
             permission: PERMISSION_CODES.manage_sub_admins,
           },
-          {
+/*           {
             href: "/permissions",
             label: t("SIDEBAR.Permissions"),
             labelStr: "Permissions",
             icon: KeyIcon,
             permission: PERMISSION_CODES.manage_sub_admins,
-          },
+          }, */
         ],
       },
       {
