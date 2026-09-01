@@ -1,4 +1,4 @@
-import { Logo } from "./Logo";
+import { AnimatedLogo } from "./AnimatedLogo";
 
 interface LogoShowcaseProps {
   className?: string;
@@ -36,44 +36,18 @@ export function LogoShowcase({ className }: LogoShowcaseProps) {
         />
 
         <g className="login-logo-orbit-sat login-logo-orbit-sat-1">
-          <circle cx="160" cy="12" r="4" />
+          <circle cx="160" cy="12" r="3.5" />
         </g>
         <g className="login-logo-orbit-sat login-logo-orbit-sat-2">
-          <circle cx="278" cy="160" r="3" />
+          <circle cx="278" cy="160" r="2.5" />
         </g>
         <g className="login-logo-orbit-sat login-logo-orbit-sat-3">
-          <circle cx="160" cy="248" r="2.5" />
+          <circle cx="160" cy="248" r="2" />
         </g>
       </svg>
 
-      <div className="login-logo-glow login-logo-glow-1" />
-      <div className="login-logo-glow login-logo-glow-2" />
-
-      <div className="login-logo-badge">
-        <div className="login-logo-shine" />
-        <Logo variant="onBrand" size={112} className="login-logo-mark" />
-      </div>
-
-      <div className="login-logo-particles">
-        {[
-          { top: "18%", left: "22%", delay: "0s" },
-          { top: "72%", left: "18%", delay: "1.2s" },
-          { top: "28%", left: "78%", delay: "2.1s" },
-          { top: "68%", left: "76%", delay: "0.8s" },
-          { top: "12%", left: "58%", delay: "1.8s" },
-          { top: "82%", left: "46%", delay: "2.6s" },
-        ].map((particle, index) => (
-          <span
-            key={index}
-            className="login-logo-particle"
-            style={{
-              top: particle.top,
-              left: particle.left,
-              animationDelay: particle.delay,
-            }}
-          />
-        ))}
-      </div>
+      <div className="login-logo-glow" />
+      <AnimatedLogo size={168} />
     </div>
   );
 }

@@ -1437,9 +1437,10 @@
     }
   }
 
-  /* ─── Login brand panel — animated logo showcase ─────────────────────── */
+  /* ─── Login brand panel — animated logo (404 sway + orbit rings) ──────── */
   .login-logo-showcase {
-    @apply relative mx-auto flex size-80 items-center justify-center;
+    @apply relative mx-auto flex size-80 items-center justify-center sm:size-88;
+    animation: login-logo-enter 0.7s ease-out both;
   }
 
   .login-logo-orbit-svg {
@@ -1448,27 +1449,27 @@
 
   .login-logo-orbit-track {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.14);
+    stroke: rgba(255, 255, 255, 0.16);
     transform-origin: 160px 160px;
   }
 
   .login-logo-orbit-track-1 {
     stroke-width: 1.5;
-    animation: login-orbit-spin 28s linear infinite;
+    animation: login-orbit-spin 32s linear infinite;
   }
 
   .login-logo-orbit-track-2 {
     stroke-width: 1;
-    stroke-dasharray: 6 10;
-    opacity: 0.75;
-    animation: login-orbit-spin 20s linear infinite reverse;
+    stroke-dasharray: 5 9;
+    opacity: 0.7;
+    animation: login-orbit-spin 24s linear infinite reverse;
   }
 
   .login-logo-orbit-track-3 {
     stroke-width: 1;
-    stroke: color-mix(in srgb, var(--color-main) 35%, transparent);
+    stroke: color-mix(in srgb, var(--color-main) 40%, transparent);
     opacity: 0.55;
-    animation: login-orbit-spin 14s linear infinite;
+    animation: login-orbit-spin 18s linear infinite;
   }
 
   .login-logo-orbit-sat {
@@ -1477,17 +1478,17 @@
   }
 
   .login-logo-orbit-sat-1 {
-    animation: login-orbit-spin 28s linear infinite;
+    animation: login-orbit-spin 32s linear infinite;
   }
 
   .login-logo-orbit-sat-2 {
     fill: color-mix(in srgb, var(--color-main) 85%, white);
-    animation: login-orbit-spin 20s linear infinite reverse;
+    animation: login-orbit-spin 24s linear infinite reverse;
   }
 
   .login-logo-orbit-sat-3 {
     opacity: 0.7;
-    animation: login-orbit-spin 14s linear infinite;
+    animation: login-orbit-spin 18s linear infinite;
   }
 
   @keyframes login-orbit-spin {
@@ -1500,131 +1501,49 @@
   }
 
   .login-logo-glow {
-    @apply pointer-events-none absolute rounded-full;
-    filter: blur(28px);
+    @apply pointer-events-none absolute size-64 rounded-full sm:size-80;
+    background: color-mix(in srgb, var(--color-main) 12%, transparent);
+    filter: blur(48px);
   }
 
-  .login-logo-glow-1 {
-    width: 11rem;
-    height: 11rem;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--color-main) 55%, transparent),
-      transparent 72%
-    );
-    animation: login-logo-glow 4.5s ease-in-out infinite;
+  .login-animated-logo {
+    @apply relative z-10;
+    filter: drop-shadow(0 8px 24px color-mix(in srgb, var(--color-main) 45%, transparent));
   }
 
-  .login-logo-glow-2 {
-    width: 14rem;
-    height: 14rem;
-    background: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.22),
-      transparent 70%
-    );
-    animation: login-logo-glow 4.5s ease-in-out infinite reverse;
+  .login-logo-sway {
+    animation: login-logo-sway 3.8s ease-in-out infinite;
   }
 
-  @keyframes login-logo-glow {
+  @keyframes login-logo-sway {
     0%,
     100% {
-      transform: scale(0.92);
-      opacity: 0.55;
+      transform: rotate(-6deg);
     }
     50% {
-      transform: scale(1.08);
-      opacity: 0.9;
+      transform: rotate(6deg);
     }
   }
 
-  .login-logo-badge {
-    @apply relative z-10 flex size-36 items-center justify-center overflow-hidden rounded-[2rem];
-    background: linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.22),
-      rgba(255, 255, 255, 0.08)
-    );
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    box-shadow:
-      0 24px 48px rgba(0, 0, 0, 0.22),
-      inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(18px);
-    animation: login-logo-float 5.5s ease-in-out infinite;
-  }
-
-  @keyframes login-logo-float {
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
+  @keyframes login-logo-enter {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
     }
-    50% {
-      transform: translateY(-10px) scale(1.02);
-    }
-  }
-
-  .login-logo-shine {
-    @apply pointer-events-none absolute inset-0 opacity-40;
-    background: linear-gradient(
-      115deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.45) 48%,
-      transparent 100%
-    );
-    animation: login-logo-shine 4.8s ease-in-out infinite;
-  }
-
-  @keyframes login-logo-shine {
-    0% {
-      transform: translateX(-130%) skewX(-12deg);
-    }
-    55%,
-    100% {
-      transform: translateX(180%) skewX(-12deg);
-    }
-  }
-
-  .login-logo-mark {
-    @apply relative z-10 drop-shadow-[0_10px_24px_rgba(0,0,0,0.22)];
-    animation: login-logo-mark-pulse 4.5s ease-in-out infinite;
-  }
-
-  @keyframes login-logo-mark-pulse {
-    0%,
-    100% {
-      filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.22));
-    }
-    50% {
-      filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.28));
-    }
-  }
-
-  .login-logo-particles {
-    @apply pointer-events-none absolute inset-0;
-  }
-
-  .login-logo-particle {
-    @apply absolute size-1.5 rounded-full;
-    background: rgba(255, 255, 255, 0.75);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
-    animation: login-logo-particle 3.6s ease-in-out infinite;
-  }
-
-  @keyframes login-logo-particle {
-    0%,
-    100% {
-      transform: translateY(0) scale(0.85);
-      opacity: 0.35;
-    }
-    50% {
-      transform: translateY(-8px) scale(1);
-      opacity: 0.95;
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .login-logo-showcase *,
-    .login-logo-showcase svg * {
+    .login-logo-showcase {
+      animation: none;
+    }
+
+    .login-logo-sway,
+    .login-logo-orbit-track,
+    .login-logo-orbit-sat {
       animation: none !important;
     }
   }
