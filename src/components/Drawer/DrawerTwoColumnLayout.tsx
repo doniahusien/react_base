@@ -1,5 +1,6 @@
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+import { Logo } from "../Shared/Logo";
 import { Tooltip } from "../Tooltip";
 import { DrawerNavItem } from "./DrawerNavItem";
 import { DrawerSectionTitle } from "./DrawerSectionTitle";
@@ -46,13 +47,7 @@ export function DrawerTwoColumnLayout({
       <div className="drawer-shell fixed inset-y-0 inset-s-0 z-40 hidden w-74 overflow-hidden lg:flex">
         <div className="flex w-18 shrink-0 flex-col border-e border-border/60">
           <div className="flex justify-center px-2 py-4">
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              width={28}
-              height={28}
-              className="h-7 w-7"
-            />
+            <Logo className="h-7 w-7" />
           </div>
           <div className="mx-2.5 mb-2 h-px drawer-divider" />
           <nav className="drawer-nav-scroll flex flex-1 flex-col items-center gap-1 overflow-y-auto px-1.5">

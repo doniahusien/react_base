@@ -5,7 +5,7 @@ import { AtSymbolIcon as AtSign, LockClosedIcon as Lock } from "@heroicons/react
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { Button } from "../../components/UI/Button";
 import { Form } from "../../components/Inputs/Form";
-import { ThemeSwitcher, LanguageSwitcher } from "../../components/Shared";
+import { ThemeSwitcher, LanguageSwitcher, Logo, LogoShowcase } from "../../components/Shared";
 import { useAuthStore } from "../../stores/auth";
 import { toast } from "../../stores/toast";
 import api from "../../lib/axios";
@@ -35,7 +35,7 @@ export default function Login() {
       const { permissions, user } = useAuthStore.getState();
       navigate(firstAllowedPath(permissions, user));
     } catch (err: any) {
-      toast.error("Login failed", err?.response?.data?.message);
+      toast.error(t("LOGIN.loginFailed"), err?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -210,7 +210,7 @@ export default function Login() {
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl text-white bg-[rgba(255,255,255,0.15)] backdrop-blur-md">
-                <img src="/logo.svg" alt="Logo" width={28} height={28} className="h-7 w-7" />
+                <Logo variant="onBrand" className="h-7 w-7" />
               </div>
               <div className="flex flex-col">
                 <span className="text-xs md:text-base font-bold leading-snug text-white">{t("TITLES.dashName")}</span>
@@ -226,72 +226,8 @@ export default function Login() {
 
           </div>
 
-          <div className="flex min-h-80 flex-1 items-center justify-center py-6 text-white/80 drop-shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
-            <svg width="320" height="320" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Outer circle frame */}
-              <circle cx="100" cy="100" r="85" stroke="currentColor" strokeWidth="2" opacity="0.3" />
-              <circle cx="100" cy="100" r="70" stroke="currentColor" strokeWidth="1.5" opacity="0.2" />
-
-              {/* Central dashboard/analytics icon */}
-              <g transform="translate(100, 100)">
-                {/* Monitor/Screen */}
-                <rect x="-40" y="-35" width="80" height="50" rx="4" stroke="currentColor" strokeWidth="2.5" fill="none" />
-                <line x1="-40" y1="-15" x2="40" y2="-15" stroke="currentColor" strokeWidth="2" opacity="0.6" />
-
-                {/* Chart bars inside screen */}
-                <rect x="-28" y="-8" width="8" height="15" fill="currentColor" opacity="0.7" rx="1" />
-                <rect x="-15" y="-12" width="8" height="19" fill="currentColor" opacity="0.8" rx="1" />
-                <rect x="-2" y="-5" width="8" height="12" fill="currentColor" opacity="0.7" rx="1" />
-                <rect x="11" y="-10" width="8" height="17" fill="currentColor" opacity="0.9" rx="1" />
-                <rect x="24" y="-7" width="8" height="14" fill="currentColor" opacity="0.7" rx="1" />
-
-                {/* Monitor stand */}
-                <path d="M -15 15 L -15 25 L 15 25 L 15 15" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                <line x1="0" y1="15" x2="0" y2="25" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-
-                {/* Base */}
-                <rect x="-25" y="25" width="50" height="4" rx="2" fill="currentColor" opacity="0.8" />
-              </g>
-
-              {/* Floating data nodes around */}
-              <g opacity="0.6">
-                <circle cx="40" cy="50" r="3" fill="currentColor">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="160" cy="50" r="3" fill="currentColor">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" begin="0.5s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="170" cy="120" r="3" fill="currentColor">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" begin="1s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="30" cy="120" r="3" fill="currentColor">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" begin="1.5s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="45" cy="155" r="3" fill="currentColor">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" begin="2s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="155" cy="155" r="3" fill="currentColor">
-                  <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" begin="2.5s" repeatCount="indefinite" />
-                </circle>
-              </g>
-
-              {/* Connecting lines (subtle) */}
-              <g opacity="0.2" stroke="currentColor" strokeWidth="1">
-                <line x1="40" y1="50" x2="70" y2="70" />
-                <line x1="160" y1="50" x2="130" y2="70" />
-                <line x1="170" y1="120" x2="130" y2="110" />
-                <line x1="30" y1="120" x2="70" y2="110" />
-                <line x1="45" y1="155" x2="80" y2="130" />
-                <line x1="155" y1="155" x2="120" y2="130" />
-              </g>
-
-              {/* Orbital rings */}
-              <g opacity="0.15" stroke="currentColor" strokeWidth="1" fill="none" strokeDasharray="5,5">
-                <ellipse cx="100" cy="100" rx="95" ry="95">
-                  <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="30s" repeatCount="indefinite" />
-                </ellipse>
-              </g>
-            </svg>
+          <div className="relative flex min-h-80 flex-1 items-center justify-center py-6">
+            <LogoShowcase />
           </div>
         </div>
 
@@ -306,7 +242,7 @@ export default function Login() {
                     background: 'linear-gradient(145deg, var(--color-primary), var(--color-secondary))'
                   }}
                 >
-                  <img src="/logo.svg" alt="Logo" width={22} height={22} className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <Logo variant="onBrand" className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div className="flex min-w-0 flex-col">
                   <span className="text-sm font-bold leading-snug text-foreground sm:text-base">{t("TITLES.dashName")}</span>

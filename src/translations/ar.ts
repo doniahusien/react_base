@@ -92,6 +92,7 @@ export const ar = {
     secureLogin: "تسجيل دخول آمن",
     enterCredentials: "أدخل بياناتك للوصول إلى حسابك",
     authenticating: "جارِ المصادقة...",
+    loginFailed: "فشل تسجيل الدخول",
     sslSecured: "مشفر وآمن",
     encrypted: "مشفر",
     termsFooter: "بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية",

@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+import { Logo } from "../Shared/Logo";
 import { Tooltip } from "../Tooltip";
 import type { DrawerHeaderProps } from "./types";
 
@@ -21,13 +22,7 @@ export function DrawerHeader({
       }`}
     >
       <div className=" shrink-0">
-        <img
-          src="/logo.svg"
-          alt="Logo"
-          width={28}
-          height={28}
-          className="h-7 w-7"
-        />
+        <Logo className="h-7 w-7" />
       </div>
       {showLabel && (
         <div className="min-w-0 flex flex-col">

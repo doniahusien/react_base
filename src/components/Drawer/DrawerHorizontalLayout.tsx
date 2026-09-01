@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Logo } from "../Shared/Logo";
 import type { NavGroup } from "../../types/sidebar";
 import { isItemActive } from "./utils";
 
@@ -21,13 +22,7 @@ export function DrawerHorizontalLayout({
       <div className="fixed inset-x-0 top-0 z-30 hidden h-14 lg:block">
         <div className="flex h-full items-center gap-5 px-5">
           <div className="flex shrink-0 items-center gap-2.5">
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              width={28}
-              height={28}
-              className="h-7 w-7"
-            />
+            <Logo className="h-7 w-7" />
           </div>
           <nav className="flex flex-1 items-center gap-0.5 overflow-x-auto">
             {groups

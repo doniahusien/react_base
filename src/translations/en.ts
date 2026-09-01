@@ -92,6 +92,7 @@ export const en = {
     secureLogin: "Secure Login",
     enterCredentials: "Enter your credentials to access your account",
     authenticating: "Authenticating...",
+    loginFailed: "Login failed",
     sslSecured: "SSL Secured",
     encrypted: "Encrypted",
     termsFooter: "By continuing, you agree to our Terms of Service and Privacy Policy",
