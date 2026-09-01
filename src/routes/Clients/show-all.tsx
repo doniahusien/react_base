@@ -107,11 +107,11 @@ export default function ClientsShowAll() {
               <p className="text-sm font-medium text-foreground">
                 {displayName(item.full_name)}
               </p>
-              {item.gender && (
+           {/*    {item.gender && (
                 <p className="text-xs capitalize text-muted-foreground">
                   {t(`TITLES.${item.gender}`, { defaultValue: item.gender })}
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         );
@@ -134,9 +134,9 @@ export default function ClientsShowAll() {
         return item.phone ? (
           <div className="flex items-center gap-1.5">
             <Phone width={14} height={14} className="shrink-0 text-muted-foreground" />
-            <bdo dir="ltr" className="text-sm text-foreground">
-              {item.phone}
-            </bdo>
+            <a href={`tel:${item.phone}`} title={item.phone} className="text-sm text-foreground transition-colors hover:opacity-80">
+              <bdo dir="ltr">{item.phone}</bdo>
+            </a>
           </div>
         ) : (
           <span className="text-sm text-muted-foreground">—</span>

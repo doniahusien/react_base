@@ -296,7 +296,7 @@ export default function ClientShow() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+{/*         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div className="px-6 py-5">
             <SectionHeading icon={CalendarDays} title={t("TITLES.metaInfo")} />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -306,7 +306,7 @@ export default function ClientShow() {
               </InfoCard>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
