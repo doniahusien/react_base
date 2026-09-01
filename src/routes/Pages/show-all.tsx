@@ -24,7 +24,7 @@ import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
 import { BaseSelectInput } from "../../components/Inputs/BaseSelectInput";
 import { ImageInput } from "../../components/Inputs/ImageInput";
-import { Filter, type FilterSection } from "../../components/Filter/Filter";
+import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { Pagination } from "../../components/UI/Table/Pagination";
 import { pagesService } from "../../services/pagesService";
 import { toast } from "../../stores/toast";
@@ -275,18 +275,20 @@ export default function PagesShowAll() {
     [pageTypes]
   );
 
-  const filterSections: FilterSection[] = useMemo(
+  const filterItems: FilterItem[] = useMemo(
     () => [
       {
-        type: "select",
+        type: "radio",
         key: "type",
         label: t("PAGES.pageType"),
-        placeholder: t("PAGES.all"),
-        icon: RectangleStackIcon,
-        items: typeOptions.map((type) => ({
-          id: type,
-          name: getTypeLabel(type as PageType),
-        })),
+        prependInputIcon: RectangleStackIcon,
+        options: [
+          { id: "all", label: t("PAGES.all") },
+          ...typeOptions.map((type) => ({
+            id: type,
+            label: getTypeLabel(type as PageType),
+          })),
+        ],
       },
     ],
     [t, typeOptions]
@@ -312,16 +314,18 @@ export default function PagesShowAll() {
       />
 
       {/* Toolbar: Total + Filter dropdown */}
-      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/80 bg-card p-4 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <h2 className="text-sm font-bold text-foreground">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-3 rounded-2xl sm:rounded-3xl bg-card border border-border px-3 sm:px-5 py-3 sm:py-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <h2 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
             {t("TITLES.pages")}
           </h2>
-          <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
+          <span className="rounded-full bg-primary px-2.5 sm:px-3 py-0.5 sm:py-1 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
             {meta.total}
           </span>
         </div>
-        <Filter sections={filterSections} />
+        <div className="flex items-center justify-end gap-2 sm:gap-2.5 w-full sm:w-auto ms-auto">
+          <Filter items={filterItems} />
+        </div>
       </div>
 
       {/* Pages Grid */}

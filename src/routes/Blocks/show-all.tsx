@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { PageHeader } from "../../components/UI/PageHeader";
 import { Button } from "../../components/UI/Button";
-import { Filter, type FilterSection } from "../../components/Filter/Filter";
+import { Filter, type FilterItem } from "../../components/Filter/Filter";
 import { Pagination } from "../../components/UI/Table/Pagination";
 import { BaseTextInput } from "../../components/Inputs/BaseTextInput";
 import { BaseSwitchInput } from "../../components/Inputs/BaseSwitchInput";
@@ -289,18 +289,20 @@ export default function BlocksShowAll() {
     [categories]
   );
 
-  const filterSections: FilterSection[] = useMemo(
+  const filterItems: FilterItem[] = useMemo(
     () => [
       {
-        type: "select",
+        type: "radio",
         key: "category",
         label: t("TITLES.category"),
-        placeholder: t("TITLES.all"),
-        icon: TagIcon,
-        items: categoryOptions.map((cat) => ({
-          id: cat,
-          name: t(CATEGORY_TITLE_KEYS[cat] || cat),
-        })),
+        prependInputIcon: TagIcon,
+        options: [
+          { id: "all", label: t("TITLES.all") },
+          ...categoryOptions.map((cat) => ({
+            id: cat,
+            label: t(CATEGORY_TITLE_KEYS[cat] || cat),
+          })),
+        ],
       },
     ],
     [t, categoryOptions]
@@ -326,16 +328,18 @@ export default function BlocksShowAll() {
       />
 
       {/* Toolbar: Total + Filter dropdown */}
-      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/80 bg-card p-4 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <h2 className="text-sm font-bold text-foreground">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-3 rounded-2xl sm:rounded-3xl bg-card border border-border px-3 sm:px-5 py-3 sm:py-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <h2 className="text-sm sm:text-base font-bold text-foreground tracking-tight">
             {t("TITLES.blocks")}
           </h2>
-          <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
+          <span className="rounded-full bg-primary px-2.5 sm:px-3 py-0.5 sm:py-1 text-xs font-bold tabular-nums text-primary-foreground shadow-sm">
             {meta.total}
           </span>
         </div>
-        <Filter sections={filterSections} />
+        <div className="flex items-center justify-end gap-2 sm:gap-2.5 w-full sm:w-auto ms-auto">
+          <Filter items={filterItems} />
+        </div>
       </div>
 
       {/* Grid of Block Templates */}
