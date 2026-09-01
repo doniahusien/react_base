@@ -85,7 +85,7 @@ function FilterSectionComponent({
   tempValues: Record<string, string>;
   onTempChange: (key: string, value: string) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(section.defaultOpen ?? true);
+  const [isOpen, setIsOpen] = useState(section.defaultOpen ?? false);
   const Icon = section.icon;
 
   const handleRadioChange = (optionId: string | number) => {
@@ -285,7 +285,6 @@ export function Filter({
         placeholder: item.placeholder,
         options: item.options,
         icon: item.prependInputIcon,
-        defaultOpen: true,
       })) ??
       [],
     // Recompute only when keys change — labels/options refresh via parent remount is enough
