@@ -20,7 +20,7 @@ import type {
 
 interface FormValues {
   temporary_chat_duration_hours: string;
-  free_requests_limit: string;
+  request_duration: string;
 }
 
 function toForm(data: AppSettings | null): FormValues {
@@ -29,9 +29,9 @@ function toForm(data: AppSettings | null): FormValues {
       data?.temporary_chat_duration_hours != null
         ? String(data.temporary_chat_duration_hours)
         : "",
-    free_requests_limit:
-      data?.free_requests_limit != null
-        ? String(data.free_requests_limit)
+        request_duration:
+      data?.request_duration != null
+        ? String(data.request_duration)
         : "",
   };
 }
@@ -70,7 +70,7 @@ export default function SettingsPage() {
 
   const submit = async () => {
     const duration = Number(values.temporary_chat_duration_hours);
-    const freeLimit = Number(values.free_requests_limit);
+    const freeLimit = Number(values.request_duration);
 
     if (
       values.temporary_chat_duration_hours.trim() === "" ||
@@ -88,7 +88,7 @@ export default function SettingsPage() {
     }
 
     if (
-      values.free_requests_limit.trim() === "" ||
+      values.request_duration.trim() === "" ||
       Number.isNaN(freeLimit) ||
       freeLimit < 0
     ) {
@@ -104,7 +104,7 @@ export default function SettingsPage() {
 
     const payload: AppSettingsUpdatePayload = {
       temporary_chat_duration_hours: Math.round(duration),
-      free_requests_limit: Math.round(freeLimit),
+      request_duration: Math.round(freeLimit),
     };
 
     try {
@@ -153,11 +153,11 @@ export default function SettingsPage() {
                   onInput={setField("temporary_chat_duration_hours")}
                 />
                 <BaseTextInput
-                  name="free_requests_limit"
+                  name="request_duration"
                   type="number"
                   label={t("TITLES.freeRequestsLimit")}
-                  value={values.free_requests_limit}
-                  onInput={setField("free_requests_limit")}
+                  value={values.request_duration}
+                  onInput={setField("request_duration")}
                 />
               </div>
             </SectionCard>
