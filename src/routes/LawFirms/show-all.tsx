@@ -17,11 +17,13 @@ import { PageHeader } from "../../components/UI/PageHeader";
 import {
   Avatar,
   StatusBadge,
+  accountDisplayStatus,
   displayName,
   formatDate,
+  isAccountSuspended,
 } from "../../components/Shared/AccountHelpers";
 import api from "../../lib/axios";
-import { buildDynamicFilterItems } from "../../lib/buildDynamicFilters";
+import { buildDynamicFilterItems, type ApiFilters } from "../../lib/buildDynamicFilters";
 import { normalizeResponse } from "../../lib/normalizeResponse";
 import { toast } from "../../stores/toast";
 import type { LawFirmListItem } from "../../types/accounts";
@@ -51,14 +53,27 @@ export default function LawFirmsShowAll() {
     [t]
   );
 
-  const filterItems = useMemo(
-    () =>
-      buildDynamicFilterItems(t, data.meta?.filters, {
-        placeholder: t("LABELS.searchLawFirms"),
-        prependInputIcon: Search as any,
-      }),
-    [t, data.meta?.filters]
-  );
+  const filterItems = useMemo(() => {
+    const apiFilters = data.meta?.filters ?? {};
+    const filters: ApiFilters = {};
+
+    if (apiFilters.status) filters.status = apiFilters.status;
+
+    filters.verification_status = [
+      { value: "approved", label: "status.approved" },
+      { value: "pending", label: "status.pending" },
+      { value: "rejected", label: "status.rejected" },
+    ];
+
+    for (const [key, options] of Object.entries(apiFilters)) {
+      if (!filters[key]) filters[key] = options;
+    }
+
+    return buildDynamicFilterItems(t, filters, {
+      placeholder: t("LABELS.searchLawFirms"),
+      prependInputIcon: Search as any,
+    });
+  }, [t, data.meta?.filters]);
 
   const page = searchParams.get("page") ?? "1";
   const search = searchParams.get("search") ?? "";
@@ -131,19 +146,21 @@ export default function LawFirmsShowAll() {
         ) : (
           <span className="text-sm text-muted-foreground">—</span>
         );
-      case "status":
+      case "status": {
+        const status = accountDisplayStatus(item);
         return (
           <StatusBadge
-            status={item.status}
+            status={status}
             label={
-              item.status
-                ? t(`STATUS.${item.status}`, {
-                    defaultValue: item.status.replace(/_/g, " "),
+              status
+                ? t(`STATUS.${status}`, {
+                    defaultValue: status.replace(/_/g, " "),
                   })
                 : undefined
             }
           />
         );
+      }
       case "verification_status":
         return (
           <StatusBadge
@@ -164,7 +181,7 @@ export default function LawFirmsShowAll() {
           </span>
         );
       case "actions": {
-        const isSuspended = item.status === "suspended";
+        const isSuspended = isAccountSuspended(item);
         return (
           <div className="relative w-9 overflow-visible">
             <button

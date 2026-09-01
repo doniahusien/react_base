@@ -69,6 +69,7 @@ export interface LawyerListItem {
   membership_type: string | null;
   commercial_registry_verified: boolean;
   joined_at: string | null;
+  deleted_at?: string | null;
 }
 
 export interface NamedLocale {
@@ -103,6 +104,7 @@ export interface LawFirmListItem {
   membership_type: string | null;
   commercial_registry_verified: boolean;
   joined_at: string | null;
+  deleted_at?: string | null;
   account_subtype?: string | null;
 }
 

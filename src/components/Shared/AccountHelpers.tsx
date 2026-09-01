@@ -14,6 +14,21 @@ export function displayName(name: string | null | undefined): string {
   return name?.trim() || "—";
 }
 
+export function isAccountSuspended(item: {
+  status?: string | null;
+  deleted_at?: string | null;
+}): boolean {
+  return item.status === "suspended" || Boolean(item.deleted_at);
+}
+
+export function accountDisplayStatus(item: {
+  status?: string | null;
+  deleted_at?: string | null;
+}): string | null | undefined {
+  if (isAccountSuspended(item)) return "suspended";
+  return item.status;
+}
+
 function statusStyles(status: string | null | undefined): {
   badge: string;
   dot: string;

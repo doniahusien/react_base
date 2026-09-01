@@ -18,8 +18,10 @@ import {
   InfoCard,
   SectionHeading,
   StatusBadge,
+  accountDisplayStatus,
   displayName,
   formatDate,
+  isAccountSuspended,
 } from "../../components/Shared/AccountHelpers";
 import api from "../../lib/axios";
 import { toast } from "../../stores/toast";
@@ -83,7 +85,8 @@ export default function LawFirmShow() {
     );
   }
 
-  const isSuspended = firm.status === "suspended";
+  const isSuspended = isAccountSuspended(firm);
+  const displayStatus = accountDisplayStatus(firm);
 
   return (
     <div className="space-y-0">
@@ -158,11 +161,11 @@ export default function LawFirmShow() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
               <InfoCard label={t("TITLES.status")}>
                 <StatusBadge
-                  status={firm.status}
+                  status={displayStatus}
                   label={
-                    firm.status
-                      ? t(`STATUS.${firm.status}`, {
-                          defaultValue: firm.status.replace(/_/g, " "),
+                    displayStatus
+                      ? t(`STATUS.${displayStatus}`, {
+                          defaultValue: displayStatus.replace(/_/g, " "),
                         })
                       : undefined
                   }
