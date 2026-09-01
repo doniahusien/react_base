@@ -8,6 +8,17 @@ import {
   BookOpenIcon as BookOpen,
   LanguageIcon as Language,
   StarIcon as Star,
+  CreditCardIcon as CreditCard,
+  CalendarDaysIcon as CalendarDays,
+  ArrowPathRoundedSquareIcon as AutoRenew,
+  TagIcon as Tag,
+  BanknotesIcon as Banknotes,
+  ArrowTopRightOnSquareIcon as ExternalLink,
+  GlobeAltIcon as Globe,
+  FingerPrintIcon as FingerPrint,
+  CheckBadgeIcon as CheckBadge,
+  ClockIcon as Clock,
+  InboxIcon as Inbox,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "../../components/UI/PageHeader";
@@ -24,7 +35,17 @@ import {
 import api from "../../lib/axios";
 import { toast } from "../../stores/toast";
 import { useAppStore } from "../../store";
-import type { LawyerDetail, NamedLocale } from "../../types/accounts";
+import type { ClientPayment, LawyerDetail, NamedLocale } from "../../types/accounts";
+
+function formatAmount(amount: string | number | null | undefined) {
+  if (amount == null || amount === "") return "—";
+  const value = Number(amount);
+  if (Number.isNaN(value)) return String(amount);
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+}
 
 function localeName(item: NamedLocale, lang: string) {
   return lang === "ar" ? item.name_ar : item.name_en;
@@ -84,6 +105,8 @@ export default function LawyerShow() {
   }
 
   const isSuspended = lawyer.status === "suspended";
+  const sub = lawyer.subscription;
+  const payments: ClientPayment[] = Array.isArray(lawyer.payments) ? lawyer.payments : [];
 
   return (
     <div className="space-y-0">
@@ -198,6 +221,115 @@ export default function LawyerShow() {
               <InfoCard label={t("TITLES.joinedAt")}>{formatDate(lawyer.joined_at)}</InfoCard>
               <InfoCard label={t("TITLES.address")}>{lawyer.address || "—"}</InfoCard>
             </div>
+          </div>
+        </div>
+
+        {sub ? (
+          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className="px-6 py-5">
+              <SectionHeading icon={CreditCard} title={t("TITLES.subscription")} />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+                <InfoCard label={t("TITLES.status")}>
+                  <StatusBadge
+                    status={sub.status}
+                    label={
+                      sub.status
+                        ? t(`STATUS.${sub.status}`, {
+                            defaultValue: sub.status.replace(/_/g, " "),
+                          })
+                        : undefined
+                    }
+                  />
+                </InfoCard>
+                <InfoCard icon={CalendarDays} label={t("ANALYTICS.fromDate")}>
+                  {formatDate(sub.start_date)}
+                </InfoCard>
+                <InfoCard icon={CalendarDays} label={t("ANALYTICS.toDate")}>
+                  {formatDate(sub.end_date)}
+                </InfoCard>
+                <InfoCard icon={AutoRenew} label={t("TITLES.autoRenew")}>
+                  {sub.auto_renew ? t("BUTTONS.yes") : t("BUTTONS.no")}
+                </InfoCard>
+                <InfoCard icon={Tag} label={t("TITLES.planId")}>
+                  <Link
+                    to={`/subscription-plans/${sub.plan_id}`}
+                    className="font-semibold text-primary hover:underline"
+                  >
+                    #{sub.plan_id}
+                  </Link>
+                </InfoCard>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="px-6 py-5">
+            <SectionHeading icon={Banknotes} title={t("TITLES.payments")} />
+            {payments.length ? (
+              <div className="space-y-3">
+                {payments.map((payment) => (
+                  <div
+                    key={payment.id}
+                    className="rounded-xl border border-border bg-background p-4"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                          <Banknotes width={14} height={14} />
+                        </span>
+                        <p className="text-sm font-semibold text-foreground">
+                          {t("TITLES.payment")} #{payment.id}
+                        </p>
+                      </div>
+                      <Link
+                        to={`/payments/${payment.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                      >
+                        {t("TITLES.paymentDetails")}
+                        <ExternalLink width={12} height={12} />
+                      </Link>
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+                      <InfoCard icon={Banknotes} label={t("TITLES.amount")}>
+                        {formatAmount(payment.amount)}
+                      </InfoCard>
+                      <InfoCard icon={CheckBadge} label={t("TITLES.status")}>
+                        <StatusBadge
+                          status={payment.status}
+                          label={
+                            payment.status
+                              ? t(`STATUS.${payment.status}`, {
+                                  defaultValue: payment.status.replace(/_/g, " "),
+                                })
+                              : undefined
+                          }
+                        />
+                      </InfoCard>
+                      <InfoCard icon={Globe} label={t("TITLES.paymentGateway")}>
+                        {payment.payment_gateway || "—"}
+                      </InfoCard>
+                      <InfoCard icon={FingerPrint} label={t("TITLES.transactionId")}>
+                        <span className="break-all font-mono text-xs">
+                          {payment.gateway_transaction_id || "—"}
+                        </span>
+                      </InfoCard>
+                      <InfoCard icon={Clock} label={t("TITLES.paidAt")}>
+                        {formatDate(payment.paid_at)}
+                      </InfoCard>
+                      <InfoCard icon={CreditCard} label={t("TITLES.subscription")}>
+                        {payment.subscription_id ?? "—"}
+                      </InfoCard>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Inbox width={16} height={16} className="shrink-0 opacity-70" />
+                {t("TITLES.noPayments")}
+              </p>
+            )}
           </div>
         </div>
 

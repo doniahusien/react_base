@@ -84,7 +84,7 @@ export interface LawyerDetail extends LawyerListItem {
   bio?: string | null;
   address?: string | null;
   subscription?: ClientSubscription | null;
-  payments?: unknown[];
+  payments?: ClientPayment[];
   languages?: NamedLocale[];
   practice_areas?: NamedLocale[];
   price_offers_count?: number;

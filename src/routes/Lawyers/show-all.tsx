@@ -21,7 +21,7 @@ import {
   formatDate,
 } from "../../components/Shared/AccountHelpers";
 import api from "../../lib/axios";
-import { buildDynamicFilterItems } from "../../lib/buildDynamicFilters";
+import { buildDynamicFilterItems, type ApiFilters } from "../../lib/buildDynamicFilters";
 import { normalizeResponse } from "../../lib/normalizeResponse";
 import { toast } from "../../stores/toast";
 import type { LawyerListItem } from "../../types/accounts";
@@ -52,14 +52,31 @@ export default function LawyersShowAll() {
     [t]
   );
 
-  const filterItems = useMemo(
-    () =>
-      buildDynamicFilterItems(t, data.meta?.filters, {
-        placeholder: t("LABELS.searchLawyers"),
-        prependInputIcon: Search as any,
-      }),
-    [t, data.meta?.filters]
-  );
+  const filterItems = useMemo(() => {
+    const apiFilters = data.meta?.filters ?? {};
+    const filters: ApiFilters = {};
+
+    if (apiFilters.status) filters.status = apiFilters.status;
+
+    filters.verification_status = [
+      { value: "approved", label: "status.approved" },
+      { value: "pending", label: "status.pending" },
+      { value: "rejected", label: "status.rejected" },
+    ];
+
+    if (apiFilters.membership_type) {
+      filters.membership_type = apiFilters.membership_type;
+    }
+
+    for (const [key, options] of Object.entries(apiFilters)) {
+      if (!filters[key]) filters[key] = options;
+    }
+
+    return buildDynamicFilterItems(t, filters, {
+      placeholder: t("LABELS.searchLawyers"),
+      prependInputIcon: Search as any,
+    });
+  }, [t, data.meta?.filters]);
 
   const page = searchParams.get("page") ?? "1";
   const search = searchParams.get("search") ?? "";
