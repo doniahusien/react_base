@@ -540,6 +540,8 @@ export const en = {
     blockFieldsSchemaDesc: "These inputs will be rendered in the page editor when adding this block.",
     addField: "Add Field",
     saveBlockTemplate: "Save Template",
+    fieldLabelArabic: "Field label (Arabic)",
+    fieldLabelEnglish: "Field label (English)",
     fieldTypeText: "Text",
     fieldTypeTextarea: "Textarea",
     fieldTypeImage: "Image",

@@ -24,4 +24,16 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
+if (import.meta.hot) {
+  import.meta.hot.accept(["./translations/en", "./translations/ar"], (mods) => {
+    const [enMod, arMod] = mods ?? [];
+    if (enMod?.en) {
+      i18n.addResourceBundle("en", "translation", enMod.en, true, true);
+    }
+    if (arMod?.ar) {
+      i18n.addResourceBundle("ar", "translation", arMod.ar, true, true);
+    }
+  });
+}
+
 export default i18n;

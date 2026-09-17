@@ -82,17 +82,22 @@ function emptyFormData(): BlockTemplateFormData {
   };
 }
 
+function asText(value: unknown): string {
+  return typeof value === "string" ? value : value == null ? "" : String(value);
+}
+
 function templateToFormData(tpl: BlockTemplate): BlockTemplateFormData {
   return {
-    id: tpl.id,
-    name_ar: tpl.name_ar,
-    name_en: tpl.name_en,
-    description_ar: tpl.description_ar,
-    description_en: tpl.description_en,
+    id: asText(tpl.id),
+    name_ar: asText(tpl.name_ar),
+    name_en: asText(tpl.name_en),
+    // API may return null for optional description fields
+    description_ar: asText(tpl.description_ar),
+    description_en: asText(tpl.description_en),
     category: tpl.category,
-    icon: tpl.icon,
-    shape_tags_str: tpl.shape_tags.join(", "),
-    is_active: tpl.is_active,
+    icon: asText(tpl.icon) || "Sparkles",
+    shape_tags_str: (tpl.shape_tags ?? []).join(", "),
+    is_active: tpl.is_active !== false,
     fields: JSON.parse(JSON.stringify(tpl.fields || [])),
   };
 }
@@ -106,12 +111,17 @@ export function buildBlockTemplatePayload(
     .map((s) => s.trim())
     .filter(Boolean);
 
+  const nameAr = asText(formData.name_ar).trim();
+  const nameEn = asText(formData.name_en).trim();
+  const descriptionAr = asText(formData.description_ar).trim();
+  const descriptionEn = asText(formData.description_en).trim();
+
   return {
-    id: formData.id.trim().toLowerCase().replace(/\s+/g, "_"),
-    name_ar: formData.name_ar.trim(),
-    name_en: formData.name_en.trim() || formData.name_ar.trim(),
-    description_ar: formData.description_ar.trim(),
-    description_en: formData.description_en.trim() || formData.description_ar.trim(),
+    id: asText(formData.id).trim().toLowerCase().replace(/\s+/g, "_"),
+    name_ar: nameAr,
+    name_en: nameEn || nameAr,
+    description_ar: descriptionAr,
+    description_en: descriptionEn || descriptionAr,
     category: formData.category,
     icon: formData.icon,
     shape_tags: tags,
@@ -255,19 +265,36 @@ export function BlockTemplateForm({
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-xs font-bold text-foreground">
-          {t("LABELS.blockDescription")}
-        </label>
-        <textarea
-          rows={2}
-          value={formData.description_ar}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, description_ar: e.target.value }))
-          }
-          placeholder={t("LABELS.blockDescriptionPlaceholder")}
-          className="w-full rounded-xl border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-foreground">
+            {t("LABELS.blockDescription")} (AR)
+          </label>
+          <textarea
+            rows={2}
+            value={formData.description_ar}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, description_ar: e.target.value }))
+            }
+            placeholder={t("LABELS.blockDescriptionPlaceholder")}
+            className="w-full rounded-xl border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-bold text-foreground">
+            {t("LABELS.blockDescription")} (EN)
+          </label>
+          <textarea
+            rows={2}
+            value={formData.description_en}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, description_en: e.target.value }))
+            }
+            placeholder={t("LABELS.blockDescriptionPlaceholder")}
+            className="w-full rounded-xl border border-border bg-background p-2.5 text-xs focus:border-primary focus:outline-none"
+            dir="ltr"
+          />
+        </div>
       </div>
 
       <div className="space-y-3 pt-3 border-t border-border">
@@ -292,60 +319,78 @@ export function BlockTemplateForm({
           </Button>
         </div>
 
-        <div className="space-y-2.5 max-h-60 overflow-y-auto p-1">
+        <div className="space-y-2.5 max-h-72 overflow-y-auto p-1">
           {formData.fields.map((field, idx) => (
             <div
               key={idx}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-2 rounded-xl border border-border bg-muted/20 p-2.5 text-xs"
+              className="flex flex-col gap-2 rounded-xl border border-border bg-muted/20 p-2.5 text-xs"
             >
-              <span className="font-bold text-muted-foreground w-6 text-center">
-                #{idx + 1}
-              </span>
-              <input
-                type="text"
-                value={field.key}
-                onChange={(e) => handleUpdateField(idx, { key: e.target.value })}
-                placeholder="field_key"
-                className="w-28 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-mono"
-              />
-              <input
-                type="text"
-                value={field.label_ar}
-                onChange={(e) =>
-                  handleUpdateField(idx, { label_ar: e.target.value })
-                }
-                placeholder="تسمية الحقل (عربي)"
-                className="flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs"
-              />
-              <BaseSelectInput
-                name={`field_type_${idx}`}
-                items={[
-                  { id: "text", name: t("LABELS.fieldTypeText") },
-                  { id: "textarea", name: t("LABELS.fieldTypeTextarea") },
-                  { id: "image", name: t("LABELS.fieldTypeImage") },
-                  { id: "icon", name: t("LABELS.fieldTypeIcon") },
-                  { id: "url", name: t("LABELS.fieldTypeUrl") },
-                  { id: "repeater", name: t("LABELS.fieldTypeRepeater") },
-                ]}
-                value={{
-                  id: field.type,
-                  name: t(
-                    `LABELS.fieldType${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`
-                  ),
-                }}
-                onChange={(val) => {
-                  if (val && !Array.isArray(val)) {
-                    handleUpdateField(idx, { type: val.id as FieldInputType });
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <span className="font-bold text-muted-foreground w-6 text-center shrink-0">
+                  #{idx + 1}
+                </span>
+                <input
+                  type="text"
+                  value={field.key}
+                  onChange={(e) => handleUpdateField(idx, { key: e.target.value })}
+                  placeholder="field_key"
+                  className="w-28 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-mono shrink-0"
+                />
+                <BaseSelectInput
+                  name={`field_type_${idx}`}
+                  items={[
+                    { id: "text", name: t("LABELS.fieldTypeText") },
+                    { id: "textarea", name: t("LABELS.fieldTypeTextarea") },
+                    { id: "image", name: t("LABELS.fieldTypeImage") },
+                    { id: "icon", name: t("LABELS.fieldTypeIcon") },
+                    { id: "url", name: t("LABELS.fieldTypeUrl") },
+                    { id: "repeater", name: t("LABELS.fieldTypeRepeater") },
+                  ]}
+                  value={{
+                    id: field.type,
+                    name: t(
+                      `LABELS.fieldType${field.type.charAt(0).toUpperCase() + field.type.slice(1)}`
+                    ),
+                  }}
+                  onChange={(val) => {
+                    if (val && !Array.isArray(val)) {
+                      handleUpdateField(idx, { type: val.id as FieldInputType });
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveField(idx)}
+                  className="p-1.5 text-muted-foreground hover:text-rose-500 rounded-lg sm:ms-auto"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:ps-8">
+                <input
+                  type="text"
+                  value={asText(field.label_ar)}
+                  onChange={(e) =>
+                    handleUpdateField(idx, { label_ar: e.target.value })
                   }
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => handleRemoveField(idx)}
-                className="p-1.5 text-muted-foreground hover:text-rose-500 rounded-lg"
-              >
-                <TrashIcon className="h-4 w-4" />
-              </button>
+                  placeholder={t("LABELS.fieldLabelArabic", {
+                    defaultValue: "Field label (Arabic)",
+                  })}
+                  className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs"
+                />
+                <input
+                  type="text"
+                  value={asText(field.label_en)}
+                  onChange={(e) =>
+                    handleUpdateField(idx, { label_en: e.target.value })
+                  }
+                  placeholder={t("LABELS.fieldLabelEnglish", {
+                    defaultValue: "Field label (English)",
+                  })}
+                  className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs"
+                  dir="ltr"
+                />
+              </div>
             </div>
           ))}
         </div>

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { BaseTextInput } from "../Inputs/BaseTextInput";
+import { BaseSwitchInput } from "../Inputs/BaseSwitchInput";
 import { IconPicker } from "../Inputs/IconPicker";
 import { ImageInput } from "../Inputs/ImageInput";
 import { GlobalSliderNotice } from "./GlobalSliderNotice";
@@ -66,6 +67,248 @@ function RepeaterHeader({
 }
 
 // ============================================================================
+// Schema-driven fields (for custom / API-defined templates)
+// ============================================================================
+
+function getByPath(obj: any, path: string) {
+  if (!path.includes(".")) return obj?.[path];
+  return path.split(".").reduce((acc, key) => (acc == null ? undefined : acc[key]), obj);
+}
+
+function setByPath(obj: any, path: string, value: any) {
+  if (!path.includes(".")) return { ...obj, [path]: value };
+  const keys = path.split(".");
+  const root = { ...obj };
+  let cursor: any = root;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const k = keys[i];
+    cursor[k] = { ...(cursor[k] ?? {}) };
+    cursor = cursor[k];
+  }
+  cursor[keys[keys.length - 1]] = value;
+  return root;
+}
+
+function fieldLabel(
+  field: { label_ar?: string | null; label_en?: string | null },
+  uiLang: "ar" | "en",
+  contentLang?: "ar" | "en"
+) {
+  const base =
+    uiLang === "ar"
+      ? field.label_ar || field.label_en || ""
+      : field.label_en || field.label_ar || "";
+  return contentLang ? `${base} (${contentLang.toUpperCase()})` : base;
+}
+
+function SchemaDrivenFields({
+  fields,
+  content,
+  lang,
+  currentUiLang,
+  onChange,
+  translate,
+}: {
+  fields: NonNullable<BlockTemplate["fields"]>;
+  content: Record<string, any>;
+  lang: "ar" | "en";
+  currentUiLang: "ar" | "en";
+  onChange: (updater: (prev: any) => any) => void;
+  translate: (key: string, opts?: Record<string, any>) => string;
+}) {
+  if (!fields.length) {
+    return (
+      <div className="text-xs text-muted-foreground p-4 text-center">
+        {translate("LABELS.noFieldBlocks")}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      {fields.map((field) => {
+        const label = fieldLabel(field, currentUiLang, lang);
+        const value = getByPath(content, field.key);
+
+        if (field.type === "textarea" || field.type === "rich_text") {
+          return (
+            <SectionTextArea
+              key={field.key}
+              label={label}
+              value={value ?? ""}
+              rows={field.type === "rich_text" ? 5 : 3}
+              onChange={(e) =>
+                onChange((prev) => setByPath(prev, field.key, e.target.value))
+              }
+            />
+          );
+        }
+
+        if (field.type === "image") {
+          return (
+            <ImageInput
+              key={field.key}
+              label={label}
+              value={value || field.default_value || ""}
+              onChange={(url) =>
+                onChange((prev) => setByPath(prev, field.key, url))
+              }
+            />
+          );
+        }
+
+        if (field.type === "icon") {
+          return (
+            <IconPicker
+              key={field.key}
+              label={label}
+              value={value || field.default_value || "Sparkles"}
+              onChange={(iconKey) =>
+                onChange((prev) => setByPath(prev, field.key, iconKey))
+              }
+              currentLang={currentUiLang}
+            />
+          );
+        }
+
+        if (field.type === "switch") {
+          return (
+            <BaseSwitchInput
+              key={field.key}
+              name={field.key}
+              label={label}
+              value={Boolean(value)}
+              onChange={(checked) =>
+                onChange((prev) => setByPath(prev, field.key, checked))
+              }
+            />
+          );
+        }
+
+        if (field.type === "repeater") {
+          const items: any[] = Array.isArray(value) ? value : [];
+          const itemLabel =
+            currentUiLang === "ar"
+              ? field.item_label_ar || field.item_label_en || translate("LABELS.addField")
+              : field.item_label_en || field.item_label_ar || translate("LABELS.addField");
+          const subFields = field.item_fields || [];
+
+          return (
+            <div key={field.key} className="space-y-3">
+              <RepeaterHeader
+                label={fieldLabel(field, currentUiLang)}
+                count={items.length}
+                addLabel={`+ ${itemLabel}`}
+                onAdd={() => {
+                  const blank: Record<string, any> = { id: `item-${Date.now()}` };
+                  for (const sub of subFields) {
+                    blank[sub.key] =
+                      sub.type === "repeater" ? [] : sub.default_value ?? "";
+                  }
+                  onChange((prev) =>
+                    setByPath(prev, field.key, [...items, blank])
+                  );
+                }}
+              />
+              {items.map((item, itemIdx) => (
+                <div
+                  key={item.id || itemIdx}
+                  className="space-y-3 rounded-xl border border-border bg-muted/20 p-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-muted-foreground">
+                      {itemLabel} #{itemIdx + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onChange((prev) =>
+                          setByPath(
+                            prev,
+                            field.key,
+                            items.filter((_, i) => i !== itemIdx)
+                          )
+                        )
+                      }
+                      className="p-1 text-muted-foreground hover:text-rose-500"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                  {subFields.map((sub) => {
+                    const subLabel = fieldLabel(sub, currentUiLang, lang);
+                    const subVal = item[sub.key];
+                    const patchItem = (nextVal: any) =>
+                      onChange((prev) => {
+                        const list = [...(getByPath(prev, field.key) || [])];
+                        list[itemIdx] = { ...list[itemIdx], [sub.key]: nextVal };
+                        return setByPath(prev, field.key, list);
+                      });
+
+                    if (sub.type === "textarea" || sub.type === "rich_text") {
+                      return (
+                        <SectionTextArea
+                          key={sub.key}
+                          label={subLabel}
+                          value={subVal ?? ""}
+                          rows={2}
+                          onChange={(e) => patchItem(e.target.value)}
+                        />
+                      );
+                    }
+                    if (sub.type === "image") {
+                      return (
+                        <ImageInput
+                          key={sub.key}
+                          label={subLabel}
+                          value={subVal || sub.default_value || ""}
+                          onChange={patchItem}
+                        />
+                      );
+                    }
+                    if (sub.type === "icon") {
+                      return (
+                        <IconPicker
+                          key={sub.key}
+                          label={subLabel}
+                          value={subVal || sub.default_value || "Sparkles"}
+                          onChange={patchItem}
+                          currentLang={currentUiLang}
+                        />
+                      );
+                    }
+                    return (
+                      <BaseTextInput
+                        key={sub.key}
+                        label={subLabel}
+                        value={subVal ?? ""}
+                        onChange={(e) => patchItem(e.target.value)}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          );
+        }
+
+        // text | url | fallback
+        return (
+          <BaseTextInput
+            key={field.key}
+            label={label}
+            value={value ?? ""}
+            onChange={(e) =>
+              onChange((prev) => setByPath(prev, field.key, e.target.value))
+            }
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================================
 // DEDICATED BLOCK SPECIFIC CONTENT FORM
 // ============================================================================
 
@@ -82,6 +325,7 @@ export function BlockContentForm({
   lang,
   onChange,
   currentUiLang,
+  templates = [],
 }: BlockSpecificContentFormProps) {
   const { t, i18n } = useTranslation();
   const ct = (key: string, opts?: Record<string, any>) => {
@@ -93,6 +337,7 @@ export function BlockContentForm({
   const contentT = (key: string, opts?: Record<string, any>) =>
     i18n.t(key, { lng: lang, ...opts });
   const content = section.content[lang] || {};
+  const matchedTemplate = templates.find((tpl) => tpl.id === section.type);
 
   switch (section.type) {
     // 1. Home Header (Hero Carousel)
@@ -1339,6 +1584,18 @@ export function BlockContentForm({
     }
 
     default:
+      if (matchedTemplate?.fields?.length) {
+        return (
+          <SchemaDrivenFields
+            fields={matchedTemplate.fields}
+            content={content}
+            lang={lang}
+            currentUiLang={currentUiLang}
+            onChange={onChange}
+            translate={ct}
+          />
+        );
+      }
       return (
         <div className="text-xs text-muted-foreground p-4 text-center">
           {t("LABELS.noFieldBlocks")}

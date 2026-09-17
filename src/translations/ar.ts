@@ -540,6 +540,8 @@ export const ar = {
     blockFieldsSchemaDesc: "هذه الحقول هي التي سيقوم المحرر بتعبئة نصوصها وصورها عند إضافة هذا البلوك في أي صفحة.",
     addField: "إضافة حقل",
     saveBlockTemplate: "حفظ القالب",
+    fieldLabelArabic: "تسمية الحقل (عربي)",
+    fieldLabelEnglish: "تسمية الحقل (إنجليزي)",
     fieldTypeText: "نص",
     fieldTypeTextarea: "نص طويل",
     fieldTypeImage: "صورة",

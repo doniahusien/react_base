@@ -44,8 +44,9 @@ export interface BlockTemplate {
   id: string; // canonical block id (e.g. "hero_header", "cards_grid_with_icons_images")
   name_ar: string;
   name_en: string;
-  description_ar: string;
-  description_en: string;
+  /** Backend may return null when the field was never set */
+  description_ar: string | null;
+  description_en: string | null;
   category: BlockCategory;
   icon: string; // icon identifier (e.g. "Sparkles", "Scale", "RectangleStack")
   shape_tags: string[]; // e.g. ["title", "description", "image", "icon", "cta"]
